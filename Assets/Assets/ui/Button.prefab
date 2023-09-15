@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 7962852333113913288}
   - component: {fileID: 7962852333113913289}
   - component: {fileID: 7962852333113913294}
-  - component: {fileID: 7962852333113913295}
   - component: {fileID: 7962852333113913292}
   - component: {fileID: 7962852333113913293}
   - component: {fileID: 7962852333113913282}
@@ -94,20 +93,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d80807a58673cd941a601e267d1524a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Icon: {fileID: 0}
-  <TooltipText>k__BackingField: Example tooltip.
---- !u!114 &7962852333113913295
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7962852333113913283}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 0
     m_WrapAround: 0
@@ -118,16 +103,16 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 0.3372549, g: 0.45490196, b: 0.5764706, a: 1}
-    m_HighlightedColor: {r: 0.3812745, g: 0.52755105, b: 0.6792453, a: 1}
+    m_HighlightedColor: {r: 0.38039216, g: 0.5294118, b: 0.6784314, a: 1}
     m_PressedColor: {r: 0.19607843, g: 0.32941177, b: 0.4627451, a: 1}
-    m_SelectedColor: {r: 0.19607843, g: 0.32941177, b: 0.4627451, a: 1}
-    m_DisabledColor: {r: 0.34509805, g: 0.34117648, b: 0.34117648, a: 1}
+    m_SelectedColor: {r: 1, g: 0.43921572, b: 0.27058825, a: 1}
+    m_DisabledColor: {r: 0.34117648, g: 0.3372549, b: 0.3372549, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
-    m_HighlightedSprite: {fileID: 21300000, guid: 30228661cd02ef8429f51b1bf4461e08, type: 3}
-    m_PressedSprite: {fileID: 21300000, guid: 9c9d521bcf0c1b74dbac61f40867bc7f, type: 3}
-    m_SelectedSprite: {fileID: 21300000, guid: ee14e6216b58ac047ae936f431060fb7, type: 3}
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
     m_DisabledSprite: {fileID: 0}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
@@ -219,7 +204,7 @@ GameObject:
   - component: {fileID: 7962852333743449023}
   - component: {fileID: 7962852333743449020}
   m_Layer: 5
-  m_Name: Text
+  m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

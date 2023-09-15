@@ -346,7 +346,7 @@ RectTransform:
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 75, y: 75}
-  m_Pivot: {x: 0, y: 0.5}
+  m_Pivot: {x: 0.4999999, y: 0.5}
 --- !u!114 &72776461
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -693,10 +693,10 @@ RectTransform:
   m_Father: {fileID: 2017615842}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -125.83, y: 0}
-  m_SizeDelta: {x: 250, y: 400}
+  m_AnchorMin: {x: 0, y: 0.31500003}
+  m_AnchorMax: {x: 1, y: 0.6842593}
+  m_AnchoredPosition: {x: 0.000021971762, y: 0.5}
+  m_SizeDelta: {x: 0, y: 1}
   m_Pivot: {x: 0.00000017136335, y: 0.5}
 --- !u!114 &187347497
 MonoBehaviour:
@@ -719,7 +719,7 @@ MonoBehaviour:
   m_Spacing: 50
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
+  m_ChildControlWidth: 1
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
@@ -2889,8 +2889,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -33.25508, y: -966.88}
-  m_SizeDelta: {x: 314.85, y: 80.916}
+  m_AnchoredPosition: {x: 50, y: -969}
+  m_SizeDelta: {x: 250, y: 80.916}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &839750045
 MonoBehaviour:
@@ -3874,7 +3874,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 905209248}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3884,8 +3884,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 194.925, y: -40.458}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 162.5, y: -40.458}
+  m_SizeDelta: {x: 200, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &905209250
 MonoBehaviour:
@@ -4026,8 +4026,8 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 314.85, y: 80.916}
-  m_Pivot: {x: 0, y: 0.5}
+  m_SizeDelta: {x: 0, y: 80.916}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &910827307
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4083,6 +4083,42 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: Play
           m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2017615845}
+        m_TargetAssemblyTypeName: Damath.SidebarController, Assembly-CSharp
+        m_MethodName: ExtendSidebar
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 905209248}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 1746603296}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &910827308
 MonoBehaviour:
@@ -4141,7 +4177,7 @@ MonoBehaviour:
     m_Bottom: 0
   m_ChildAlignment: 4
   m_Spacing: 0
-  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
@@ -5148,8 +5184,8 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 314.85, y: 80.916}
-  m_Pivot: {x: 0, y: 0.5}
+  m_SizeDelta: {x: 0, y: 80.916}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1317155497
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5169,7 +5205,7 @@ MonoBehaviour:
     m_Bottom: 0
   m_ChildAlignment: 4
   m_Spacing: 0
-  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
@@ -5231,6 +5267,42 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: Options
           m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2017615845}
+        m_TargetAssemblyTypeName: Damath.SidebarController, Assembly-CSharp
+        m_MethodName: ExtendSidebar
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 905209248}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 1746603296}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &1317155499
 MonoBehaviour:
@@ -5304,11 +5376,11 @@ RectTransform:
   m_Father: {fileID: 1109477810}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 125, y: 0}
-  m_SizeDelta: {x: 1670, y: 1080}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 250, y: 0}
+  m_SizeDelta: {x: 1670, y: 0}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1366567577
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7106,8 +7178,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 229.26076, y: -40.458}
-  m_SizeDelta: {x: 308.5215, y: 51.4866}
+  m_AnchoredPosition: {x: 216.76, y: -43.416}
+  m_SizeDelta: {x: 308.5215, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1746603298
 MonoBehaviour:
@@ -7500,6 +7572,42 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: LogoButton, Assembly-CSharp
         m_MethodName: Spin
         m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2017615845}
+        m_TargetAssemblyTypeName: Damath.SidebarController, Assembly-CSharp
+        m_MethodName: CollapseSidebar
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 905209248}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1746603296}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -8961,6 +9069,7 @@ GameObject:
   - component: {fileID: 2017615842}
   - component: {fileID: 2017615844}
   - component: {fileID: 2017615843}
+  - component: {fileID: 2017615846}
   - component: {fileID: 2017615845}
   m_Layer: 5
   m_Name: Sidebar
@@ -9039,28 +9148,43 @@ MonoBehaviour:
   m_GameObject: {fileID: 2017615841}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90506e6d8a14de74881650315be4c6c3, type: 3}
+  m_Script: {fileID: 11500000, guid: fab681ce9a5e276498eb6b83ae95ccf9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SideBar: {fileID: 2017615841}
-  TitleScreen: {fileID: 265251272}
-  SideBarImage: {fileID: 0}
-  rect: {fileID: 0}
-  TitleScreenRectTransform: {fileID: 0}
-  SideBarSize: {x: 0, y: 0}
-  TitleScreenSize: {x: 0, y: 0}
-  ScreenWidth: 0
-  ExitedWidth: 0
-  StartingWidth: 0
-  FinalWidth: 0
-  IsHovered: 0
-  ChangedValue: 0
-  Duration: 0.125
-  ElapsedTime: 0
-  WaitingTime: 0
-  Delay: 0.1
-  DefaultColor: {r: 0, g: 0, b: 0, a: 0}
-  HoveredColor: {r: 0.14901961, g: 0.23529412, b: 0.32156864, a: 1}
+  SideBarImage: {fileID: 2017615843}
+  SidebarRectTransform: {fileID: 2017615842}
+  TitleScreenRectTransform: {fileID: 1366567576}
+  Duration: 0.2
+  _elapsedTime: 0
+--- !u!114 &2017615846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017615841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 4
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2017615845}
+          m_TargetAssemblyTypeName: Damath.SidebarController, Assembly-CSharp
+          m_MethodName: 
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1001 &2065369527
 PrefabInstance:
   m_ObjectHideFlags: 0

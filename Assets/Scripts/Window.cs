@@ -8,7 +8,7 @@ using TMPro;
 
 namespace Damath
 {
-    public class Window : MonoBehaviour, IToggleable, IUIElement
+    public class Window : MonoBehaviour, IToggleable
     {
         public bool IsVisible { get; set; }   
         public bool IsChoiceable = false;

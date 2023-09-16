@@ -11,12 +11,12 @@ GameObject:
   - component: {fileID: 3990577252084355901}
   - component: {fileID: 3990577252084355899}
   - component: {fileID: 3990577252084355900}
-  - component: {fileID: 2125970164168761384}
+  - component: {fileID: 4896626776148167481}
   - component: {fileID: 3910922287463087841}
   - component: {fileID: 3990577252084355898}
   - component: {fileID: 3706864259511901089}
   m_Layer: 5
-  m_Name: Tooltip
+  m_Name: Tooltip (UI)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -40,7 +40,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 960, y: 540}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3990577252084355899
@@ -65,7 +65,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.9529412, g: 0.4392157, b: 0.28235295, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -81,7 +81,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2125970164168761384
+--- !u!114 &4896626776148167481
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -93,8 +93,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4584ead8a37b50e42a1236769d918183, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Enable: 1
-  Text: 
   IsVisible: 0
   ShowDelay: 1
   HideDelay: 0
@@ -102,8 +100,8 @@ MonoBehaviour:
   FadeInDuration: 0.25
   FadeOutDuration: 0.25
   rect: {fileID: 3990577252084355901}
-  image: {fileID: 3990577252084355900}
   tmpUGUI: {fileID: 3990577253348019447}
+  image: {fileID: 3990577252084355900}
 --- !u!210 &3910922287463087841
 SortingGroup:
   m_ObjectHideFlags: 0
@@ -191,7 +189,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 323.35, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3990577253348019446

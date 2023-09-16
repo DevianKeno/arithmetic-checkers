@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 namespace Damath
 {
-    public class Toggle : MonoBehaviour, IUIElement
+    public class Toggle : MonoBehaviour
     {
         public bool IsVisible { get; set; }   
         public bool Value { get; set; }

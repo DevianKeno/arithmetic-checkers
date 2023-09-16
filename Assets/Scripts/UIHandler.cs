@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Microsoft.Unity.VisualStudio.Editor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,31 +7,35 @@ namespace Damath
     public class UIHandler : MonoBehaviour
     {
         public static UIHandler Main;
-        [SerializeField] Canvas Canvas;
+
+        public Canvas Canvas { get; private set; }
+        public Tooltip Tooltip;
         public List<Sprite> icons;
         public Dictionary<string, Sprite> Icons = new();
+        private bool IsDimmed;
         
         [Header("Prefabs")]
-        [SerializeField] private UnityEngine.UI.Image dim;
+        public Image dim;
         public GameObject windowPrefab;
         public GameObject choiceWindowPrefab;
         public GameObject choicePrefab;
-        private bool IsDimmed;
-        [SerializeField] private Tooltip tooltipPrefab;
+        public GameObject tooltipPrefab;
 
         void Awake()
         {
             Main = this;
+
+            Canvas = GetComponentInChildren<Canvas>();
         }
 
         void Start()
         {
-            
+            //
         }
 
         public void PlayTransition()
         {
-            
+            //
         }
 
         public void AddIcon(string name, Sprite sprite)
@@ -67,32 +70,27 @@ namespace Damath
             return newWindow.GetComponent<Window>();
         }
 
-        /// <summary>
-        /// Add a tooltip for a UIElement.
-        /// </summary>
-        /// <param name="element"></param>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        public void ShowTooltip(IUIElement element, string text)
+        public Tooltip CreateTooltip(string text)
         {
-            tooltipPrefab.SetElement(element);
-            tooltipPrefab.SetText(text);
-            tooltipPrefab.SetActive(true);
+            Tooltip = Instantiate(tooltipPrefab, Canvas.transform).GetComponent<Tooltip>();
+            Tooltip.SetText(text);
+            return Tooltip;
+        }
+
+        public Tooltip CreateTooltip(string text, Color color)
+        {
+            Tooltip = Instantiate(tooltipPrefab, Canvas.transform).GetComponent<Tooltip>();
+
+            Tooltip.SetText(text);
+            Tooltip.SetColor(color);
+            Tooltip.Show();
+
+            return Tooltip;
         }
 
         public void HideTooltip()
         {
-            tooltipPrefab.SetActive(false);
-        }
-
-        public Tooltip CreateTooltip(IUIElement element, string text, Color color)
-        {
-            var newTooltip = Instantiate(tooltipPrefab, Input.mousePosition, Quaternion.identity, Canvas.transform);
-            Tooltip m_tooltip = newTooltip.GetComponent<Tooltip>();
-            m_tooltip.SetElement(element);
-            m_tooltip.SetText(text);
-            m_tooltip.SetColor(color);
-            return m_tooltip;
+            Tooltip.Hide();
         }
 
         public void Dim(float time)

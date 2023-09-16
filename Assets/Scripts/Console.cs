@@ -296,35 +296,35 @@ namespace Damath
 
         void Command_Match(List<string> args)
         {
-            if (args[1] == "create")
-            {
-                try
-                {
-                    Ruleset.Type mode = args[2] switch
-                    {
-                        "standard" or "1" => Ruleset.Type.Standard,
-                        "speed" or "2" => Ruleset.Type.Speed,
-                        // "custom" or "3" => Ruleset.Type.Custom,
-                        _ => throw new Exception()
-                    };
-                    Game.Main.CreateMatch(mode);
-                } catch
-                { 
-                    PromptInvalid(args[0]);
-                }
-            } else if (args[1] == "start")
-            {
-                if (Game.Main.Ruleset == null)
-                {
-                    Log("No match created. Create one with /match create <mode>");
-                } else
-                {
-                    Game.Main.StartMatch();
-                }
-            } else if (args[1] == "get")
-            {
-                Log($"{Match}");
-            }
+            // if (args[1] == "create")
+            // {
+            //     try
+            //     {
+            //         Ruleset.Type mode = args[2] switch
+            //         {
+            //             "standard" or "1" => Ruleset.Type.Standard,
+            //             "speed" or "2" => Ruleset.Type.Speed,
+            //             // "custom" or "3" => Ruleset.Type.Custom,
+            //             _ => throw new Exception()
+            //         };
+            //         Game.Main.CreateMatch(mode);
+            //     } catch
+            //     { 
+            //         PromptInvalid(args[0]);
+            //     }
+            // } else if (args[1] == "start")
+            // {
+            //     if (Game.Main.Ruleset == null)
+            //     {
+            //         Log("No match created. Create one with /match create <mode>");
+            //     } else
+            //     {
+            //         Game.Main.StartMatch();
+            //     }
+            // } else if (args[1] == "get")
+            // {
+            //     Log($"{Match}");
+            // }
         }
         
         void Command_Move(List<string> args)

@@ -1,153 +1,73 @@
 using System;
-using Unity.VisualScripting;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using Unity.VisualScripting;
 
-public class SidebarController : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+namespace Damath
 {
-    public GameObject SideBar;
-    public GameObject TitleScreen;
-    public Image SideBarImage;
-    [SerializeField] private RectTransform rect;
-    public RectTransform TitleScreenRectTransform;
-
-    public Vector2 SideBarSize;
-    public Vector2 TitleScreenSize;
-    public float ScreenWidth;
-
-    public float ExitedWidth;       // captures the width when the pointer exits
-    public float StartingWidth = 250f;     // collapsed sidebar width
-    public float FinalWidth = 600f;        // expanded sidebar width
-
-    // two boolean variables to check every update
-    // ChangedValue will only be true once IsHovered variable changes,
-    // and will immediately be set back to false after the Delay
-    public bool IsHovered = false;
-    public bool ChangedValue = false;
-
-    // stores the variables needed for the hover animation
-    public float Duration = 0.3f;
-    public float ElapsedTime = 0;
-    private float _percent = 0f;
-
-    // animation Delay when first hovered (pointer exits will not have delays)
-    public float WaitingTime = 0;
-    public float Delay = 0.1f;
-
-    public Color DefaultColor;
-    public Color HoveredColor = new Color(38/255f, 60/255f, 82/255f, 1f);
-
-    void Start()
+    public class SidebarController : MonoBehaviour
     {
-        // stores the reference to the GameObject components
-        SideBarImage = SideBar.GetComponent<Image>();
-        rect = SideBar.GetComponent<RectTransform>();
-        TitleScreenRectTransform = TitleScreen.GetComponent<RectTransform>();     
 
-        SideBarSize = rect.sizeDelta;
-        TitleScreenSize = TitleScreenRectTransform.sizeDelta;
-        ScreenWidth = rect.sizeDelta.x + TitleScreenRectTransform.sizeDelta.x;
+        public Image SideBarImage;
+        public RectTransform SidebarRectTransform;
+        public RectTransform TitleScreenRectTransform;
+        public float Duration = 0.1f;
 
-        // the final width should be twice as wide as the initial width
-        StartingWidth = SideBarSize.x;
-        FinalWidth = StartingWidth * 2f;     
+        // stores the variables needed for the animation
+        private Boolean _isClicked;
+        private float _initialWidth = 250f;
+        private float _extendedWidth = 450f;
+        [SerializeField]
+        private float _elapsedTime = 0f;
+        private float _percent = 0f;
+        private float _screenWidth;
 
-        DefaultColor = SideBarImage.color;
-       
-    }
+        public void ExtendSidebar()
+        {            
+            _isClicked = true;
 
-    public void OnPointerEnter(PointerEventData pointerEventData)
-    {
-        
-    }
+        }
 
-    public void OnPointerClick(PointerEventData pointerEventData)
-    {
-        Toggle();
-        LeanTween.size(rect, new Vector2(600f, rect.sizeDelta.y), 0.5f).setEaseOutExpo();
-    }
-    
-    
-    public void OnPointerExit(PointerEventData pointerEventData)
-    {
-        LeanTween.size(rect, new Vector2(360f, rect.sizeDelta.y), 0.5f).setEaseOutExpo();
-    }
-
-    void Update()
-    {
-      
-
-        if (IsHovered)
+        public void CollapseSidebar()
         {
+            _isClicked = false;
+        }
 
-            SideBarImage.color = Color.Lerp(DefaultColor, HoveredColor, Mathf.SmoothStep(0, 1, (WaitingTime / Delay)));
+        private void Start()
+        {
+            _screenWidth = SidebarRectTransform.sizeDelta.x + TitleScreenRectTransform.sizeDelta.x;
+        }
 
-            if (ChangedValue)
+        // Update is called once per frame
+        void Update()
+        {
+            if (_isClicked)
             {
-                if (WaitingTime < Delay)
-                {
-                    WaitingTime += Time.deltaTime;
-                    return;
+                if (SidebarRectTransform.sizeDelta.x < _extendedWidth)
+                {   
+                    _elapsedTime += Time.deltaTime;
+                    _percent = _elapsedTime / Duration;
+                    SidebarRectTransform.sizeDelta = new Vector2(Mathf.Lerp(_initialWidth, _extendedWidth, Mathf.SmoothStep(0, 1, _percent)), SidebarRectTransform.sizeDelta.y);
                 }
-                ChangedValue = false;
-
-            }
-            if (ElapsedTime < Duration)
+            } 
+            else
             {
-                ElapsedTime += Time.deltaTime;
-                _percent = ElapsedTime / Duration;
-                rect.sizeDelta = new Vector2(Mathf.Lerp(StartingWidth, FinalWidth, Mathf.SmoothStep(0, 1, _percent)), SideBarSize.y);
-                TitleScreenRectTransform.sizeDelta = new Vector2(ScreenWidth - rect.sizeDelta.x, TitleScreenSize.y);
+                if (SidebarRectTransform.sizeDelta.x > _initialWidth)
+                {
+                    _elapsedTime -= Time.deltaTime;
+                    _percent = _elapsedTime / Duration;
+                    SidebarRectTransform.sizeDelta = new Vector2(Mathf.Lerp(_extendedWidth, _initialWidth, Mathf.SmoothStep(0, 1, Math.Abs(1 - _percent))), SidebarRectTransform.sizeDelta.y);
+                }
             }
+
+            TitleScreenRectTransform.sizeDelta = new Vector2(_screenWidth - SidebarRectTransform.sizeDelta.x, TitleScreenRectTransform.sizeDelta.y);
+            TitleScreenRectTransform.anchoredPosition = new Vector2(SidebarRectTransform.sizeDelta.x, TitleScreenRectTransform.anchoredPosition.y);
         }
-        else
-        {
-            SideBarImage.color = Color.Lerp(HoveredColor, DefaultColor, Mathf.SmoothStep(0, 1, Math.Abs(1 - _percent)));
-
-            if (ChangedValue)
-            {
-                // captures the current width of the sidebar as soon as the pointer exits
-                // this will serve as the starting width for the collapse animation
-                ExitedWidth = rect.sizeDelta.x;
-                ChangedValue = false;
-
-            }
-            if (ElapsedTime > 0)
-            {
-                ElapsedTime -= Time.deltaTime;
-                _percent = ElapsedTime / Duration;
-                rect.sizeDelta = new Vector2(Mathf.Lerp(ExitedWidth, StartingWidth, Mathf.SmoothStep(0, 1, Math.Abs(1 - _percent))), SideBarSize.y);
-                TitleScreenRectTransform.sizeDelta = new Vector2(ScreenWidth - rect.sizeDelta.x, TitleScreenSize.y);
-            }
-        }
-
+            
     }
 
-    void Toggle()
-    {
-        ChangedValue = true;
-        if (IsHovered)
-        {
-            WaitingTime = 0;
-            _percent = 0f;
-            IsHovered = false;
-        }
-        else
-        {
-            IsHovered = true;
-        }
-    }
-
-    //void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
-    //{
-    //    Toggle();
-    //    WaitingTime = 0;
-    //    _percent = 0f;
-    //}
-
-    //void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
-    //{
-    //    Toggle();
-    //}
 }
+

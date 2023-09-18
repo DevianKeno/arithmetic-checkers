@@ -150,7 +150,7 @@ namespace Damath
 
         public void AddRule(int id, string name, object value)
         {
-            Rules.Add(name, new(id, name, value));
+            //Rules.Add(name, new(id, name, value));
         }
 
         public object GetRule(string rule)

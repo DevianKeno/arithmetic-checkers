@@ -244,7 +244,8 @@ namespace Damath
         {
             args.RemoveAt(0);
             var message = string.Join(" ", args.ToArray());
-            Log($"Sent a message: {message}");
+            Game.Events.NetworkSend(message);
+            //Log($"Sent a message: {message}");
             
             //
         }

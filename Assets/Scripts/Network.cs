@@ -19,10 +19,11 @@ namespace Damath
 
         private void Awake()
         {
-            Game.Events.OnNetworkSend += sendData;
+            
         }
         void Start()
         {
+            Game.Events.OnNetworkSend += sendDataRpc;
             if (Main != null && Main != this)
             {
                 Destroy(this);
@@ -55,6 +56,7 @@ namespace Damath
         {
             //process data then return the data using receiveDataRpc
             receiveDataRpc(data);
+
         }
 
         [ObserversRpc]

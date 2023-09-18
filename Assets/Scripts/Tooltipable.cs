@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 
 namespace Damath
 {
+    [RequireComponent(typeof(IHoverable))]
     public class Tooltipable : MonoBehaviour
     {
         public bool Enable = true;
@@ -29,11 +30,13 @@ namespace Damath
         {
             if (!Enable) return;
 
+            Debug.Log("hover");
             Game.UI.CreateTooltip(Text, Color);
         }
         
         void Hide(PointerEventData eventData)
         {
+            Debug.Log("unhover");
             Game.UI.HideTooltip();
         }
     }

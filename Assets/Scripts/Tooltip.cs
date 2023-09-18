@@ -1,9 +1,7 @@
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using TMPro;
-using UnityEditor;
 
 namespace Damath
 {
@@ -23,7 +21,10 @@ namespace Damath
 
         void Start()
         {
-            gameObject.SetActive(false);
+            // gameObject.SetActive(false);
+
+            image.color = new (image.color.r, image.color.g, image.color.b, 0f);
+            tmpUGUI.color = new (tmpUGUI.color.r, tmpUGUI.color.g, tmpUGUI.color.b, 0f);
         }
 
         void Update()
@@ -69,14 +70,12 @@ namespace Damath
             {  
                 LeanTween.cancel(gameObject);
 
-                if (!IsVisible) await Task.Delay((int)ShowDelay * 1000);
+                if (IsVisible) return;
                 IsVisible = true;
-                // if (!element.IsHovered) return;
                 
-                image.color = new (image.color.r, image.color.g, image.color.b, 0f);
-                tmpUGUI.color = new (tmpUGUI.color.r, tmpUGUI.color.g, tmpUGUI.color.b, 0f);
-                gameObject.SetActive(true);
-
+                await Task.Delay((int)ShowDelay * 1000);
+                try{ if (gameObject == null) return; } catch { return; }; // Stupid but fuckkk, it's 5 am ;;
+                
                 LeanTween.value(gameObject, image.color.a, 1f, FadeInDuration)
                 .setOnUpdate( (i) =>
                 {
@@ -114,8 +113,10 @@ namespace Damath
             }
         }
 
-        void Delete()
+        async void Delete()
         {
+            gameObject.SetActive(false);
+            await Task.Delay((int)FadeOutDuration * 1000);
             Destroy(gameObject);
         }
     }

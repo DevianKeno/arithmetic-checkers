@@ -74,13 +74,14 @@ namespace Damath
         {
             Tooltip = Instantiate(tooltipPrefab, Canvas.transform).GetComponent<Tooltip>();
             Tooltip.SetText(text);
+            Tooltip.Show();
+
             return Tooltip;
         }
 
         public Tooltip CreateTooltip(string text, Color color)
         {
             Tooltip = Instantiate(tooltipPrefab, Canvas.transform).GetComponent<Tooltip>();
-
             Tooltip.SetText(text);
             Tooltip.SetColor(color);
             Tooltip.Show();

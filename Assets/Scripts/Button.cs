@@ -1,6 +1,6 @@
 using System;
-using UnityEngine.EventSystems;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Damath
 {
@@ -13,7 +13,7 @@ namespace Damath
         public override void OnPointerEnter(PointerEventData eventData)
         {
             base.OnPointerEnter(eventData);
-            Debug.Log("hover");
+            
             IsHovered = true;
             OnMouseEnter?.Invoke(eventData);
         }
@@ -22,7 +22,6 @@ namespace Damath
         {
             base.OnPointerExit(eventData);
 
-            Debug.Log("hover");
             IsHovered = false;
             OnMouseExit?.Invoke(eventData);
         }

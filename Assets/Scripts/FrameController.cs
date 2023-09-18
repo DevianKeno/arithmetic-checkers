@@ -41,7 +41,7 @@ namespace Damath
                         CurrentFrame.gameObject.SetActive(false);
                     });
 
-                    frame.gameObject.gameObject.SetActive(true);
+                    frame.gameObject.SetActive(true);
                     frame.gameObject.transform.SetParent(transform);
                     LeanTween.move(frame.rect, new Vector3(0f, 0f, 0f), Settings.AnimationFactor)
                     .setEaseOutExpo()

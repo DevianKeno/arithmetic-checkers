@@ -1,29 +1,64 @@
 using System.Collections.Generic;
+using System.Data;
 using Unity.Netcode;
 using UnityEngine;
 
 namespace Damath
 {
+    public static class XmlHelper
+    {
+
+    }
+    
+    public class Rule
+    {
+        public string Name { get; private set; }
+        public object Value { get; private set; }
+
+        public static Rule Create(string name, object value)
+        {
+            return new ()
+            {
+                Name = name,
+                Value = value
+            };
+        }
+
+        public object GetValue()
+        {
+            return Value;
+        }
+
+        public void SetValue(object value)
+        {
+            Value = value;
+        }
+    }
     /// <summary>
     /// A ruleset defines the rules for a match.
     /// </summary>
     public class Ruleset : INetworkSerializable
     {
-        public enum Type {Standard, Speed, Custom}
-        public Type Mode;
+        public Dictionary<string, Rule> Rules = new ();
         public bool EnableCheats;
         public bool EnableCapture;
         public bool EnableMandatoryCapture;
         public bool EnableChainCapture;
-        public bool EnableTouchMove;
-        public bool EnableScoring;
+
         public bool EnablePromotion;
+
+        public bool EnableTouchMove;
+
+        public bool EnableScoring;
+
         public bool EnableTimer;
         public bool EnableTurnTimer;
         public bool EnableGlobalTimer;
         public float GlobalTimerSeconds;
         public float TurnTimerSeconds;
+
         public Side FirstTurn;
+        
         public Cellmap<Operation> Symbols = new();
         public Cellmap<(Side, string, bool)> Pieces = new();
 
@@ -97,36 +132,35 @@ namespace Damath
             SetStandard();
         }
 
-        public Ruleset(Type value)
+        public static Ruleset CreateStandard()
         {
-            switch (value)
-            {
-                case Type.Standard:
-                    SetStandard();
-                    break;
-                    
-                case Type.Speed:
-                    SetSpeed();
-                    break;
-
-                case Type.Custom:
-                    SetStandard();
-                    break;
-
-                default:
-                    SetStandard();
-                    break;
-            }
+            Rule.Create("enableCapture", false);
+            Rule.Create("enableTimer", 1f);
+            return new Ruleset();
         }
 
-        public void SetValue(string rule, int value)
+        public void AddRule(string name, Rule rule)
         {
+            Rules.Add(name, rule);
+        }
 
+        public object GetRule(string rule)
+        {
+            return Rules[rule].GetValue();
+        }
+
+        public void SetRule(string rule, object value)
+        {
+            Rules[rule].SetValue(value);
+        }
+
+        public void RetreiveRules()
+        {
+            
         }
 
         public void SetStandard()
         {
-            Mode = Type.Standard;
             EnableMandatoryCapture = true;
             EnablePromotion = true;
             EnableChainCapture = true;
@@ -146,7 +180,6 @@ namespace Damath
 
         public void SetSpeed()
         {
-            Mode = Type.Speed;
             EnableMandatoryCapture = true;
             EnablePromotion = true;
             EnableChainCapture = true;

@@ -70,11 +70,6 @@ namespace Damath
         {
             Game.Events.LobbyStart(this);
         }
-
-        public void SetRuleset(Ruleset.Type type)
-        {
-            Ruleset = new(type);
-        }
         
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {

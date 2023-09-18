@@ -56,14 +56,14 @@ namespace Damath
             if (IsHost) return;
             if (lobby == null) return;
 
-            ReceiveLobbyClientRpc((int)lobby.Ruleset.Mode);
+            ReceiveLobbyClientRpc(1);
         }
 
         [ClientRpc]
         public void ReceiveLobbyClientRpc(int mode, ClientRpcParams clientRpcParams = default)
         {
             if (IsServer) return;
-            Game.Console.Log($"Received lobby with mode {(Ruleset.Type)mode}");
+            Game.Console.Log($"Received lobby with mode");
         }
 
         private void OnClientConnectedCallback(ulong clientId)
@@ -94,13 +94,13 @@ namespace Damath
                 };
 
                 Game.Console.Log("Passing ruleset to opponent");
-                if (Lobby.Ruleset.Mode != Ruleset.Type.Custom)
-                {
-                    ReceiveLobbyInfoClientRpc((int)Lobby.Ruleset.Mode, clientRpcParams);
-                } else
-                {
-                    ReceiveLobbyInfoClientRpc(Lobby.Ruleset, clientRpcParams);
-                }
+                // if (Lobby.Ruleset.Mode != Ruleset.Type.Custom)
+                // {
+                //     ReceiveLobbyInfoClientRpc((int)Lobby.Ruleset.Mode, clientRpcParams);
+                // } else
+                // {
+                //     ReceiveLobbyInfoClientRpc(Lobby.Ruleset, clientRpcParams);
+                // }
             }
         }
         
@@ -112,8 +112,8 @@ namespace Damath
             Game.Console.Log($"Fetched ruleset {mode} from lobby");
 
             // This should handle other lobby information as well
-            Lobby = new(new ((Ruleset.Type)mode));
-            Game.Console.Log($"Joined lobby with match {Lobby.Ruleset.Mode}");
+            // Lobby = new(new ((Ruleset.Type)mode));
+            // Game.Console.Log($"Joined lobby with match {Lobby.Ruleset.Mode}");
         }
 
         /// <summary>

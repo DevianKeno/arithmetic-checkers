@@ -12,7 +12,6 @@ using UnityEngine.SceneManagement;
 
 namespace Damath
 {
-    public enum Mode {Standard, Speed, Custom}
     /// <summary>
     /// Main game controller.
     /// </summary>
@@ -74,6 +73,7 @@ namespace Damath
                 if (playTransition)
                 {
                     // Play transition
+                    // UI.PlayTransition();
                     StartCoroutine(Load(scene, delayInSeconds));
                 } else
                 {
@@ -94,11 +94,11 @@ namespace Damath
         /// <summary>
         /// Creates a match given a ruleset.
         /// </summary>
-        public void CreateMatch(Ruleset.Type mode)
+        public void CreateMatch()
         {
             LoadScene("Match", playTransition: true);
             
-            Ruleset = new Ruleset(mode);
+            Ruleset = Ruleset.CreateStandard();
             Events.RulesetCreate(Ruleset);
         }
 
@@ -128,7 +128,7 @@ namespace Damath
 
         public void Debug_StartStandard()
         {
-            CreateMatch(Ruleset.Type.Standard);
+            CreateMatch();
             StartMatch();
         }
 

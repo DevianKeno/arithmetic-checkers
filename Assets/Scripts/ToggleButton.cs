@@ -1,70 +1,39 @@
+using System;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using TMPro;
-using Unity.VisualScripting;
 
 namespace Damath
 {
-    public class ToggleButton : MonoBehaviour, IUIElement
+    public class ToggleButton : UnityEngine.UI.Toggle, IHoverable
     {
-        public Sprite Icon = null;
-        [field: SerializeField] public bool Value { get; set; }
-        public bool IsVisible { get; set; }
         public bool IsHovered { get; set; }
-        [SerializeField] private UnityEngine.UI.Toggle button;
-        [SerializeField] private TextMeshProUGUI tmpUGUI;
+        public event Action<PointerEventData> OnMouseEnter;
+        public event Action<PointerEventData> OnMouseExit;
 
-        void Start()
+        public override void OnPointerEnter(PointerEventData eventData)
         {
-            // Tooltip = Game.UI.CreateTooltip(this, TooltipText);
-            Value = false;
-        }
-
-        public void OnPointerEnter(PointerEventData eventData)
-        {
+            base.OnPointerEnter(eventData);
+            
             IsHovered = true;
+            OnMouseEnter?.Invoke(eventData);
         }
         
-        public void OnPointerExit(PointerEventData eventData)
+        public override void OnPointerExit(PointerEventData eventData)
         {
+            base.OnPointerExit(eventData);
+
             IsHovered = false;
+            OnMouseExit?.Invoke(eventData);
         }
 
-        public bool GetValue()
+        public void ToggleColor(bool value)
         {
-            return Value;
-        }
-
-        public void ToggleValue()
-        {
-            Value = !Value;
-        }
-        
-        public void SetValue(bool value)
-        {
-            Value = value;
-        }
-
-        public void SetText(string value)
-        {
-            tmpUGUI.text = value;
-        }
-
-        public void SetIcon(Sprite icon)
-        {
-            if (icon != null)
+            if (value)
             {
-                Icon = icon;
-            }
-        }
-
-        public void AddListener(UnityAction<bool> function)
-        {
-            if (button != null)
+                image.color = new (0.56f, 0.69f, 0.77f, 1f);
+            } else
             {
-                button.onValueChanged.AddListener(function);
+                image.color = Color.white;
             }
         }
     }

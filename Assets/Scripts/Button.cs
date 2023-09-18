@@ -1,63 +1,29 @@
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using TMPro;
-using Unity.VisualScripting;
 using System;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Damath
 {
-    public class Button : MonoBehaviour, IUIElement, IHoverable, ITooltip
+    public class Button : UnityEngine.UI.Button, IHoverable
     {
-        public bool IsVisible { get; set; }
-        public Sprite Icon = null;
         public bool IsHovered { get; set; }
+        public event Action<PointerEventData> OnMouseEnter;
+        public event Action<PointerEventData> OnMouseExit;
 
-        [field: Header("Tooltip")]
-        public bool EnableTooltip { get; set; }
-        [field: TextArea] public string TooltipText { get; set; }
-
-        [SerializeField] private UnityEngine.UI.Button button;
-        [SerializeField] private TextMeshProUGUI tmpUGUI;
-        
-        void Awake()
+        public override void OnPointerEnter(PointerEventData eventData)
         {
-            button = GetComponent<UnityEngine.UI.Button>();
-            tmpUGUI = transform.Find("Text").GetComponent<TextMeshProUGUI>();
-        }
-
-        public void OnPointerEnter(PointerEventData eventData)
-        {
+            base.OnPointerEnter(eventData);
+            
             IsHovered = true;
-            Game.UI.ShowTooltip(this, TooltipText);
+            OnMouseEnter?.Invoke(eventData);
         }
         
-        public void OnPointerExit(PointerEventData eventData)
+        public override void OnPointerExit(PointerEventData eventData)
         {
+            base.OnPointerExit(eventData);
+
             IsHovered = false;
-            Game.UI.HideTooltip();
-        }
-
-        public void SetText(string value)
-        {
-            tmpUGUI.text = value;
-        }
-
-        public void SetIcon(Sprite icon)
-        {
-            if (icon != null)
-            {
-                Icon = icon;
-            }
-        }
-
-        public void AddListener(UnityAction function)
-        {
-            if (button != null)
-            {
-                button.onClick.AddListener(function);
-            }
+            OnMouseExit?.Invoke(eventData);
         }
     }
 }

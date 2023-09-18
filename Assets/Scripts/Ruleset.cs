@@ -15,13 +15,11 @@ namespace Damath
         public string Name { get; private set; }
         public object Value { get; private set; }
 
-        public static Rule Create(string name, object value)
+        public Rule(int id, string name, object value)
         {
-            return new ()
-            {
-                Name = name,
-                Value = value
-            };
+            Id = id;
+            Name = name;
+            Value = value;
         }
 
         public object GetValue()
@@ -57,9 +55,9 @@ namespace Damath
         public Side FirstTurn;
         
         public Cellmap<Operation> Symbols = new();
-        public Cellmap<(Side, string, bool)> Pieces = new();
+        public Cellmap<PieceData> Pieces = new();
 
-        public Dictionary<(int, int), Operation> SymbolMapStandard = new()
+        public static Dictionary<(int, int), Operation> SymbolMapStandard = new()
         {
             {(1, 0), Operation.Add},
             {(3, 0), Operation.Sub},
@@ -95,33 +93,33 @@ namespace Damath
             {(6, 7), Operation.Add},
         };
 
-        public Dictionary<(int, int), (Side, string, bool)> PieceMapStandard = new()
+        public static Dictionary<(int, int), PieceData> PieceMapStandard = new()
         {
-            {(1, 0), (Side.Bot, "-11", false)},
-            {(3, 0), (Side.Bot, "8", false)},
-            {(5, 0), (Side.Bot, "-5", false)},
-            {(7, 0), (Side.Bot, "2", false)},
-            {(0, 1), (Side.Bot, "0", false)},
-            {(2, 1), (Side.Bot, "-3", false)},
-            {(4, 1), (Side.Bot, "10", false)},
-            {(6, 1), (Side.Bot, "-7", false)},
-            {(1, 2), (Side.Bot, "-9", false)},
-            {(3, 2), (Side.Bot, "6", false)},
-            {(5, 2), (Side.Bot, "-1", false)},
-            {(7, 2), (Side.Bot, "4", false)},
+            {(1, 0), new("-11", Side.Bot, false)},
+            {(3, 0), new("8", Side.Bot, false)},
+            {(5, 0), new("-5", Side.Bot,false)},
+            {(7, 0), new("2", Side.Bot, false)},
+            {(0, 1), new("0", Side.Bot, false)},
+            {(2, 1), new("-3", Side.Bot, false)},
+            {(4, 1), new("10", Side.Bot, false)},
+            {(6, 1), new("-7", Side.Bot, false)},
+            {(1, 2), new("-9", Side.Bot, false)},
+            {(3, 2), new("6", Side.Bot, false)},
+            {(5, 2), new("-1", Side.Bot, false)},
+            {(7, 2), new("4", Side.Bot, false)},
 
-            {(0, 5), (Side.Top, "4", false)},
-            {(2, 5), (Side.Top, "-1", false)},
-            {(4, 5), (Side.Top, "6", false)},
-            {(6, 5), (Side.Top, "-9", false)},
-            {(1, 6), (Side.Top, "-7", false)},
-            {(3, 6), (Side.Top, "10", false)},
-            {(5, 6), (Side.Top, "-3", false)},
-            {(7, 6), (Side.Top, "0", false)},
-            {(0, 7), (Side.Top, "2", false)},
-            {(2, 7), (Side.Top, "-5", false)},
-            {(4, 7), (Side.Top, "8", false)},
-            {(6, 7), (Side.Top, "-11", false)}
+            {(0, 5), new("4", Side.Top, false)},
+            {(2, 5), new("-1", Side.Top, false)},
+            {(4, 5), new("6", Side.Top, false)},
+            {(6, 5), new("-9", Side.Top, false)},
+            {(1, 6), new("-7", Side.Top, false)},
+            {(3, 6), new("10", Side.Top, false)},
+            {(5, 6), new("-3", Side.Top, false)},
+            {(7, 6), new("0", Side.Top, false)},
+            {(0, 7), new("2", Side.Top, false)},
+            {(2, 7), new("-5", Side.Top, false)},
+            {(4, 7), new("8", Side.Top, false)},
+            {(6, 7), new("-11", Side.Top, false)}
         };
 
         public Ruleset()
@@ -134,10 +132,18 @@ namespace Damath
             Ruleset ruleset = new();
 
             ruleset.AddRule(0, "enableCapture", true);
-            Rule.Create("enableMandatoryCapture", true);
-            Rule.Create("enableChainCapture", true);
-            Rule.Create("enablePromotion", true);
-            Rule.Create("enableTouchMove", true);
+            ruleset.AddRule(1, "enableMandatoryCapture", true);
+            ruleset.AddRule(2, "enableChainCapture", true);
+            ruleset.AddRule(3, "EnablePromotion", true);
+            ruleset.AddRule(4, "EnableTouchMove", true);
+            ruleset.AddRule(5, "EnableScoring", true);
+            ruleset.AddRule(6, "EnableTimer", true);
+            ruleset.AddRule(7, "EnableTurnTimer", true);
+            ruleset.AddRule(8, "EnableGlobalTimer", true);
+            ruleset.AddRule(9, "GlobalTimerSeconds", 1200f);
+            ruleset.AddRule(10, "TurnTimerSeconds", 60f);
+
+            // ruleset.SetPieceMap(PieceMapStandard);
 
             return new Ruleset();
         }
@@ -150,6 +156,16 @@ namespace Damath
         public object GetRule(string rule)
         {
             return Rules[rule].GetValue();
+        }
+
+        public void SetPieceMap(Cellmap<PieceData> value)
+        {
+            Pieces = value;
+        }
+
+        public void SetSymbolMap(Cellmap<Cell> value)
+        {
+
         }
 
         public new string ToString()
@@ -166,6 +182,7 @@ namespace Damath
         {
             
         }
+        
 
         public void SetStandard()
         {
@@ -182,8 +199,8 @@ namespace Damath
             FirstTurn = Side.Bot;
             EnableCheats = false;
 
-            Pieces.SetMap(PieceMapStandard);
-            Symbols.SetMap(SymbolMapStandard);
+            // Pieces.SetMap(PieceMapStandard);
+            // Symbols.SetMap(SymbolMapStandard);
         }
 
         public void SetSpeed()
@@ -201,8 +218,8 @@ namespace Damath
             FirstTurn = Side.Bot;
             EnableCheats = true;
 
-            Pieces.SetMap(PieceMapStandard);
-            Symbols.SetMap(SymbolMapStandard);
+            // Pieces.SetMap(PieceMapStandard);
+            // Symbols.SetMap(SymbolMapStandard);
         }
     }
 }

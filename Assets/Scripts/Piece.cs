@@ -10,6 +10,20 @@ using Unity.VisualScripting;
 
 namespace Damath
 {
+    public struct PieceData
+    {
+        public string Value;
+        public Side Side;
+        public bool IsKing;
+
+        public PieceData(string value, Side side, bool isKing)
+        {
+            Value = value;
+            Side = side;
+            IsKing = isKing;
+        }
+    }
+
     public class Piece : MonoBehaviour
     {
         public Cell Cell;

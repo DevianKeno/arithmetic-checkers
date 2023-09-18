@@ -3,42 +3,42 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using UnityEditor;
-using UnityEditor.UI;
+// using UnityEditor;
+// using UnityEditor.UI;
 
 namespace Damath
 {
-    [CustomEditor(typeof(Toggle))]
-    public class ToggleEditor : UnityEditor.UI.ToggleEditor
-    {
-        private SerializedProperty Value;
-        private SerializedProperty knobRect;
-        private SerializedProperty backgroundImage;
+    // [CustomEditor(typeof(Toggle))]
+    // public class ToggleEditor : UnityEditor.UI.ToggleEditor
+    // {
+    //     private SerializedProperty Value;
+    //     private SerializedProperty knobRect;
+    //     private SerializedProperty backgroundImage;
         
-        protected override void OnEnable()
-        {
-            base.OnEnable();
+    //     protected override void OnEnable()
+    //     {
+    //         base.OnEnable();
 
-            Value = serializedObject.FindProperty("Value");
-            knobRect = serializedObject.FindProperty("knobRect");
-            backgroundImage = serializedObject.FindProperty("backgroundImage");
-        }
+    //         Value = serializedObject.FindProperty("Value");
+    //         knobRect = serializedObject.FindProperty("knobRect");
+    //         backgroundImage = serializedObject.FindProperty("backgroundImage");
+    //     }
 
-        public override void OnInspectorGUI()
-        {
-            base.OnInspectorGUI();
-            serializedObject.Update();
+    //     public override void OnInspectorGUI()
+    //     {
+    //         base.OnInspectorGUI();
+    //         serializedObject.Update();
 
-            EditorGUILayout.PropertyField(Value);
-            EditorGUILayout.PropertyField(knobRect);
-            EditorGUILayout.PropertyField(backgroundImage);
+    //         EditorGUILayout.PropertyField(Value);
+    //         EditorGUILayout.PropertyField(knobRect);
+    //         EditorGUILayout.PropertyField(backgroundImage);
 
-            EditorGUILayout.Space();
+    //         EditorGUILayout.Space();
 
 
-            serializedObject.ApplyModifiedProperties();
-        }
-    }
+    //         serializedObject.ApplyModifiedProperties();
+    //     }
+    // }
 
     public class Toggle : UnityEngine.UI.Toggle, IHoverable
     {

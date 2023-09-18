@@ -162,18 +162,18 @@ namespace Damath
                 int col = pieceData.Key.Item1;
                 int row = pieceData.Key.Item2;
                 Cell cell = GetCell(col, row);
-                Side side = pieceData.Value.Item1;
-                string value = pieceData.Value.Item2;
-                bool IsKing = pieceData.Value.Item3;
+                // Side side = pieceData.Value.Item1;
+                // string value = pieceData.Value.Item2;
+                // bool IsKing = pieceData.Value.Item3;
     
                 Piece newPiece = Instantiate(piecePrefab, new Vector3(col, row, 0), Quaternion.identity);
-                newPiece.name = $"Piece ({value})";
+                // newPiece.name = $"Piece ({value})";
                 newPiece.transform.SetParent(pieceGroup.transform);
                 newPiece.transform.position = cell.transform.position;
                 newPiece.SetCell(cell);
-                newPiece.SetSide(side);
-                newPiece.SetValue(value);
-                newPiece.SetKing(IsKing);
+                // newPiece.SetSide(side);
+                // newPiece.SetValue(value);
+                // newPiece.SetKing(IsKing);
                 cell.SetPiece(newPiece);
             }
         }

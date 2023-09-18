@@ -68,7 +68,6 @@ namespace Damath
         public event Action OnRefresh;
         public event Action<Side> OnChangeTurn;
         public event Action OnBoardFlip;
-        
 
         #endregion
 

@@ -6,9 +6,9 @@ namespace Damath
     {
         public Dictionary<(int, int), T> Map { get; set; }
 
-        public void SetMap(Dictionary<(int, int), T> value)
-        {
-            Map = value;
-        }
+        // public Cellmap<T>
+        // {
+        //     //
+        // }
     }
 }

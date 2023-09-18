@@ -3,19 +3,24 @@ using System.Net;
 using System.Net.Sockets;
 using System.Collections;
 using System.Collections.Generic;
+using FishNet.Object;
+using FishNet.Connection;
 
 namespace Damath
 {
-    public class Network
+    public class Network : NetworkBehaviour
     {
         public static Network Main { get; private set; }
         public Lobby Lobby;
         private int[] lobbyList;
         private List<Lobby> lobbies;
         public string localIp; 
-        public bool EnableDebug = true; 
+        public bool EnableDebug = true;
 
-        /*
+        private void Awake()
+        {
+            Game.Events.OnNetworkSend += sendData;
+        }
         void Start()
         {
             if (Main != null && Main != this)
@@ -25,11 +30,14 @@ namespace Damath
             {
                 Main = this;
             }
-
-            OnClientConnectedCallback += ClientConnectedCallback;
         }
 
-        private void ClientConnectedCallback(ulong clientId)
+        void sendData(string data)
+        {
+            sendDataRpc(data);
+        }
+
+/*        private void ClientConnectedCallback(ulong clientId)
         {
             if (IsServer)
             {
@@ -40,9 +48,23 @@ namespace Damath
                     Game.Console.Log("Client connected with id " + clientId);
                 }
             }
+        }*/
+
+        [ServerRpc(RequireOwnership = true)]
+        void sendDataRpc(string data)
+        {
+            //process data then return the data using receiveDataRpc
+            receiveDataRpc(data);
         }
+
+        [ObserversRpc]
+        void receiveDataRpc(string data)
+        {
+            Game.Console.Log(data);
+        }
+
         
-        [ServerRpc]
+/*      [ServerRpc]
         public void RequestLobbiesServerRpc(ServerRpcParams serverRpcParams = default)
         {
             if (!IsServer) return;
@@ -97,8 +119,6 @@ namespace Damath
         public void RemoveLobby()
         {
             Lobby = null;
-        }
-
-        */
+        }*/
     }
 }

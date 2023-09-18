@@ -46,6 +46,9 @@ namespace Damath
         public event Action<Lobby> OnLobbyStart;
         public event Action<MatchController> OnMatchHost;
 
+        public event Action<string> OnNetworkSend;
+        public event Action<string> OnNetworkRecieve;
+
         #endregion
         
         #region Match events
@@ -225,10 +228,16 @@ namespace Damath
             OnMatchHost?.Invoke(match);
         }
 
+        public void NetworkSend(string data)
+        {
+            OnNetworkSend?.Invoke(data);
+        }
+
+
         #endregion
 
         #region Match event methods
-        
+
         /// <summary>
         /// Fired upon deselection.
         /// </summary>

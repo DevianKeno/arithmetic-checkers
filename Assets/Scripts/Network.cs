@@ -3,12 +3,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Netcode;
-using Unity.Netcode.Transports.UTP;
 
 namespace Damath
 {
-    public class Network : NetworkManager
+    public class Network
     {
         public static Network Main { get; private set; }
         public Lobby Lobby;
@@ -17,6 +15,7 @@ namespace Damath
         public string localIp; 
         public bool EnableDebug = true; 
 
+        /*
         void Start()
         {
             if (Main != null && Main != this)
@@ -99,5 +98,7 @@ namespace Damath
         {
             Lobby = null;
         }
+
+        */
     }
 }

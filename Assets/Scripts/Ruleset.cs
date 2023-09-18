@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Data;
-using Unity.Netcode;
 using UnityEngine;
 
 namespace Damath
@@ -37,7 +36,7 @@ namespace Damath
     /// <summary>
     /// A ruleset defines the rules for a match.
     /// </summary>
-    public class Ruleset : INetworkSerializable
+    public class Ruleset
     {
         public Dictionary<string, Rule> Rules = new ();
         public bool EnableCheats;
@@ -195,11 +194,6 @@ namespace Damath
 
             Pieces.SetMap(PieceMapStandard);
             Symbols.SetMap(SymbolMapStandard);
-        }
-
-        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-        {
-            
         }
     }
 }

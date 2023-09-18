@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using TMPro;
-using Unity.Netcode.Transports.UTP;
 using System.Data.Common;
 
 namespace Damath
@@ -251,7 +250,7 @@ namespace Damath
 
         void Command_Connect(List<string> args)
         {
-            Network.Main.JoinLobby(args[1]);
+            // Network.Main.JoinLobby(args[1]);
         }
 
         void Command_Flip(List<string> args)
@@ -282,8 +281,8 @@ namespace Damath
 
         void Command_Host(List<string> args)
         {
-            Network.Main.CreateLobby();
-            Network.Main.Host();
+            // Network.Main.CreateLobby();
+            // Network.Main.Host();
         }
 
         void Command_Lobby(List<string> args)

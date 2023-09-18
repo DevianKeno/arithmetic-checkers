@@ -3,7 +3,6 @@ using Unity.VisualScripting;
 using UnityEngine;
 using Unity;
 using System.Runtime.InteropServices;
-using Unity.Netcode;
 using System;
 using System.Linq;
 
@@ -50,13 +49,13 @@ namespace Damath
         {
             if (IsPlaying) return;
 
-            if (Network.Main.IsListening)
-            {
-                StartOnline();
-            } else
-            {
-                StartSolo();
-            }
+            // if (Network.Main.IsListening)
+            // {
+            //     StartOnline();
+            // } else
+            // {
+            //     StartSolo();
+            // }
         }
 
         public Player CreatePlayer(Side side)
@@ -94,16 +93,16 @@ namespace Damath
 
         public void AddPlayer(ulong clientId)
         {
-            Player player;
-            if (clientId == Game.Network.LocalClientId)
-            {
-                player = CreatePlayer(Side.Bot);
-            } else
-            {
-                player = CreatePlayer(Side.Top);
-            }
-            player.SetClientId(clientId);
-            player.GetComponent<NetworkObject>().Spawn();
+            // Player player;
+            // if (clientId == Game.Network.LocalClientId)
+            // {
+            //     player = CreatePlayer(Side.Bot);
+            // } else
+            // {
+            //     player = CreatePlayer(Side.Top);
+            // }
+            // player.SetClientId(clientId);
+            // player.GetComponent<NetworkObject>().Spawn();
         }
 
         public void BeginMatch(bool force = false)

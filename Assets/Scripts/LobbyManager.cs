@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Unity.Netcode;
+// using Unity.Netcode;
 using System.Text.RegularExpressions;
 
 namespace Damath
 {
+    /*
     public class LobbyManager : NetworkBehaviour
     {
         public Lobby Lobby;
@@ -165,7 +166,6 @@ namespace Damath
             }
         }
 
-        [ClientRpc]
         public void BeginMatchClientRpc(ClientRpcParams clientRpcParams = default)
         {
             button.gameObject.SetActive(false);
@@ -181,4 +181,5 @@ namespace Damath
 
         }
     }
+    */
 }

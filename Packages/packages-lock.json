@@ -1,14 +1,5 @@
 {
   "dependencies": {
-    "com.community.netcode.extensions": {
-      "version": "https://github.com/Unity-Technologies/multiplayer-community-contributions.git?path=/com.community.netcode.extensions",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {
-        "com.unity.netcode.gameobjects": "1.0.2"
-      },
-      "hash": "b2265b5a650ccc1c4ea4526351839b1c6e3263e0"
-    },
     "com.unity.2d.animation": {
       "version": "7.0.11",
       "depth": 1,
@@ -108,7 +99,7 @@
     },
     "com.unity.burst": {
       "version": "1.6.6",
-      "depth": 2,
+      "depth": 3,
       "source": "registry",
       "dependencies": {
         "com.unity.mathematics": "1.2.1"
@@ -120,16 +111,6 @@
       "depth": 0,
       "source": "registry",
       "dependencies": {},
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.collections": {
-      "version": "1.2.4",
-      "depth": 2,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.burst": "1.6.6",
-        "com.unity.test-framework": "1.1.31"
-      },
       "url": "https://packages.unity.com"
     },
     "com.unity.ext.nunit": {
@@ -186,23 +167,6 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
-    "com.unity.netcode.gameobjects": {
-      "version": "1.5.2",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.nuget.mono-cecil": "1.10.1",
-        "com.unity.transport": "1.3.4"
-      },
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.nuget.mono-cecil": {
-      "version": "1.10.1",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://packages.unity.com"
-    },
     "com.unity.test-framework": {
       "version": "1.1.33",
       "depth": 0,
@@ -232,17 +196,6 @@
         "com.unity.modules.animation": "1.0.0",
         "com.unity.modules.audio": "1.0.0",
         "com.unity.modules.particlesystem": "1.0.0"
-      },
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.transport": {
-      "version": "1.4.0",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.collections": "1.2.4",
-        "com.unity.burst": "1.6.6",
-        "com.unity.mathematics": "1.2.6"
       },
       "url": "https://packages.unity.com"
     },

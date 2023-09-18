@@ -1,13 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Netcode;
 using UnityEngine;
 
 namespace Damath
 {
     public enum MoveType {All, Normal, Capture}
 
-    public class Move : INetworkSerializable
+    public class Move
     {
         public Player Player;
         public Cell originCell, from;
@@ -56,11 +55,6 @@ namespace Damath
         public void SetPlayer(Player player)
         {
             Player = player;
-        }
-
-        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-        {
-            
         }
     }
 }

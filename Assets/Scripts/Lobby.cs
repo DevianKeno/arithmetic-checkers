@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
-using Unity.Netcode;
 using UnityEngine;
 
 namespace Damath
@@ -9,7 +8,7 @@ namespace Damath
     /// <summary>
     /// Lobby before the match begins.
     /// </summary>
-    public class Lobby : INetworkSerializable
+    public class Lobby
     {
         public bool IsPrivate { get; private set; }
         public string Password { get; private set; }
@@ -69,11 +68,6 @@ namespace Damath
         public void Start()
         {
             Game.Events.LobbyStart(this);
-        }
-        
-        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-        {
-            
         }
     }
 }

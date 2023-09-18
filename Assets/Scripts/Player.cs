@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-using Unity.Netcode;
+// using Unity.Netcode;
 using Unity.VisualScripting;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,12 +13,12 @@ namespace Damath
     public class Actor : MonoBehaviour
     {
         public string Name = "Actor";
-        public NetworkObject networkObject { get; set; }
+        // public NetworkObject networkObject { get; set; }
         public RaycastHit2D Hit;
 
         void Awake()
         {
-            networkObject = GetComponent<NetworkObject>();
+            // networkObject = GetComponent<NetworkObject>();
         }
     }
 
@@ -67,7 +67,7 @@ namespace Damath
         void OnDisable()
         {
             Game.Events.OnMatchBegin -= SetConsoleOperator;
-            Game.Events.OnPieceMove -= IMadeAMove;
+            // Game.Events.OnPieceMove -= IMadeAMove;
             Game.Events.OnLobbyStart -= InitOnline;
             Game.Events.OnPieceDone -= Deselect;
             Game.Events.OnChangeTurn -= SetTurn;
@@ -87,7 +87,7 @@ namespace Damath
 
         public void InitOnline(Lobby lobby)
         {
-            Game.Events.OnPieceMove += IMadeAMove;
+            // Game.Events.OnPieceMove += IMadeAMove;
         }
 
         public void Init()
@@ -304,50 +304,50 @@ namespace Damath
             Deselect();
         }
 
-        private void IMadeAMove(Move move)
-        {
-            Debug.Log($"I made a move");
+        // private void IMadeAMove(Move move)
+        // {
+        //     Debug.Log($"I made a move");
             
-            int[] moveData = new int[]
-            {
-                move.originCell.Col,
-                move.originCell.Row,
-                move.destinationCell.Col,
-                move.destinationCell.Row
-            };
+        //     int[] moveData = new int[]
+        //     {
+        //         move.originCell.Col,
+        //         move.originCell.Row,
+        //         move.destinationCell.Col,
+        //         move.destinationCell.Row
+        //     };
           
-            Game.Console.Log("Sending move data to server...");
-            SendMoveDataServerRpc(moveData);
-        }
+        //     Game.Console.Log("Sending move data to server...");
+        //     SendMoveDataServerRpc(moveData);
+        // }
 
-        [ServerRpc(RequireOwnership = false)]
-        public void SendMoveDataServerRpc(int[] moveData, ServerRpcParams serverRpcParams = default)
-        {
-            Game.Console.Log("Received move data");
-            var senderClientId = serverRpcParams.Receive.SenderClientId;
+        // [ServerRpc(RequireOwnership = false)]
+        // public void SendMoveDataServerRpc(int[] moveData, ServerRpcParams serverRpcParams = default)
+        // {
+        //     Game.Console.Log("Received move data");
+        //     var senderClientId = serverRpcParams.Receive.SenderClientId;
 
-            Game.Console.Log("Sending move data to clients...");
-            ReceiveMoveDataClientRpc(moveData, GetClientsExcept(senderClientId));
-        }
+        //     Game.Console.Log("Sending move data to clients...");
+        //     ReceiveMoveDataClientRpc(moveData, GetClientsExcept(senderClientId));
+        // }
 
-        private ClientRpcParams GetClientsExcept(ulong exceptedClientId)
-        {
-            var target = new ClientRpcParams()
-            {
-                Send = new ClientRpcSendParams()
-                {
-                    // This should get players from the lobby tho (?)
-                    TargetClientIds = Network.Main.ConnectedClientsIds.Where(x => x != exceptedClientId).ToArray()
-                }
-            };
-            return target;
-        }
+        // private ClientRpcParams GetClientsExcept(ulong exceptedClientId)
+        // {
+        //     var target = new ClientRpcParams()
+        //     {
+        //         Send = new ClientRpcSendParams()
+        //         {
+        //             // This should get players from the lobby tho (?)
+        //             TargetClientIds = Network.Main.ConnectedClientsIds.Where(x => x != exceptedClientId).ToArray()
+        //         }
+        //     };
+        //     return target;
+        // }
 
-        [ClientRpc]
-        public void ReceiveMoveDataClientRpc(int[] command, ClientRpcParams clientRpcParams)
-        {
-            Game.Console.Log("Received client rpc");
-            Game.Console.Log($"Someone made a move {command}");
-        }
+        // [ClientRpc]
+        // public void ReceiveMoveDataClientRpc(int[] command, ClientRpcParams clientRpcParams)
+        // {
+        //     Game.Console.Log("Received client rpc");
+        //     Game.Console.Log($"Someone made a move {command}");
+        // }
     }
 }

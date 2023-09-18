@@ -1816,7 +1816,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51698ad0a9ec80a4bb13d7f4f7dd24b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Canvas: {fileID: 228190698}
+  Tooltip: {fileID: 0}
   icons:
   - {fileID: 21300000, guid: ca1ca1a49c3be7244a0c4e60917893fb, type: 3}
   - {fileID: 21300000, guid: f96175962d45bfb4cb830e42536c21a4, type: 3}
@@ -2063,10 +2063,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2085565774}
-  - component: {fileID: 2085565778}
-  - component: {fileID: 2085565777}
-  - component: {fileID: 2085565776}
-  - component: {fileID: 2085565775}
   m_Layer: 0
   m_Name: Network
   m_TagString: Network
@@ -2089,117 +2085,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2085565775
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2085565771}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b46ffdc4d7ab38141a7ae4b98322c4e4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Discovery: {fileID: 2085565776}
-  DrawOffset: {x: 10, y: 210}
---- !u!114 &2085565776
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2085565771}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e41f5ac27cd5d94290b437bd63e3e94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Port: 47777
-  m_UniqueApplicationId: 972501145328777855
-  m_StartWithServer: 1
-  ServerName: EnterName
-  OnServerFound:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2085565775}
-        m_TargetAssemblyTypeName: ExampleNetworkDiscoveryHud, Netcode for GameObjects
-          Community Extensions
-        m_MethodName: OnServerFound
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &2085565777
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2085565771}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6960e84d07fb87f47956e7a81d71c4e6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ProtocolType: 0
-  m_MaxPacketQueueSize: 128
-  m_MaxPayloadSize: 6144
-  m_HeartbeatTimeoutMS: 500
-  m_ConnectTimeoutMS: 1000
-  m_MaxConnectAttempts: 60
-  m_DisconnectTimeoutMS: 30000
-  ConnectionData:
-    Address: 127.0.0.1
-    Port: 7777
-    ServerListenAddress: 127.0.0.1
-  DebugSimulator:
-    PacketDelayMS: 0
-    PacketJitterMS: 0
-    PacketDropRate: 0
---- !u!114 &2085565778
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2085565771}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 008bdcbf91cc83840a4766d999cfb5b3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  NetworkConfig:
-    ProtocolVersion: 0
-    NetworkTransport: {fileID: 2085565777}
-    PlayerPrefab: {fileID: 8192390590991075092, guid: 77738396a965bd541a08b2db11d00798, type: 3}
-    Prefabs:
-      NetworkPrefabsLists: []
-    TickRate: 30
-    ClientConnectionBufferTimeout: 10
-    ConnectionApproval: 0
-    ConnectionData: 
-    EnableTimeResync: 0
-    TimeResyncInterval: 30
-    EnsureNetworkVariableLengthSafety: 0
-    EnableSceneManagement: 1
-    ForceSamePrefabs: 1
-    RecycleNetworkIds: 1
-    NetworkIdRecycleDelay: 120
-    RpcHashSize: 0
-    LoadSceneTimeOut: 120
-    SpawnTimeout: 1
-    EnableNetworkLogs: 1
-    OldPrefabList: []
-  RunInBackground: 1
-  LogLevel: 1
-  localIp: 
-  EnableDebug: 1
 --- !u!1 &2105621930
 GameObject:
   m_ObjectHideFlags: 0

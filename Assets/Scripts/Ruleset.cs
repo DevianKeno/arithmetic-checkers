@@ -11,6 +11,7 @@ namespace Damath
     
     public class Rule
     {
+        public int Id { get; private set; }
         public string Name { get; private set; }
         public object Value { get; private set; }
 
@@ -46,9 +47,7 @@ namespace Damath
         public bool EnableChainCapture;
         public bool EnablePromotion;
         public bool EnableTouchMove;
-
         public bool EnableScoring;
-
         public bool EnableTimer;
         public bool EnableTurnTimer;
         public bool EnableGlobalTimer;
@@ -132,19 +131,30 @@ namespace Damath
 
         public static Ruleset CreateStandard()
         {
-            Rule.Create("enableCapture", false);
-            Rule.Create("enableTimer", 1f);
+            Ruleset ruleset = new();
+
+            ruleset.AddRule(0, "enableCapture", true);
+            Rule.Create("enableMandatoryCapture", true);
+            Rule.Create("enableChainCapture", true);
+            Rule.Create("enablePromotion", true);
+            Rule.Create("enableTouchMove", true);
+
             return new Ruleset();
         }
 
-        public void AddRule(string name, Rule rule)
+        public void AddRule(int id, string name, object value)
         {
-            Rules.Add(name, rule);
+            Rules.Add(name, new(id, name, value));
         }
 
         public object GetRule(string rule)
         {
             return Rules[rule].GetValue();
+        }
+
+        public new string ToString()
+        {
+            return $"";
         }
 
         public void SetRule(string rule, object value)

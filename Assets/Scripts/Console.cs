@@ -295,6 +295,7 @@ namespace Damath
 
         void Command_Match(List<string> args)
         {
+            Game.Main.CreateMatch(Ruleset.CreateStandard());
             // if (args[1] == "create")
             // {
             //     try

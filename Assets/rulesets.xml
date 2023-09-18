@@ -4,5 +4,11 @@
     <standard>
         <add key="enableCapture" value="true"/>
         <add key="enableMandatoryCapture" value="true"/>
+        <add key="enableMandatoryCapture" value="true"/>
+        <add key="enableMandatoryCapture" value="true"/>
+        <add key="enableMandatoryCapture" value="true"/>
+        <add key="enableMandatoryCapture" value="true"/>
+        <add key="enableMandatoryCapture" value="true"/>
+        <add key="enableMandatoryCapture" value="true"/>
     </standard>
 </ruleset>

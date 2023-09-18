@@ -38,7 +38,7 @@ namespace Damath
                 Console = GetComponentInChildren<Console>();
                 UI = GetComponentInChildren<UIHandler>();
                 Audio = GetComponentInChildren<AudioManager>();
-                Network = GameObject.FindGameObjectWithTag("Network").GetComponent<Network>();
+                // Network = GameObject.FindGameObjectWithTag("Network").GetComponent<Network>();
             }
         }
 
@@ -88,11 +88,11 @@ namespace Damath
         /// <summary>
         /// Creates a match given a ruleset.
         /// </summary>
-        public void CreateMatch()
+        public void CreateMatch(Ruleset ruleset)
         {
             LoadScene("Match", playTransition: true);
             
-            Ruleset = Ruleset.CreateStandard();
+            Ruleset = ruleset;
             Events.RulesetCreate(Ruleset);
         }
 
@@ -122,7 +122,7 @@ namespace Damath
 
         public void Debug_StartStandard()
         {
-            CreateMatch();
+            
             StartMatch();
         }
 

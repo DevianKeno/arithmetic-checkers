@@ -14,8 +14,7 @@ public class Persistent : MonoBehaviour
         } else
         {
             _instance = this;
-            DontDestroyOnLoad(this);
-        }
-        
+            DontDestroyOnLoad(gameObject);
+        }   
     }
 }

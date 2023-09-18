@@ -11,6 +11,7 @@ TagManager:
   - Board
   - Network
   - Piece
+  - Global
   layers:
   - Default
   - TransparentFX

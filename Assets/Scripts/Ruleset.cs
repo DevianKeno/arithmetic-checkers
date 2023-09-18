@@ -33,6 +33,7 @@ namespace Damath
             Value = value;
         }
     }
+    
     /// <summary>
     /// A ruleset defines the rules for a match.
     /// </summary>
@@ -43,9 +44,7 @@ namespace Damath
         public bool EnableCapture;
         public bool EnableMandatoryCapture;
         public bool EnableChainCapture;
-
         public bool EnablePromotion;
-
         public bool EnableTouchMove;
 
         public bool EnableScoring;

@@ -242,7 +242,11 @@ namespace Damath
 
         void Command_Chat(List<string> args)
         {
+            args.RemoveAt(0);
+            var message = string.Join(" ", args.ToArray());
+            Log($"Sent a message: {message}");
             
+            //
         }
 
         void Command_Connect(List<string> args)

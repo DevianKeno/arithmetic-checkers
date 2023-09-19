@@ -23,104 +23,54 @@ namespace Damath
         }
         void Start()
         {
-            Game.Events.OnNetworkSend += sendDataRpc;
-            if (Main != null && Main != this)
-            {
-                Destroy(this);
-            } else
-            {
-                Main = this;
-            }
+            Game.Events.OnServerSend += SendServerData;
+            if(IsServer) Game.Events.OnObserverSend += SendObserverRpc;
         }
 
-        void sendData(string data)
+        void SendServerData(string data)
         {
-            sendDataRpc(data);
+            SendServerRpc(data);
         }
 
-/*        private void ClientConnectedCallback(ulong clientId)
-        {
-            if (IsServer)
-            {
-                if (ConnectedClients.ContainsKey(clientId)) return;
-
-                if (EnableDebug)
-                {
-                    Game.Console.Log("Client connected with id " + clientId);
-                }
-            }
-        }*/
-
+        //Every client should be able to send message to the server
+        //However, only the owner of the object can send the rpc to the server.
         [ServerRpc(RequireOwnership = true)]
-        void sendDataRpc(string data)
+        void SendServerRpc(string data, NetworkConnection conn = null)
         {
-            //process data then return the data using receiveDataRpc
-            receiveDataRpc(data);
-
-        }
-
-        [ObserversRpc]
-        void receiveDataRpc(string data)
-        {
-            Game.Console.Log(data);
-        }
-
-        
-/*      [ServerRpc]
-        public void RequestLobbiesServerRpc(ServerRpcParams serverRpcParams = default)
-        {
-            if (!IsServer) return;
-
-            var senderClientId = serverRpcParams.Receive.SenderClientId;
-            
-            ClientRpcParams clientRpcParams = new()
+            //temporary parser
+            string[] args = data.Split(';');
+            if (args[0].Equals("c"))
             {
-                Send = new ClientRpcSendParams
+                Game.Events.ObserverSend($"c;{conn.ClientId};{args[2]};");
+            }
+            
+            
+        }
+
+        //only accessible when the owner is also a server
+        [ObserversRpc(ExcludeOwner = false)]
+        void SendObserverRpc(string data)
+        {
+            //only the owner should receive the observerRpc
+            if (base.IsOwner) {
+                //temporary parser
+                string[] args = data.Split(';');
+                if (args[0].Equals("c"))
                 {
-                    TargetClientIds = new ulong[]{senderClientId}
+                    Game.Console.Log($"<{args[1]}>: {args[2]}");
                 }
-            };
-
-            RetrieveLobbiesClientRpc(lobbyList, clientRpcParams);
+                
+            }
+       
         }
 
-        [ClientRpc]
-        public void RetrieveLobbiesClientRpc(int[] lobbies, ClientRpcParams clientRpcParams)
+        void onDestroy()
         {
-            lobbyList = lobbies;
+            Game.Events.OnServerSend -= SendServerData;
+            if (base.IsServer) Game.Events.OnObserverSend -= SendObserverRpc;
         }
 
-        public Lobby CreateLobby()
-        {
-            Lobby = new(Game.Main.Ruleset);
-            Game.Console.Log($"Created lobby");
-            Game.Events.LobbyCreate(Lobby);
-            return Lobby;
-        }
-
-        public void Host()
-        {
-            if (Lobby == null) return;     
-            StartHost();
-            Game.Events.LobbyHost(Lobby);
-            Game.Console.Log("Hosted lobby");
-        }
-
-        public void JoinLobby(string address, ushort port = default)
-        {
-            // If hosting, stop host
-            if (address == "localhost") address = "127.0.0.1";
-            if (port == default) port = 7777;
-
-            Main.GetComponent<UnityTransport>().SetConnectionData(address, port);
-
-            // Handle invalid ip address
-            StartClient();
-        }
-
-        public void RemoveLobby()
-        {
-            Lobby = null;
-        }*/
     }
+
+
 }

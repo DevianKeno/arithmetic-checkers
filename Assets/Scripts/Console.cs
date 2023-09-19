@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using TMPro;
 using System.Data.Common;
+using FishNet.Connection;
 
 namespace Damath
 {
@@ -244,7 +245,7 @@ namespace Damath
         {
             args.RemoveAt(0);
             var message = string.Join(" ", args.ToArray());
-            Game.Events.NetworkSend(message);
+            Game.Events.ServerSend($"c;null;{message}");
             //Log($"Sent a message: {message}");
             
             //

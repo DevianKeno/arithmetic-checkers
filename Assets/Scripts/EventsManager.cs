@@ -46,8 +46,9 @@ namespace Damath
         public event Action<Lobby> OnLobbyStart;
         public event Action<MatchController> OnMatchHost;
 
-        public event Action<string> OnNetworkSend;
-        public event Action<string> OnNetworkRecieve;
+        public int ownerID = 0;
+        public event Action<string> OnServerSend;
+        public event Action<string> OnObserverSend;
 
         #endregion
         
@@ -227,9 +228,16 @@ namespace Damath
             OnMatchHost?.Invoke(match);
         }
 
-        public void NetworkSend(string data)
+        public void ServerSend(string data)
         {
-            OnNetworkSend?.Invoke(data);
+            Debug.Log($"Test RPC {data}");
+            OnServerSend?.Invoke(data);
+        }
+
+        public void ObserverSend(string data)
+        {
+            Debug.Log($"Test RPC {data}");
+            OnObserverSend?.Invoke(data);
         }
 
 

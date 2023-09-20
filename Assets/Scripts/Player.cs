@@ -2,24 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
-// using Unity.Netcode;
-using Unity.VisualScripting;
-using System.Linq;
-using System.Threading.Tasks;
+using FishNet.Object;
+using FishNet.Connection;
 
 namespace Damath
 {
     public class Actor : MonoBehaviour
     {
         public string Name = "Actor";
-        // public NetworkObject networkObject { get; set; }
+        public NetworkObject NetworkObject { get; set; }
         public RaycastHit2D Hit;
-
-        void Awake()
-        {
-            // networkObject = GetComponent<NetworkObject>();
-        }
     }
 
     public class Spectator : Actor
@@ -50,7 +42,7 @@ namespace Damath
 
         void Awake()
         {
-
+            NetworkObject = GetComponent<NetworkObject>();
         }
 
         void Start()
@@ -60,7 +52,6 @@ namespace Damath
             Game.Events.OnChangeTurn += SetTurn;
             Game.Events.OnPieceDone += Deselect;
             Game.Events.OnChangeTurn += SetTurn;
-            
             Init();
         }
 
@@ -71,6 +62,11 @@ namespace Damath
             Game.Events.OnLobbyStart -= InitOnline;
             Game.Events.OnPieceDone -= Deselect;
             Game.Events.OnChangeTurn -= SetTurn;
+        }
+
+        void SetOwner(NetworkConnection conn)
+        {
+            NetworkObject.GiveOwnership(conn);
         }
         
         void Update()
@@ -83,7 +79,31 @@ namespace Damath
                 if (!IsPlaying) return;
                 SetConsoleOperator();
             }
+
+            // if (Input.GetKeyDown(KeyCode.G))
+            // {
+            //     TestServerRpc();
+            // }
+
+            // if (Input.GetKeyDown(KeyCode.H))
+            // {
+            //     TestObserverRpc();
+            // }
         }
+
+        // [ServerRpc]
+        // public void TestServerRpc(NetworkConnection connection = default)
+        // {
+        //     Game.Console.Log("Send to server");
+        // }
+
+        // [ObserversRpc(ExcludeOwner = true)]
+        // public void TestObserverRpc(NetworkConnection connection = default)
+        // {
+        //     // if (!IsOwner) return;
+
+        //     Game.Console.Log("Send to client");
+        // }
 
         public void InitOnline(Lobby lobby)
         {

@@ -50,7 +50,7 @@ namespace Damath
 
         public void IndicateCapturingPieces(List<Move> moves)
         {
-            if (Rules.EnableMandatoryCapture)
+            if ((bool) Rules["AllowMandatoryCapture"])
             {
                 foreach (var move in moves)
                 {

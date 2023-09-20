@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using FishNet.Managing;
 
 namespace Damath
 {
@@ -19,6 +20,9 @@ namespace Damath
         public static AudioManager Audio { get; private set; }
         protected bool IsAlive;
         public bool IsPaused;
+
+        // True when there is an ongoing match
+        public bool IsPlaying;
         public bool HasMatch { get; private set; }
         [field: SerializeField] public bool IsHosting { get; private set; }
         public Ruleset Ruleset { get; private set; }
@@ -38,7 +42,7 @@ namespace Damath
                 Console = GetComponentInChildren<Console>();
                 UI = GetComponentInChildren<UIHandler>();
                 Audio = GetComponentInChildren<AudioManager>();
-                // Network = GameObject.FindGameObjectWithTag("Network").GetComponent<Network>();
+                // Network = GetComponentInChildren<Network>();
             }
         }
 

@@ -4,16 +4,24 @@ using UnityEngine;
 
 namespace Damath
 {
-    public enum Operation {None, Add, Sub, Mul, Div}
+    public enum Operation {None, Add, Subtract, Multiply, Divide}
+
+    public struct CellData
+    {
+        public Vector2 Coordinates;
+        public Operation Operation;
+    }
 
     public class Cell : MonoBehaviour
     {
+        public Vector2 Coordinates;
         public int Col, Row;
+        public Operation Operation;
         public Piece Piece = null;
         public bool HasPiece = false;
         public bool IsValidMove = false;
-        public Operation Operation;
         public List<Sprite> Sprite;
+        
         private static GameObject prefab;
 
         SpriteRenderer spriteRenderer;
@@ -60,9 +68,9 @@ namespace Damath
             spriteRenderer.sprite = value switch
             {
                 Operation.Add => Sprite[0],
-                Operation.Sub => Sprite[1],
-                Operation.Mul => Sprite[2],
-                Operation.Div => Sprite[3],
+                Operation.Subtract => Sprite[1],
+                Operation.Multiply => Sprite[2],
+                Operation.Divide => Sprite[3],
                 _ => null,
             };
             spriteRenderer.color = Colors.darkCerulean;

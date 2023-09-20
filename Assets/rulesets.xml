@@ -12,3 +12,18 @@
         <add key="enableMandatoryCapture" value="true"/>
     </standard>
 </ruleset>
+
+<pieceMap>
+    <standard>
+        <key ="(0, 0)">
+            <value = "5"/>
+            <side = "bot"/>
+            <king = "false"/>
+        </key>
+        <key ="(0, 1)">
+            <value = "5"/>
+            <side = "bot"/>
+            <king = "false"/>
+        </key>
+    </standard>
+</pieceMap>

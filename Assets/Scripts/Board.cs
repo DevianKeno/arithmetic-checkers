@@ -7,11 +7,12 @@ namespace Damath
     public class Board : MonoBehaviour
     {
         [Header("Board Settings")]
-        [SerializeField] int maximumColumns = 8;
-        [SerializeField] int MaximumRows = 8;
+        [SerializeField] int MaxColumns = 8;
+        [SerializeField] int MaxRows = 8;
         public Themes Theme;
-        [field: SerializeField] public Ruleset Rules { get; private set; }
-        public static Dictionary<(int, int), Cell> Cellmap = new();
+        Ruleset Rules { get; set; }
+
+        public Dictionary<Vector2, Cell> Cells = new();
         [SerializeField] private Cell SelectedCell = null;
         public Piece SelectedPiece = null;
         public Piece MovedPiece = null;
@@ -109,6 +110,12 @@ namespace Damath
         
         public void Init(MatchController match)
         {
+            if (Rules == null)
+            {
+                Game.Console.Log("[Board]: Failed to initialize board, no ruleset");
+                return;
+            }
+
             GenerateCells();
             GeneratePieces();
 
@@ -119,37 +126,41 @@ namespace Damath
         }
 
         /// <summary>
-        /// Generates board cells from the map.
+        /// Generate default board cells.
         /// </summary>
-        Dictionary<(int, int), Cell>  GenerateCells()
+        void GenerateCells()
         {
-            for (int row = 0; row < MaximumRows; row++)
+            for (int row = 0; row < MaxRows; row++)
             {
-                for (int col = 0; col < maximumColumns; col++)
+                for (int col = 0; col < MaxColumns; col++)
                 {
-                    var newCell = Instantiate(cellPrefab, new Vector3(col, row, 0), Quaternion.identity);
+                    Vector2 coords = new (col, row);
+
+                    Cell newCell = Instantiate(cellPrefab, cellGroup.transform).GetComponent<Cell>();
+                    RectTransform rect = newCell.GetComponent<RectTransform>();
                     newCell.name = $"Cell ({col}, {row})";
-                    newCell.transform.SetParent(cellGroup.transform);
                     
-                    var rect = newCell.GetComponent<RectTransform>();
-                    float cellPositionX = col * Constants.CellSize + Constants.CellOffset;
-                    float cellPositionY = row * Constants.CellSize + Constants.CellOffset;
-                    rect.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(cellPositionX - 0.25f,
-                                                                                        cellPositionY - 0.25f,
-                                                                                        0); // Idk why, but I didn't have to subtract .25 from this before
-                    rect.GetComponent<RectTransform>().localScale = new Vector2(Constants.CellSize, Constants.CellSize);
+                    // Transform cell position
+                    float positionX = col * Constants.CellSize + Constants.CellOffset;
+                    float positionY = row * Constants.CellSize + Constants.CellOffset;
+                    rect.anchoredPosition3D = new (positionX - 0.25f,
+                                                   positionY - 0.25f,
+                                                   0); // Idk why, but I didn't have to subtract .25 from this before
+                    rect.localScale = new (Constants.CellSize, Constants.CellSize);
                     
+                    // Cell initialization
                     newCell.SetColRow(col, row);
-                    if (Rules.Symbols.Map.ContainsKey((col, row)))
+
+                    if (Rules.SymbolMap.ContainsKey(coords))
                     {
-                        newCell.SetOperation(Rules.Symbols.Map[(col, row)]);
+                        newCell.SetOperation(Rules.SymbolMap[coords]);
                     }
-                    Cellmap[(col, row)] = newCell;
+
+                    Cells[coords] = newCell;
                 }
             }
 
-            Game.Events.BoardUpdateCellmap(Cellmap);
-            return Cellmap;
+            Game.Events.BoardUpdateCellmap(Cellmap<Cell>.ToCellmap(Cells));
         }
 
         /// <summary>
@@ -157,23 +168,23 @@ namespace Damath
         /// </summary>
         void GeneratePieces()
         {
-            foreach (var pieceData in Rules.Pieces.Map)
+            foreach (var entry in Rules.PieceMap)
             {
-                int col = pieceData.Key.Item1;
-                int row = pieceData.Key.Item2;
-                Cell cell = GetCell(col, row);
-                // Side side = pieceData.Value.Item1;
-                // string value = pieceData.Value.Item2;
-                // bool IsKing = pieceData.Value.Item3;
-    
-                Piece newPiece = Instantiate(piecePrefab, new Vector3(col, row, 0), Quaternion.identity);
-                // newPiece.name = $"Piece ({value})";
-                newPiece.transform.SetParent(pieceGroup.transform);
+                Vector2 coords = entry.Key;
+                PieceData pieceData = entry.Value;
+
+                Cell cell = GetCell(coords);    
+                Piece newPiece = Instantiate<Piece>(piecePrefab, pieceGroup.transform);
+                newPiece.name = $"Piece ({pieceData.Value}) {pieceData.Side}";
+
+                // Transform piece position
                 newPiece.transform.position = cell.transform.position;
+
+                // Initialize piece values
                 newPiece.SetCell(cell);
-                // newPiece.SetSide(side);
-                // newPiece.SetValue(value);
-                // newPiece.SetKing(IsKing);
+                newPiece.SetValue(pieceData.Value);
+                newPiece.SetSide(pieceData.Side);
+                newPiece.SetKing(pieceData.IsKing);
                 cell.SetPiece(newPiece);
             }
         }
@@ -233,7 +244,7 @@ namespace Damath
             }
 
             Rules = rules;
-            ChangeTurns(Rules.FirstTurn);
+            ChangeTurns((Side) Rules["FirstTurn"]);
         }
 
         /// <summary>
@@ -326,7 +337,7 @@ namespace Damath
             Debug.Log($"[ACTION]: {move.capturingPiece} captured {move.capturedPiece}");
             AnimateCapture(move);
 
-            if (Rules.EnableChainCapture)
+            if ((bool) Rules["AllowChainCapture"])
             {            
                 // Check for chain captures
                 ValidMoves = GetPieceMoves(SelectedPiece, MoveType.Capture);
@@ -557,7 +568,7 @@ namespace Damath
             int nextEnemyPiece = 0;
             int left = piece.Col - 1;
 
-            for (int row = startingRow ; row < MaximumRows ; row += yDirection)
+            for (int row = startingRow ; row < MaxRows ; row += yDirection)
             {
                 if (left < 0 || left > 7) break;    //
                 if (row < 0 || row > 7) break;      // Out of bounds
@@ -614,7 +625,7 @@ namespace Damath
             Cell cellToCapture = null;
             int right = piece.Col + 1;
 
-            for (int row = startingRow; row < MaximumRows ; row += yDirection)
+            for (int row = startingRow; row < MaxRows ; row += yDirection)
             {
                 if (right < 0 || right > 7) break;      //
                 if (row < 0 || row > 7) break;          // Out of bounds
@@ -691,14 +702,19 @@ namespace Damath
             }
         }
 
-        public static Cell GetCell(int col, int row)
+        public Cell GetCell(Vector2 coords)
         {
-            return Cellmap[(col, row)];
+            return Cells[coords];
+        }
+
+        public Cell GetCell(int col, int row)
+        {
+            return Cells[new (col, row)];
         }
 
         public Cell GetCell(Piece piece)
         {
-            return Cellmap[(piece.Col, piece.Row)];
+            return Cells[new (piece.Col, piece.Row)];
         }
     }
 }

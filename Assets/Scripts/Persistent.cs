@@ -8,7 +8,7 @@ public class Persistent : MonoBehaviour
 
     void Awake()
     {
-        if (_instance != null && _instance == this)
+        if (_instance != null)
         {
             Destroy(this);
         } else

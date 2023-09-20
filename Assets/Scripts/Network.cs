@@ -1,76 +1,145 @@
-using System;
-using System.Net;
-using System.Net.Sockets;
-using System.Collections;
-using System.Collections.Generic;
+using UnityEngine;
 using FishNet.Object;
 using FishNet.Connection;
 
 namespace Damath
 {
+    /// <summary>
+    /// Manages rpcs and data transport.
+    /// </summary>
     public class Network : NetworkBehaviour
     {
         public static Network Main { get; private set; }
         public Lobby Lobby;
         private int[] lobbyList;
-        private List<Lobby> lobbies;
-        public string localIp; 
+        // private List<Lobby> lobbies;
+        // public string localIp; 
         public bool EnableDebug = true;
 
-        private void Awake()
-        {
-            
-        }
+        [SerializeField] GameObject playerPrefab;
+        
         void Start()
         {
             Game.Events.OnServerSend += SendServerData;
-            if(IsServer) Game.Events.OnObserverSend += SendObserverRpc;
+            Game.Events.OnObserverSend += SendObserverData;
         }
 
-        void SendServerData(string data)
+        public override void OnStartServer()
         {
-            SendServerRpc(data);
+            base.OnStartServer();
+            
+            GameObject player = Instantiate(playerPrefab);
+            // Spawn(player, LocalConnection);
+            Spawn(player);
         }
 
-        //Every client should be able to send message to the server
-        //However, only the owner of the object can send the rpc to the server.
-        [ServerRpc(RequireOwnership = true)]
-        void SendServerRpc(string data, NetworkConnection conn = null)
+        public override void OnSpawnServer(NetworkConnection connection)
         {
-            //temporary parser
-            string[] args = data.Split(';');
-            if (args[0].Equals("c"))
+            base.OnSpawnServer(connection);
+
+            if (EnableDebug)
             {
-                Game.Events.ObserverSend($"c;{conn.ClientId};{args[2]};");
+                Game.Console.Log($"Client joined with id {connection.ClientId}");
             }
-            
-            
+                        
+            // Game.Console.Log($"{player.GetComponent<NetworkObject>().IsOwner}");
         }
 
-        //only accessible when the owner is also a server
-        [ObserversRpc(ExcludeOwner = false)]
-        void SendObserverRpc(string data)
+        public override void OnStartClient()
         {
-            //only the owner should receive the observerRpc
-            if (base.IsOwner) {
-                //temporary parser
-                string[] args = data.Split(';');
-                if (args[0].Equals("c"))
+            base.OnStartClient();
+
+            if (IsOwner)
+            {
+                Game.Console.Log("I am owner");
+            } else
+            {
+                Game.Console.Log("Not owner");
+            }
+        }
+
+        void SendServerData(string serverData)
+        {
+            SendServerRpc(serverData);
+        }
+
+        // Every client should be able to send message to the server.
+        // However, only the owner of the object can send the rpc to the server.
+        [ServerRpc(RequireOwnership = true)]
+        void SendServerRpc(string serverData, NetworkConnection conn = null)
+        {            
+            Pack type = Parser.Parse(serverData, out string[] args);
+
+            // Only the owner should receive the observerRpc
+            // if (IsOwner)
+            // {
+            switch (type)
+            {
+                case Pack.Ruleset:
                 {
-                    Game.Console.Log($"<{args[1]}>: {args[2]}");
+                    //
+                    break;
                 }
-                
+
+                case Pack.Chat:
+                {
+                    ReceiveChatRpc(conn, serverData);
+                    ReceiveChatRpc(null, serverData);
+                    break;
+                }
+
+                case Pack.Command:
+                {
+                    //
+                    break;
+                }
+                // }
+            }
+        }
+
+        [ObserversRpc(ExcludeOwner = true)][TargetRpc]
+        void ReceiveChatRpc(NetworkConnection target, string data)
+        {
+            Pack type = Parser.Parse(data, out string[] args);
+
+            Game.Console.Log($"<{args[1]}> {args[2]}");
+        }
+
+        void SendObserverData(string serverData)
+        {
+            SendObserverRpc(serverData);
+        }
+
+        [ObserversRpc]
+        void SendObserverRpc(string serverData, NetworkConnection conn = null)
+        {
+            Pack type = Parser.Parse(serverData, out string[] args);
+
+            // Only the owner should receive the observerRpc
+            if (IsOwner)
+            {
+                switch (type)
+                {
+                    case Pack.Ruleset:
+                        break;
+
+                    case Pack.Chat:
+
+                        Game.Console.Log($"<{args[2]}> {args[3]}");
+
+                        break;
+
+                    case Pack.Command:
+                        break;
+                }
             }
        
         }
 
-        void onDestroy()
+        void OnDestroy()
         {
             Game.Events.OnServerSend -= SendServerData;
-            if (base.IsServer) Game.Events.OnObserverSend -= SendObserverRpc;
+            Game.Events.OnObserverSend -= SendObserverData;
         }
-
     }
-
-
 }

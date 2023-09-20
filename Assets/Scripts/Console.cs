@@ -5,6 +5,7 @@ using UnityEngine.Events;
 using TMPro;
 using System.Data.Common;
 using FishNet.Connection;
+using FishNet.Managing;
 
 namespace Damath
 {
@@ -17,7 +18,7 @@ namespace Damath
         public string command;
         public MatchController Match = null;
         public Cell SelectedCell = null;
-        public Dictionary<(int, int), Cell> Cellmap;
+        public Cellmap<Cell> Cellmap;
         [SerializeField] private Window Window;
         [SerializeField] private TMP_InputField input;
         [SerializeField] private TextMeshProUGUI messages;
@@ -31,7 +32,6 @@ namespace Damath
             {
                 Main = this;
             }
-            
         }
 
         void Update()
@@ -76,7 +76,7 @@ namespace Damath
             Game.Events.OnBoardUpdateCellmap += ReceiveCellmap;
         }
 
-        void ReceiveCellmap(Dictionary<(int, int), Cell> cellmap)
+        void ReceiveCellmap(Cellmap<Cell> cellmap)
         {
             Cellmap = cellmap;
         }
@@ -137,6 +137,9 @@ namespace Damath
             CreateCommand("chat <message>",
                           "Send a message.").AddCallback(Command_Chat);
 
+            CreateCommand("clear",
+                          "Clears console.").AddCallback(Command_Clear);
+
             CreateCommand("connect <address>",
                           "Connect to a match.").AddCallback(Command_Connect);
 
@@ -153,6 +156,9 @@ namespace Damath
 
             CreateCommand("host",
                           "Host current match.").AddCallback(Command_Host);
+                          
+            CreateCommand("leave",
+                          "Leave to title screen.").AddCallback(Command_Leave);
 
             CreateCommand("lobby <info>").AddCallback(Command_Lobby);
 
@@ -243,17 +249,22 @@ namespace Damath
 
         void Command_Chat(List<string> args)
         {
+             // Remove "chat"
             args.RemoveAt(0);
-            var message = string.Join(" ", args.ToArray());
-            Game.Events.ServerSend($"c;null;{message}");
-            //Log($"Sent a message: {message}");
-            
-            //
+            string message = string.Join(" ", args.ToArray());
+            string data = $"{Game.Main.Nickname};{message}";
+
+            Game.Events.ServerSend(Parser.Pack(data, Pack.Chat));
+        }
+
+        void Command_Clear(List<string> args)
+        {
+            messages.text = "";
         }
 
         void Command_Connect(List<string> args)
         {
-            // Network.Main.JoinLobby(args[1]);
+            Game.Network.ClientManager.StartConnection();
         }
 
         void Command_Flip(List<string> args)
@@ -284,8 +295,15 @@ namespace Damath
 
         void Command_Host(List<string> args)
         {
+            Game.Network.ServerManager.StartConnection();
+            Game.Network.ClientManager.StartConnection();
             // Network.Main.CreateLobby();
             // Network.Main.Host();
+        }        
+        
+        void Command_Leave(List<string> args)
+        {
+            Game.Main.LoadScene("Title");
         }
 
         void Command_Lobby(List<string> args)
@@ -298,36 +316,41 @@ namespace Damath
 
         void Command_Match(List<string> args)
         {
-            Game.Main.CreateMatch(Ruleset.CreateStandard());
-            // if (args[1] == "create")
-            // {
-            //     try
-            //     {
-            //         Ruleset.Type mode = args[2] switch
-            //         {
-            //             "standard" or "1" => Ruleset.Type.Standard,
-            //             "speed" or "2" => Ruleset.Type.Speed,
-            //             // "custom" or "3" => Ruleset.Type.Custom,
-            //             _ => throw new Exception()
-            //         };
-            //         Game.Main.CreateMatch(mode);
-            //     } catch
-            //     { 
-            //         PromptInvalid(args[0]);
-            //     }
-            // } else if (args[1] == "start")
-            // {
-            //     if (Game.Main.Ruleset == null)
-            //     {
-            //         Log("No match created. Create one with /match create <mode>");
-            //     } else
-            //     {
-            //         Game.Main.StartMatch();
-            //     }
-            // } else if (args[1] == "get")
-            // {
-            //     Log($"{Match}");
-            // }
+            if (args[1] == "create")
+            {
+                try
+                {
+                    Ruleset ruleset = args[2] switch
+                    {
+                        "standard" or "1" => Ruleset.Standard,
+                        "speed" or "2" => Ruleset.Speed,
+                        // "custom" or "3" => Ruleset.Type.Custom,
+                        _ => throw new Exception()
+                    };
+                    Game.Main.CreateMatch(ruleset);
+                } catch
+                {
+                    PromptInvalid(args[0]);
+                    return;
+                }
+
+            } else if (args[1] == "start")
+            {
+                if (!Game.Main.IsPlaying)
+                {
+                    Game.Main.StartMatch();
+                    return;
+                }
+
+                if (Game.Main.Ruleset == null)
+                {
+                    Log("No match created. Create one with /match create <ruleset>");
+                }
+
+            } else if (args[1] == "get")
+            {
+                Log($"{Match}");
+            }
         }
         
         void Command_Move(List<string> args)
@@ -335,8 +358,8 @@ namespace Damath
             (int col, int row) = (int.Parse(args[1]), int.Parse(args[2]));
             (int toCol, int toRow) = (int.Parse(args[3]), int.Parse(args[4]));
             
-            Game.Events.CellSelect(Cellmap[(col, row)]);
-            Game.Events.CellSelect(Cellmap[(toCol, toRow)]);
+            Game.Events.CellSelect(Cellmap[new (col, row)]);
+            Game.Events.CellSelect(Cellmap[new (toCol, toRow)]);
         }
 
         void Command_Name(List<string> args)
@@ -362,7 +385,7 @@ namespace Damath
         {
             (int col, int row) = (int.Parse(args[1]), int.Parse(args[2]));
             
-            Game.Events.CellSelect(Cellmap[(col, row)]);
+            Game.Events.CellSelect(Cellmap[new (col, row)]);
         }
 
         #endregion

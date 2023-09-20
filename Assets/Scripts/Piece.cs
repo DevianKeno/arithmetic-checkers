@@ -30,8 +30,8 @@ namespace Damath
         public int Col, Row;
         public string Value;
         public Side Side;
-        public Player Owner;
         public bool IsKing = false;
+        public Player Owner;
         public bool CanCapture = false;
         public bool HasCaptured = false;
         public int Forward = 0;
@@ -46,6 +46,13 @@ namespace Damath
         [SerializeField] SpriteRenderer overlayTop;
         [SerializeField] SpriteRenderer overlayShadow;
         private static GameObject prefab;
+
+        public Piece(string value, Side side, bool isKing)
+        {
+            Value = value;
+            Side = side;
+            IsKing = isKing;
+        }
 
         void Awake()
         {
@@ -65,11 +72,11 @@ namespace Damath
             }
         }
 
-        public static Piece Create(int col, int row)
-        {
-            Cell cell = Board.GetCell(col, row);
-            return Create(cell);
-        }
+        // public static Piece Create(int col, int row)
+        // {
+        //     // Cell cell = Board.GetCell(col, row);
+        //     return Create(cell);
+        // }
         
         public static Piece Create(Cell cell)
         {

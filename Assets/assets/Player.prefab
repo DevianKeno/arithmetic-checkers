@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8192390590991075095}
   - component: {fileID: -5102925944267074581}
-  - component: {fileID: -2122544652501833332}
+  - component: {fileID: 7904246073696907354}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -52,9 +52,18 @@ MonoBehaviour:
   Score: 0
   IsPlaying: 0
   IsModerator: 0
+  IsControllable: 0
   IsAI: 0
   SelectedCell: {fileID: 0}
---- !u!114 &-2122544652501833332
+  SelectedPiece: {fileID: 0}
+  HeldPiece: {fileID: 0}
+  MovedPiece: {fileID: 0}
+  IsHolding: 0
+  HasCapture: 0
+  IsTurn: 0
+  TurnNumber: 0
+  MouseHoldTime: 0
+--- !u!114 &7904246073696907354
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -63,14 +72,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 8192390590991075092}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 951099334
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 0
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
+  <IsNested>k__BackingField: 0
+  <ComponentIndex>k__BackingField: 0
+  <PredictedSpawn>k__BackingField: {fileID: 0}
+  _networkBehaviours: []
+  <ParentNetworkObject>k__BackingField: {fileID: 0}
+  <ChildNetworkObjects>k__BackingField: []
+  SerializedTransformProperties:
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    LocalScale: {x: 0, y: 0, z: 0}
+  _isNetworked: 1
+  _isGlobal: 0
+  _initializeOrder: 0
+  _defaultDespawnType: 0
+  NetworkObserver: {fileID: 0}
+  <PrefabId>k__BackingField: 0
+  <SpawnableCollectionId>k__BackingField: 0
+  _scenePathHash: 0
+  <SceneId>k__BackingField: 0
+  <AssetPathHash>k__BackingField: 13556019081135501233

@@ -39,16 +39,13 @@ namespace Damath
         #endregion
 
         #region Network events
-
+        public event Action<string> OnServerSend;
+        public event Action<string> OnObserverSend;
         public event Action<Lobby> OnLobbyCreate;
         public event Action<Lobby> OnLobbyHost;
         public event Action<ulong, Lobby> OnLobbyJoin;
         public event Action<Lobby> OnLobbyStart;
         public event Action<MatchController> OnMatchHost;
-
-        public int ownerID = 0;
-        public event Action<string> OnServerSend;
-        public event Action<string> OnObserverSend;
 
         #endregion
         
@@ -66,7 +63,7 @@ namespace Damath
         public event Action<Move> OnPieceCapture;
         public event Action<List<Move>> OnBoardUpdateValidMoves;
         public event Action<List<Move>> OnBoardUpdateCaptureables;
-        public event Action<Dictionary<(int, int), Cell>> OnBoardUpdateCellmap;
+        public event Action<Cellmap<Cell>> OnBoardUpdateCellmap;
         public event Action<MoveType> OnMoveTypeRequest;
         public event Action<bool> OnRequireCapture;
         public event Action OnRefresh;
@@ -230,13 +227,13 @@ namespace Damath
 
         public void ServerSend(string data)
         {
-            Debug.Log($"Test RPC {data}");
+            Debug.Log($"Test server RPC {data}");
             OnServerSend?.Invoke(data);
         }
 
         public void ObserverSend(string data)
         {
-            Debug.Log($"Test RPC {data}");
+            Debug.Log($"Test observer RPC {data}");
             OnObserverSend?.Invoke(data);
         }
 
@@ -326,7 +323,7 @@ namespace Damath
         /// <summary>
         /// Called when the Board updates all its valid moves.
         /// </summary>
-        public void BoardUpdateCellmap(Dictionary<(int, int), Cell> cellmap)
+        public void BoardUpdateCellmap(Cellmap<Cell> cellmap)
         {
             OnBoardUpdateCellmap?.Invoke(cellmap);
         }

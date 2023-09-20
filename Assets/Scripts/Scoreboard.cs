@@ -8,7 +8,7 @@ namespace Damath
 {
     public class Scoreboard : MonoBehaviour
     {
-        public Ruleset Rules { get; private set; }
+        Ruleset Rules { get; set; }
         [SerializeField] private TextMeshProUGUI BlueScore;
         [SerializeField] private TextMeshProUGUI OrangeScore;
 
@@ -50,9 +50,9 @@ namespace Damath
             (score, operation) = move.destinationCell.Operation switch
             {
                 Operation.Add => (x + y, '+'),
-                Operation.Sub => (x - y, '-'),
-                Operation.Mul => (x * y, '×'),
-                Operation.Div => (x / y, '÷'),
+                Operation.Subtract => (x - y, '-'),
+                Operation.Multiply => (x * y, '×'),
+                Operation.Divide => (x / y, '÷'),
                 _ => throw new NotImplementedException(),
             };
 

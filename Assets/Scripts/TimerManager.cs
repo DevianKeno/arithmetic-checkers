@@ -14,14 +14,14 @@ namespace Damath
 
         void Awake()
         {
-            Game.Events.OnRulesetCreate += ReceiveRuleset;
+            Game.Events.OnRulesetDistribute += ReceiveRuleset;
             Game.Events.OnMatchBegin += Init;
             Game.Events.OnChangeTurn += SwapTurnTimer;
         }
 
         void OnDisable()
         {
-            Game.Events.OnRulesetCreate -= ReceiveRuleset;
+            Game.Events.OnRulesetDistribute -= ReceiveRuleset;
             Game.Events.OnMatchBegin -= Init;
             Game.Events.OnChangeTurn -= SwapTurnTimer;
         }
@@ -37,27 +37,27 @@ namespace Damath
         
         public void Init()
         {
-            if (Rules.EnableTimer) 
+            if ((bool) Rules["EnableTimer"]) 
             {
-                if (Rules.EnableGlobalTimer)
+                if ((bool) Rules["EnableTurnTimer"])
                 {
                     GlobalTimer.SetFormat(Format.MM_SS);
-                    GlobalTimer.SetTime(Rules.GlobalTimerSeconds);
+                    GlobalTimer.SetTime((float) Rules["GlobalTimerSeconds"]);
                     GlobalTimer.Begin();
                 }
-                if (Rules.EnableTurnTimer)
+                if ((bool) Rules["EnableTurnTimer"])
                 {
                     BlueTimer.SetFormat(Format.SS);
-                    BlueTimer.SetTime(Rules.TurnTimerSeconds);
+                    BlueTimer.SetTime((float) Rules["TurnTimerSeconds"]);
                     
                     OrangeTimer.SetFormat(Format.SS);
-                    OrangeTimer.SetTime(Rules.TurnTimerSeconds);
+                    OrangeTimer.SetTime((float) Rules["TurnTimerSeconds"]);
 
-                    if (Rules.FirstTurn == Side.Bot)
+                    if ((Side) Rules["FirstTurn"] == Side.Bot)
                     {
                         BlueTimer.Begin();
                         OrangeChip.SetActive(false);
-                    } else if (Rules.FirstTurn == Side.Top)
+                    } else if ((Side) Rules["FirstTurn"] == Side.Top)
                     {
                         OrangeTimer.Begin();
                         BlueChip.SetActive(false);

@@ -49,7 +49,7 @@ namespace Damath
         public void Reset()
         {
             TurnNumber = 1;
-            TurnOf = Rules.FirstTurn;
+            TurnOf = (Side) Rules["FirstTurn"];
         }
 
         public void ChangeTurns(Side side = default)
@@ -80,7 +80,7 @@ namespace Damath
 
         void OnEnable()
         {
-            Game.Events.OnRulesetCreate += ReceiveRuleset;
+            Game.Events.OnRulesetDistribute += ReceiveRuleset;
             Game.Events.OnMatchBegin += Init;
             Game.Events.OnPlayerSelectPiece += SelectPiece;
             Game.Events.OnPlayerSelectMovecell += SelectMovecell;
@@ -94,7 +94,7 @@ namespace Damath
 
         void OnDisable()
         {
-            Game.Events.OnRulesetCreate -= ReceiveRuleset;
+            Game.Events.OnRulesetDistribute -= ReceiveRuleset;
             Game.Events.OnMatchBegin -= Init;
             Game.Events.OnPlayerSelectPiece -= SelectPiece;
             Game.Events.OnPlayerSelectMovecell -= SelectMovecell;
@@ -172,12 +172,13 @@ namespace Damath
             {
                 Vector2 coords = entry.Key;
                 PieceData pieceData = entry.Value;
-
                 Cell cell = GetCell(coords);    
-                Piece newPiece = Instantiate<Piece>(piecePrefab, pieceGroup.transform);
+
+                Piece newPiece = Instantiate(piecePrefab, pieceGroup.transform);
                 newPiece.name = $"Piece ({pieceData.Value}) {pieceData.Side}";
 
                 // Transform piece position
+                newPiece.transform.localScale = new (Constants.PieceScale, Constants.PieceScale);
                 newPiece.transform.position = cell.transform.position;
 
                 // Initialize piece values

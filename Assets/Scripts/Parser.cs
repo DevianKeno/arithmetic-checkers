@@ -27,7 +27,9 @@ namespace Damath
             return $"{pack};{data}";
         }
 
-
+        /// <summary>
+        /// Parse data with pack type.
+        /// </summary>
         public static Pack Parse(string data, out string[] args)
         {
             args = data.Split(";");

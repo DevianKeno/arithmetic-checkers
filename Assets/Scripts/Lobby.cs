@@ -1,60 +1,140 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Net.Http.Headers;
+using FishNet.Connection;
+using FishNet.Object;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Damath
 {
-    /// <summary>
-    /// Lobby before the match begins.
-    /// </summary>
-    public class Lobby
+    public struct LobbyData
     {
+        public bool IsPrivate;
+        public string Password;
+        public int Host;
+        public int Opponent;
+        public bool HasOpponent;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public class Lobby : NetworkBehaviour
+    {
+        public List<int> ConnectedClients;
+
+        [field: Header("Lobby Information")]
         public bool IsPrivate { get; private set; }
         public string Password { get; private set; }
-        public List<ulong> ConnectedClients = new();
-        public ulong Host;
-        public ulong Opponent;
+        public int Host = -1;
+        public int Opponent = -1;
+        public bool HasHost = false;
         public bool HasOpponent = false;
-        public bool IsHost = false;
-        public bool IsOpponent = false;
+        
+        [SerializeField] private Image readyBotImage;
+        [SerializeField] private Image readyTopImage;
+        [SerializeField] private ToggleButton button;
+
+        [Space]
+        [SerializeField] private bool OpponentIsReady;
+        [SerializeField] private GameObject playerPrefab;
 
         public Ruleset Ruleset { get; private set; }
-        public bool OpponentIsReady;
 
-        public Lobby(Ruleset ruleset)
+        void Start()
         {
-            Ruleset = ruleset;
+            button.onValueChanged.AddListener(ToggleReady);
         }
+        
+        void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.K))
+            {
+                CheckOwnerServerRpc();
+            }
+        }
+
+        [ServerRpc]
+        void CheckOwnerServerRpc()
+        {
+            Game.Console.Log("[Debug]: Lobby owner check");
+        }
+
         public void SetPrivacy(bool value)
         {
             IsPrivate = value;
         }
 
-        public void SetHost(ulong clientId)
+        public void SetRuleset(Ruleset ruleset)
         {
-            Host = clientId;
-            IsHost = true;
-            ConnectedClients.Add(clientId);
-            Game.Events.LobbyJoin(clientId, this);
+            Ruleset = ruleset;
         }
 
-        public void SetOpponent(ulong clientId)
+        public Player SpawnPlayer(NetworkConnection owner)
         {
-            Opponent = clientId;
-            IsHost = false;
+            GameObject go = Instantiate(playerPrefab);
+            Player newPlayer = go.GetComponent<Player>();
+            Spawn(go, owner);
+            return newPlayer;
+        }
+
+        public void ConnectPlayerAsHost(NetworkConnection connection)
+        {
+            if (HasPlayer(connection.ClientId)) return;
+
+            ConnectPlayer(connection);
+            Host = connection.ClientId;
+            HasHost = true;
+
+            Game.Console.Log($"Player {connection.ClientId} joined as host");
+        }
+
+        public void ConnectPlayerAsOpponent(NetworkConnection connection)
+        {
+            if (HasPlayer(connection.ClientId)) return;
+
+            ConnectPlayer(connection);
+            Opponent = connection.ClientId;
             HasOpponent = true;
-            ConnectedClients.Add(clientId);
-            Game.Events.LobbyJoin(clientId, this);
+
+            Game.Console.Log($"Player {connection.ClientId} joined as opponent");
+    }
+
+        /// <summary>
+        /// Connect player to lobby.
+        /// </summary>
+        /// <param name="connection"></param>
+        public void ConnectPlayer(NetworkConnection connection)
+        {
+            if (HasPlayer(connection.ClientId)) return;
+
+            ConnectedClients.Add(connection.ClientId);
+            
+            Game.Console.Log($"Player {connection.ClientId} joined lobby");
+            // Game.Events.LobbyJoin(connection.ClientId, this);
         }
 
-        public void ConnectPlayer(ulong clientId)
+        public void DisconnectPlayer(NetworkConnection connection)
         {
-            ConnectedClients.Add(clientId);
-            Game.Events.LobbyJoin(clientId, this);
+            if (!HasPlayer(connection.ClientId)) return;
+
+            ConnectedClients.Remove(connection.ClientId);
+            
+            Game.Console.Log($"Player {connection.ClientId} left lobby");
+            // Game.Events.LobbyLeave(connection.ClientId, this);
         }
         
-        public bool HasPlayer(ulong clientId)
+        public bool TryConnectPlayer(int clientId)
+        {
+            if (HasPlayer(clientId)) return false;
+
+            ConnectedClients.Add(clientId);
+            
+            Game.Console.Log($"Player {clientId} joined lobby");
+            Game.Events.LobbyJoin(clientId, this);
+            return true;
+        }
+        
+        public bool HasPlayer(int clientId)
         {
             if (ConnectedClients.Contains(clientId)) return true;
             return false;
@@ -65,9 +145,65 @@ namespace Damath
             OpponentIsReady = isReady;
         }
 
-        public void Start()
+        public void Begin()
         {
             Game.Events.LobbyStart(this);
+        }
+
+        public LobbyData GetLobbyData()
+        {
+            return new()
+            {
+                IsPrivate = IsPrivate,
+                Password = Password,
+                Host = Host,
+                Opponent = Opponent,
+                HasOpponent = HasOpponent
+            };
+        }
+
+        public void SetLobbyData(LobbyData data)
+        {
+            IsPrivate = data.IsPrivate;
+            Password = data.Password;
+            Host = data.Host;
+            Opponent = data.Opponent;
+            HasOpponent = data.HasOpponent;
+        }
+
+        public void ToggleReady(bool value)
+        {
+            if (IsServer)
+            {
+                CheckOpponentReady();
+            } else
+            {
+                readyBotImage.gameObject.SetActive(value);
+                SendOpponentReadyStatusRpc(value);
+            }
+        }
+
+        [ServerRpc]
+        public void SendOpponentReadyStatusRpc(bool value, NetworkConnection connection = default)
+        {
+            if (HasPlayer(connection.ClientId))
+            {
+                SetOpponentReady(value);
+
+                if (IsServer)
+                {
+                    readyTopImage.gameObject.SetActive(value);
+                    Game.Console.Log($"Client id {connection.ClientId} ready: {value}");
+                }
+            }
+        }
+
+        public void CheckOpponentReady()
+        {
+            if (OpponentIsReady)
+            {
+                // Game.Network.OnClientConnectedCallback -= OnClientConnectedCallback;
+            }
         }
     }
 }

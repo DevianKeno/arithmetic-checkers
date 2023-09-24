@@ -5,6 +5,7 @@ using Unity;
 using System.Runtime.InteropServices;
 using System;
 using System.Linq;
+using TMPro;
 
 namespace Damath
 {
@@ -17,44 +18,53 @@ namespace Damath
         public Ruleset Rules { get; private set; }
         public bool IsPlaying { get; set; }
         public bool IsMultiplayer { get; set; }
+        public LobbyManager LobbyManager { get; private set; }
+
+        [SerializeField] private TextMeshProUGUI rulesetText;
         [SerializeField] private GameObject playerPrefab;
 
         void Awake()
         {
-            Game.Events.OnLobbyStart += BeginMatch;
-        }
+            LobbyManager = FindObjectOfType<LobbyManager>();
 
-        void OnDisable()
-        {
-            Game.Events.OnLobbyStart -= BeginMatch;
+            Game.Events.OnLobbyStart += BeginMatch;
         }
 
         void Start()
         {
-            // Game.Console.Log($"Initialized match {Rules.Mode}");
-            // Game.Events.MatchCreate(this);
+            if (Game.Main.Ruleset != null)
+            {
+                Rules = Game.Main.Ruleset;
+
+                rulesetText.text = Rules.Mode.ToString();
+                Game.Events.RulesetDistribute(Rules);
+                Game.Events.MatchCreate(this);
+                
+                Game.Console.Log($"Created {Rules.Mode} match");
+            } else
+            {
+                Game.Console.Log($"No ruleset created. Set one first before starting.");
+            }
         }
 
-        public void ReceiveRuleset(Ruleset rules)
+        void OnDisable() 
         {
-            if (Settings.EnableDebugMode)
-            {
-                Game.Console.Log("[Debug]: [Match]: Received ruleset");
-            }
-
-            Rules = rules;
+            Game.Events.OnLobbyStart -= BeginMatch;
         }
 
         public void Init()
         {
             if (IsPlaying) return;
+            IsPlaying = true;
 
-            // if (Network.Main.IsListening)
-            // {
-            //     StartOnline();
-            // } else
+            StartSolo();
+
+            // if (Game.Network.IsOffline)
             // {
             //     StartSolo();
+            // } else
+            // {
+            //     StartOnline();
             // }
         }
 
@@ -66,43 +76,21 @@ namespace Damath
             Game.Events.PlayerCreate(newPlayer);
             return newPlayer;
         }
-
-        public void AddPlayer()
-        {
-
-        }
         
         void StartOnline()
         {
-            Rules = Network.Main.Lobby.Ruleset;
+            // Rules = Network.Network.Lobby.Ruleset;
 
             // This should be called before the match starts (pre-initialization)
-            Game.Events.RulesetCreate(Rules);
             BeginMatch(true);
         }
 
         void StartSolo()
         {
-            // This should be called before the match starts (pre-initialization)
-            Game.Events.RulesetCreate(Rules);
-
             CreatePlayer(Side.Bot).IsControllable = true;
             CreatePlayer(Side.Top).IsControllable = true;
+            
             BeginMatch(true);
-        }
-
-        public void AddPlayer(ulong clientId)
-        {
-            // Player player;
-            // if (clientId == Game.Network.LocalClientId)
-            // {
-            //     player = CreatePlayer(Side.Bot);
-            // } else
-            // {
-            //     player = CreatePlayer(Side.Top);
-            // }
-            // player.SetClientId(clientId);
-            // player.GetComponent<NetworkObject>().Spawn();
         }
 
         public void BeginMatch(bool force = false)
@@ -115,133 +103,5 @@ namespace Damath
         {
             BeginMatch(true);
         }
-
-        // public void CheckVictoryCondition()
-        // {
-        //     foreach (var kv in Players)
-        //     {
-        //         Player player = kv.Value;
-        //         if (player.PieceCount <= 0)
-        //         {
-        //             //
-        //             break;
-        //         }
-        //     }
-        // }
-
-        // public void ChangeTurns(Piece piece)
-        // {
-        //     ChangeTurns();
-        // }
-
-        // /// <summary>
-        // /// Selects cell as player.
-        // /// </summary>
-        // /// <param name=""></param>
-        // public void SelectCell(Player player, Cell cell)
-        // {
-        //     SelectedCell = cell;
-        //     Game.Events.CellSelect(cell);
-            
-        //     if (TurnOf != player.Side) return;
-            
-        //     if (SelectedCell.HasPiece)
-        //     {
-        //         SelectPiece(player, cell);
-
-        //         if (SelectedCell.Piece.Side != player.Side) return;
-
-        //         if (MovedPiece != null)
-        //         {
-        //             if (SelectedCell.Piece != MovedPiece) return;
-        //         }
-
-        //         if (TurnRequiresCapture)
-        //         {
-        //             if (!SelectedCell.Piece.CanCapture) return;
-        //         }
-
-        //         SelectPiece(SelectedCell.Piece);
-        //         return;
-
-        //     } else
-        //     {
-        //         if (!SelectedCell.IsValidMove) return;
-
-        //         SelectMove(player);
-        //     }
-        //     DeselectPiece();
-        // }
-        
-        // public void SelectPiece(Player player, Piece piece)
-        // {
-        //     if (SelectedPiece != null) Game.Events.PieceDeselect(piece);
-
-        //     player.SelectedPiece = piece;
-        //     SelectedPiece = piece;
-
-        //     Game.Events.PieceSelect(piece);
-        //     Game.Audio.PlaySound("Select");
-        // }
-
-        // public void SelectPiece(Piece piece)
-        // {
-        //     if (SelectedPiece != null) Game.Events.PieceDeselect(piece);
-        //     SelectedPiece = piece;
-        //     Game.Events.PieceSelect(piece);
-        //     Game.Audio.PlaySound("Select");
-        // }
-
-        // public void DeselectPiece()
-        // {
-        //     Game.Events.PieceDeselect(SelectedPiece);
-        //     SelectedPiece = null;
-        // }
-
-        // public void DeselectPiece(Cell cell)
-        // {
-        //     DeselectPiece();
-        // }
-
-
-        // /// <summary>
-        // /// Move select by player.
-        // /// </summary>
-        // /// <param name="player"></param>
-        // public void SelectMove(Player player)
-        // {
-        //     MovedPiece = SelectedPiece;
-        //     Game.Events.PlayerSelectMove(player, player.SelectedCell);
-        //     Game.Audio.PlaySound("Move");
-        // }
-
-        // public void ClearMovedPiece(Side side)
-        // {
-        //     MovedPiece = null;
-        // }
-
-        // private void GetPlayerCommand(List<string> args)
-        // {
-        //     string command = string.Join(" ", args.ToArray());
-
-        //     ExecuteCommandServerRpc(command);
-        // }
-        
-        // [ServerRpc(RequireOwnership = false)]
-        // public void ExecuteCommandServerRpc(string command, ServerRpcParams serverRpcParams = default)
-        // {
-        //     var clientId = serverRpcParams.Receive.SenderClientId;
-        //     if (Game.Network.ConnectedClients.ContainsKey(clientId))
-        //     {
-        //         var client = Game.Network.ConnectedClients[clientId];
-
-        //         client.PlayerObject.GetComponent<Player>();
-        //     }
-        // }
-
-        // public void FlipBoard()
-        // {
-
-        // }
     }
 }

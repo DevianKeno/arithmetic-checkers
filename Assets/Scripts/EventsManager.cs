@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
+using FishNet.Connection;
+using FishNet.Object;
 using UnityEngine;
 
 namespace Damath
@@ -9,13 +10,14 @@ namespace Damath
     {
         public bool EnableDebugMode = false;
 
+        #pragma warning disable 0169
         #region Global events
 
         public event Action<MatchController> OnMatchCreate;
         public event Action<MatchController> OnMatchBegin;
         public event Action OnMatchEnd;
         public event Action OnBoardCreate;
-        public event Action<Ruleset> OnRulesetCreate;
+        public event Action<Ruleset> OnRulesetDistribute;
 
         #endregion
 
@@ -39,11 +41,15 @@ namespace Damath
         #endregion
 
         #region Network events
+        
+        public event Action<string> OnServerStart;
+        public event Action<Player> OnClientStart;
         public event Action<string> OnServerSend;
         public event Action<string> OnObserverSend;
+        public event Action<NetworkObject, NetworkConnection> OnOwnershipRequest;
         public event Action<Lobby> OnLobbyCreate;
         public event Action<Lobby> OnLobbyHost;
-        public event Action<ulong, Lobby> OnLobbyJoin;
+        public event Action<int, Lobby> OnLobbyJoin;
         public event Action<Lobby> OnLobbyStart;
         public event Action<MatchController> OnMatchHost;
 
@@ -95,9 +101,9 @@ namespace Damath
         /// Called when a ruleset is created. 
         /// </summary>
         /// <param name="value"></param>
-        public void RulesetCreate(Ruleset value)
+        public void RulesetDistribute(Ruleset value)
         {
-            OnRulesetCreate?.Invoke(value);
+            OnRulesetDistribute?.Invoke(value);
         }
 
         #endregion
@@ -200,29 +206,9 @@ namespace Damath
 
         #region Network event methods
 
-        public void LobbyCreate(Lobby lobby)
+        public void ClientStart(Player player)
         {
-            OnLobbyCreate?.Invoke(lobby);
-        }
-
-        public void LobbyHost(Lobby lobby)
-        {
-            OnLobbyHost?.Invoke(lobby);
-        }
-
-        public void LobbyJoin(ulong clientId, Lobby lobby)
-        {
-            OnLobbyJoin?.Invoke(clientId, lobby);
-        }
-        
-        public void LobbyStart(Lobby lobby)
-        {
-            OnLobbyStart?.Invoke(lobby);
-        }
-        
-        public void MatchHost(MatchController match)
-        {
-            OnMatchHost?.Invoke(match);
+            OnClientStart?.Invoke(player);
         }
 
         public void ServerSend(string data)
@@ -237,6 +223,35 @@ namespace Damath
             OnObserverSend?.Invoke(data);
         }
 
+        public void OwnershipRequest(NetworkObject networkObject, NetworkConnection connection)
+        {
+            OnOwnershipRequest?.Invoke(networkObject, connection);
+        }
+
+        public void LobbyCreate(Lobby lobby)
+        {
+            OnLobbyCreate?.Invoke(lobby);
+        }
+
+        public void LobbyHost(Lobby lobby)
+        {
+            OnLobbyHost?.Invoke(lobby);
+        }
+
+        public void LobbyJoin(int clientId, Lobby lobby)
+        {
+            OnLobbyJoin?.Invoke(clientId, lobby);
+        }
+        
+        public void LobbyStart(Lobby lobby)
+        {
+            OnLobbyStart?.Invoke(lobby);
+        }
+        
+        public void MatchHost(MatchController match)
+        {
+            OnMatchHost?.Invoke(match);
+        }
 
         #endregion
 
@@ -374,6 +389,7 @@ namespace Damath
         }
 
         #endregion
+        #pragma warning restore 0169
     }
 
 }

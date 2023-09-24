@@ -3,25 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using TMPro;
-using System.Data.Common;
-using FishNet.Connection;
-using FishNet.Managing;
 
 namespace Damath
 {
     public class Console : MonoBehaviour
     {
-        public Player Operator = null;
+        private Player Operator { get; set; }
         public Dictionary<string, Command> Commands = new();
         public static Console Main { get; private set; }
         public bool IsEnabled = false;
         public string command;
-        public MatchController Match = null;
         public Cell SelectedCell = null;
         public Cellmap<Cell> Cellmap;
         [SerializeField] private Window Window;
         [SerializeField] private TMP_InputField input;
         [SerializeField] private TextMeshProUGUI messages;
+
+        private MatchController Match { get; set; }
 
         void Awake()
         {
@@ -31,6 +29,7 @@ namespace Damath
             } else
             {
                 Main = this;
+                Operator = null;
             }
         }
 
@@ -44,20 +43,18 @@ namespace Damath
             }
         }
         
+        public void OnEnable()
+        {
+            input.Select();
+        }
+
         public void OnDisable()
         {
             IsEnabled = false;
-            Game.Events.OnMatchBegin -= ReceiveMatchInstance;
+            
+            Game.Events.OnClientStart -= SetOperator;
+            Game.Events.OnMatchCreate -= ReceiveMatchInstance;
             Game.Events.OnBoardUpdateCellmap -= ReceiveCellmap;
-        }
-
-        /// <summary>
-        /// Enables the console. Is disabled by default.
-        /// </summary>
-        public void Enable()
-        {
-            IsEnabled = true;
-            Init();
         }
 
         void ReceiveMatchInstance(MatchController match)
@@ -65,20 +62,19 @@ namespace Damath
             Match = match;
         }
 
-        public void SetOperator(Player player)
-        {
-            Operator = player;
-        }
-
-        void SubscribeToEvents()
-        {
-            Game.Events.OnMatchBegin += ReceiveMatchInstance;
-            Game.Events.OnBoardUpdateCellmap += ReceiveCellmap;
-        }
-
         void ReceiveCellmap(Cellmap<Cell> cellmap)
         {
             Cellmap = cellmap;
+        }
+
+        /// <summary>
+        /// Subscription to events is done after the EventManager is initialized.
+        /// </summary>
+        void SubscribeToEvents()
+        {
+            Game.Events.OnClientStart += SetOperator;
+            Game.Events.OnMatchCreate += ReceiveMatchInstance;
+            Game.Events.OnBoardUpdateCellmap += ReceiveCellmap;
         }
 
         void Init()
@@ -91,6 +87,24 @@ namespace Damath
 
             InitCommands();
             Log($"Started console");
+        }
+
+        /// <summary>
+        /// Enables the console. Is disabled by default.
+        /// </summary>
+        public void Enable()
+        {
+            IsEnabled = true;
+            Init();
+        }
+
+        /// <summary>
+        /// Set console commands to be executed as a player instance.
+        /// </summary>
+        /// <param name="player"></param>
+        public void SetOperator(Player player)
+        {
+            Operator = player;
         }
 
         public Command CreateCommand(string command, string description = "")
@@ -143,6 +157,8 @@ namespace Damath
             CreateCommand("connect <address>",
                           "Connect to a match.").AddCallback(Command_Connect);
 
+            CreateCommand("debug <scene>").AddCallback(Command_Debug);
+
             CreateCommand("draw",
                           "Offer a draw.").AddCallback();
 
@@ -160,7 +176,7 @@ namespace Damath
             CreateCommand("leave",
                           "Leave to title screen.").AddCallback(Command_Leave);
 
-            CreateCommand("lobby <info>").AddCallback(Command_Lobby);
+            CreateCommand("lobby <create|info>").AddCallback(Command_Lobby);
 
             CreateCommand("match <create> <classic|speed|custom>").AddCallback(Command_Match);
 
@@ -190,13 +206,12 @@ namespace Damath
             Log($"Invalid command usage. Try /help {command}");
         }
 
-        public void GetCommand(string input)
+        public void GetCommand(string command)
         {
-            if (input == "") return;
-            command = input;
+            if (command == "") return;
+
             Run(command);
-            this.input.text = "";
-            this.input.Select();
+            Refresh();
         }
 
         public void Refresh()
@@ -207,12 +222,12 @@ namespace Damath
 
         public void Log(object message)
         {
-            if (message.GetType() != typeof(string))
-            {
-                Debug.Log(message);
-            } else
+            try
             {
                 messages.text += $"\n{message}";
+            } catch
+            {
+                Debug.Log(message);
             }
         }
 
@@ -244,17 +259,23 @@ namespace Damath
             // }
         }
 
-        // Console commands list
-        #region 
+        #region Console commands list
 
         void Command_Chat(List<string> args)
         {
-             // Remove "chat"
+            // Remove "chat" argument
             args.RemoveAt(0);
             string message = string.Join(" ", args.ToArray());
             string data = $"{Game.Main.Nickname};{message}";
 
-            Game.Events.ServerSend(Parser.Pack(data, Pack.Chat));
+            // Invoke console command as player
+            if (Operator != null)
+            {
+                Operator.NetworkSendRpc(Parser.Pack(data, Pack.Chat));
+            } else
+            {
+                // Send chat locally
+            }
         }
 
         void Command_Clear(List<string> args)
@@ -264,7 +285,24 @@ namespace Damath
 
         void Command_Connect(List<string> args)
         {
-            Game.Network.ClientManager.StartConnection();
+            if (args[1] != null)
+            {
+                if (args[1] == "localhost") args[1] = "127.0.0.1";
+                
+                Network.Main.Connect(args[1]);
+
+            } else
+            {
+                Network.Main.Connect("localhost");
+            }
+        }
+
+        void Command_Debug(List<string> args)
+        {
+            if (args[1] == "scene")
+            {
+                Game.Console.Log($"Current scene: {Game.Main.CurrentScene.name}");
+            }
         }
 
         void Command_Flip(List<string> args)
@@ -278,7 +316,12 @@ namespace Damath
             {
                 // Run help command
                 Log("List of available commands: ");
-                // Iterate through command list keys
+                string message = "";
+                foreach (var c in Commands)
+                {
+                    // This will have an extra comma, pls fix
+                    message += $"{c.Value.Name}, ";
+                }
                 
             } else
             {
@@ -295,10 +338,24 @@ namespace Damath
 
         void Command_Host(List<string> args)
         {
-            Game.Network.ServerManager.StartConnection();
-            Game.Network.ClientManager.StartConnection();
-            // Network.Main.CreateLobby();
-            // Network.Main.Host();
+            try
+            {
+                RulesetType ruleset = args[1] switch
+                {
+                    "standard" or "1" => RulesetType.Standard,
+                    "speed" or "2" => RulesetType.Speed,
+                    // "custom" or "3" => Ruleset.Type.Custom,
+                    _ => throw new Exception()
+                };
+
+                Game.Main.HostMatch(ruleset);
+                return;
+
+            } catch
+            {
+                PromptInvalid(args[0]);
+                return;
+            }
         }        
         
         void Command_Leave(List<string> args)
@@ -308,9 +365,19 @@ namespace Damath
 
         void Command_Lobby(List<string> args)
         {
-            if (args[1] == "info")
+            if (!Game.Main.HasRuleset)
             {
-                // Log(Game.Main.Lobbies[0].GetLobbyInfo());
+                Game.Console.Log("Create a match first with /match create <mode>");
+                return;
+            }
+
+            if (args.Count != 1)
+            {
+                if (args[1] ==  "info")
+                {
+
+                    return;
+                }
             }
         }
 
@@ -320,14 +387,16 @@ namespace Damath
             {
                 try
                 {
-                    Ruleset ruleset = args[2] switch
+                    RulesetType ruleset = args[2] switch
                     {
-                        "standard" or "1" => Ruleset.Standard,
-                        "speed" or "2" => Ruleset.Speed,
-                        // "custom" or "3" => Ruleset.Type.Custom,
+                        "standard" or "1" => RulesetType.Standard,
+                        "speed" or "2" => RulesetType.Speed,
+                        // "custom" or "3" => RulesetType.Custom,
                         _ => throw new Exception()
                     };
+
                     Game.Main.CreateMatch(ruleset);
+
                 } catch
                 {
                     PromptInvalid(args[0]);

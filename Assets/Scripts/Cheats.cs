@@ -12,7 +12,7 @@ namespace Damath
 
         void Awake()
         {
-            Game.Events.OnRulesetCreate += ReceiveRuleset;
+            Game.Events.OnRulesetDistribute += ReceiveRuleset;
             Game.Events.OnMatchBegin += Init;
             Game.Events.OnPlayerRightClick += CheckPlayer;
             Game.Events.OnCellDeselect += HideMenus;
@@ -20,7 +20,7 @@ namespace Damath
         
         void OnDisable()
         {
-            Game.Events.OnRulesetCreate -= ReceiveRuleset;
+            Game.Events.OnRulesetDistribute -= ReceiveRuleset;
             Game.Events.OnMatchBegin -= Init;
             Game.Events.OnPlayerRightClick -= CheckPlayer;
             Game.Events.OnCellDeselect -= HideMenus;

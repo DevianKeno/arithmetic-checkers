@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &6381608699428085319
+--- !u!1 &8192390590991075092
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6381608699428085316}
-  - component: {fileID: 6381608699428085317}
-  - component: {fileID: 6381608699428085318}
+  - component: {fileID: 8192390590991075095}
+  - component: {fileID: -5102925944267074581}
+  - component: {fileID: 7904246073696907354}
+  - component: {fileID: -3089244203928090412}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -18,45 +19,61 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6381608699428085316
+--- !u!4 &8192390590991075095
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381608699428085319}
+  m_GameObject: {fileID: 8192390590991075092}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1019.1866, y: 746.6326, z: -4.978742}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6381608699428085317
+--- !u!114 &-5102925944267074581
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381608699428085319}
+  m_GameObject: {fileID: 8192390590991075092}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 008bdcbf91cc83840a4766d999cfb5b3, type: 3}
+  m_Script: {fileID: 11500000, guid: e14797e01c5cd4640a1121f8502cc504, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 0
-  _addedNetworkObject: {fileID: 6381608699428085318}
-  _networkObjectCache: {fileID: 6381608699428085318}
-  localIp: 
-  EnableDebug: 1
---- !u!114 &6381608699428085318
+  _addedNetworkObject: {fileID: 7904246073696907354}
+  _networkObjectCache: {fileID: 7904246073696907354}
+  Name: Player
+  Side: 0
+  Pieces: []
+  CapturedPieces: []
+  Score: 0
+  IsPlaying: 0
+  IsModerator: 0
+  IsControllable: 0
+  IsAI: 0
+  SelectedCell: {fileID: 0}
+  SelectedPiece: {fileID: 0}
+  HeldPiece: {fileID: 0}
+  MovedPiece: {fileID: 0}
+  IsHolding: 0
+  HasCapture: 0
+  IsTurn: 0
+  TurnNumber: 0
+  MouseHoldTime: 0
+--- !u!114 &7904246073696907354
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381608699428085319}
+  m_GameObject: {fileID: 8192390590991075092}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
@@ -66,20 +83,35 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
-  - {fileID: 6381608699428085317}
+  - {fileID: -5102925944267074581}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
-    Position: {x: 1019.1866, y: 746.6326, z: -4.978742}
-    Rotation: {x: 0, y: 0, z: 0, w: 1}
-    LocalScale: {x: 1, y: 1, z: 1}
-  _isNetworked: 1
-  _isGlobal: 0
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    LocalScale: {x: 0, y: 0, z: 0}
+  _isNetworked: 0
+  _isGlobal: 1
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 7
   <SpawnableCollectionId>k__BackingField: 0
-  _scenePathHash: 2340007188
+  _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 7807759643866311769
+--- !u!114 &-3089244203928090412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8192390590991075092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _overrideType: 3
+  _updateHostVisibility: 1
+  _observerConditions: []

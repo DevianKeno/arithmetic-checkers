@@ -14,13 +14,13 @@ namespace Damath
 
         void OnEnable()
         {
-            Game.Events.OnRulesetCreate -= ReceiveRuleset;
+            Game.Events.OnRulesetDistribute -= ReceiveRuleset;
             Game.Events.OnPieceCapture += Compute;
         }
 
         void OnDisable()
         {
-            Game.Events.OnRulesetCreate -= ReceiveRuleset;
+            Game.Events.OnRulesetDistribute -= ReceiveRuleset;
             Game.Events.OnPieceCapture -= Compute;
         }
 

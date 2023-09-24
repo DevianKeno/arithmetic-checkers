@@ -18,7 +18,7 @@ namespace Damath
 
         void OnEnable()
         {
-            Game.Events.OnRulesetCreate += ReceiveRuleset;
+            Game.Events.OnRulesetDistribute += ReceiveRuleset;
             Game.Events.OnDeselect += ClearMoveIndicators;
             Game.Events.OnPieceCapture += ClearCaptureIndicators;
             Game.Events.OnPieceDone += ClearMoveIndicators;
@@ -27,7 +27,7 @@ namespace Damath
         }
         void OnDisable()
         {
-            Game.Events.OnRulesetCreate -= ReceiveRuleset;
+            Game.Events.OnRulesetDistribute -= ReceiveRuleset;
             Game.Events.OnDeselect -= ClearMoveIndicators;
             Game.Events.OnPieceCapture -= ClearCaptureIndicators;
             Game.Events.OnPieceDone -= ClearMoveIndicators;

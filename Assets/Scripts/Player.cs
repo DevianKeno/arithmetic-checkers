@@ -7,10 +7,15 @@ using FishNet.Connection;
 
 namespace Damath
 {
-    public class Actor : MonoBehaviour
+    public struct PlayerData
+    {
+        // public Image image;
+        public string Name;
+    }
+
+    public class Actor : NetworkBehaviour
     {
         public string Name = "Actor";
-        public NetworkObject NetworkObject { get; set; }
         public RaycastHit2D Hit;
     }
 
@@ -21,7 +26,6 @@ namespace Damath
 
     public class Player : Actor
     {
-        public ulong Id { get; private set; }
         public Side Side;
         public List<Piece> Pieces;
         public List<Piece> CapturedPieces;
@@ -40,70 +44,34 @@ namespace Damath
         public int TurnNumber = 0;
         [SerializeField] private float MouseHoldTime = 0f;
 
-        void Awake()
-        {
-            NetworkObject = GetComponent<NetworkObject>();
-        }
-
         void Start()
-        {
-            Game.Events.OnMatchBegin += SetConsoleOperator;
+        {                
             Game.Events.OnLobbyStart += InitOnline;
-            Game.Events.OnChangeTurn += SetTurn;
             Game.Events.OnPieceDone += Deselect;
             Game.Events.OnChangeTurn += SetTurn;
+
             Init();
+        }
+
+        void Update()
+        {
+            DetectRaycast();
+
+            // Debug
+            if (Input.GetKeyDown(KeyCode.F1))
+            {
+                SetConsoleOperator(this);
+            }
+            
         }
 
         void OnDisable()
         {
-            Game.Events.OnMatchBegin -= SetConsoleOperator;
             // Game.Events.OnPieceMove -= IMadeAMove;
             Game.Events.OnLobbyStart -= InitOnline;
             Game.Events.OnPieceDone -= Deselect;
             Game.Events.OnChangeTurn -= SetTurn;
         }
-
-        void SetOwner(NetworkConnection conn)
-        {
-            NetworkObject.GiveOwnership(conn);
-        }
-        
-        void Update()
-        {
-            DetectRaycast();
-            
-            // Debug
-            if (Input.GetKeyDown(KeyCode.F1))
-            {
-                if (!IsPlaying) return;
-                SetConsoleOperator();
-            }
-
-            // if (Input.GetKeyDown(KeyCode.G))
-            // {
-            //     TestServerRpc();
-            // }
-
-            // if (Input.GetKeyDown(KeyCode.H))
-            // {
-            //     TestObserverRpc();
-            // }
-        }
-
-        // [ServerRpc]
-        // public void TestServerRpc(NetworkConnection connection = default)
-        // {
-        //     Game.Console.Log("Send to server");
-        // }
-
-        // [ObserversRpc(ExcludeOwner = true)]
-        // public void TestObserverRpc(NetworkConnection connection = default)
-        // {
-        //     // if (!IsOwner) return;
-
-        //     Game.Console.Log("Send to client");
-        // }
 
         public void InitOnline(Lobby lobby)
         {
@@ -114,6 +82,7 @@ namespace Damath
         {
             Name = Game.Main.Nickname;
             name = $"{Game.Main.Nickname} (Player)";
+            SetConsoleOperator(this);
             Game.Events.PlayerCreate(this);
         }
 
@@ -128,15 +97,49 @@ namespace Damath
             }
         }
 
-        void SetConsoleOperator()
+        [ServerRpc]
+        public void NetworkSendRpc(string data, NetworkConnection conn = default)
         {
-            Game.Console.SetOperator(this);
-            Debug.Log($"Set operator for {Game.Console} to {this}");
+            Pack type = Parser.Parse(data, out string[] args);
+
+            switch (type)
+            {
+                case Pack.Ruleset:
+                {
+                    //
+                    break;
+                }
+                
+                case Pack.Chat:
+                {
+                    ReceiveChatRpc(conn, data);
+                    ReceiveChatRpc(null, data);
+                    break;
+                }
+
+                case Pack.Command:
+                {
+                    //
+                    break;
+                }
+            }
+        }
+        
+        [ObserversRpc(ExcludeOwner = true)][TargetRpc]
+        void ReceiveChatRpc(NetworkConnection target, string data)
+        {
+            Pack type = Parser.Parse(data, out string[] args);
+
+            Game.Console.Log($"<{args[1]}> {args[2]}");
         }
 
-        void SetConsoleOperator(MatchController match)
+        void SetConsoleOperator(Player player)
         {
-            SetConsoleOperator();
+            if (!IsOwner) return;
+
+            if (Settings.EnableDebugMode) Game.Console.Log($"Set {player.Name} as console operator");
+            
+            Game.Console.SetOperator(this);
         }
 
         public string SetName(string value)
@@ -144,11 +147,6 @@ namespace Damath
             name = $"Player {value}";
             Name = value;
             return value;
-        }
-
-        public void SetClientId(ulong value)
-        {
-            Id = value;
         }
 
         public void SetPlaying(bool value)

@@ -3,7 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using FishNet;
 using FishNet.Managing;
+using FishNet.Managing.Scened;
+using FishNet.Transporting;
+using UnityEngine.SocialPlatforms;
 
 namespace Damath
 {
@@ -18,20 +22,24 @@ namespace Damath
         public static Network Network { get; private set; }
         public static UIHandler UI { get; private set; }
         public static AudioManager Audio { get; private set; }
-        protected bool IsAlive;
-        public bool IsPaused;
 
-        // True when there is an ongoing match
-        public bool IsPlaying;
+        protected bool IsAlive { get; private set; }
+        public bool IsPaused { get; private set; }
+        public bool IsOnline { get; private set; }
+        public bool IsHosting { get; private set; }
+        public bool IsPlaying { get; private set; }
+        public bool HasRuleset { get; private set; }
         public bool HasMatch { get; private set; }
-        [field: SerializeField] public bool IsHosting { get; private set; }
         public Ruleset Ruleset { get; private set; }
         public string Nickname = "Player";
-        public List<Lobby> Lobbies = new();
         public MatchController Match { get; private set; }
+        public Scene CurrentScene { get; private set; }
+
 
         void Awake()
         {
+            DontDestroyOnLoad(this);
+
             if (Main != null && Main != this)
             {
                 Destroy(this);
@@ -42,21 +50,32 @@ namespace Damath
                 Console = GetComponentInChildren<Console>();
                 UI = GetComponentInChildren<UIHandler>();
                 Audio = GetComponentInChildren<AudioManager>();
-                // Network = GetComponentInChildren<Network>();
+                Network = GetComponentInChildren<Network>();
             }
         }
 
         void Start()
         {
             IsAlive = true;
+            HasRuleset = false;
             HasMatch = false;
 
             if (Settings.EnableConsole)
             {
                 Console.Enable();
             }
+            
+            // Initialize
+            Ruleset.Init();
+            // Themes.Init();
+            
+            // Events.OnMatchCreate += SetMatch;
+            // Network.SceneManager.OnLoadEnd += RegisterScene;
+        }
 
-            Events.OnMatchCreate += SetMatch;
+        public void RegisterScene(SceneLoadEndEventArgs args)
+        {            
+            CurrentScene = args.LoadedScenes[0];
         }
         
         public void Pause(bool value)
@@ -64,7 +83,7 @@ namespace Damath
             IsPaused = value;
         }
 
-        public void LoadScene(string scene, bool playTransition = false, float delayInSeconds = 0f)
+        public void LoadScene(string sceneName, bool playTransition = false, float delayInSeconds = 0f)
         {
             try
             {
@@ -72,10 +91,10 @@ namespace Damath
                 {
                     // Play transition
                     // UI.PlayTransition();
-                    StartCoroutine(Load(scene, delayInSeconds));
+                    StartCoroutine(Load(sceneName, delayInSeconds));
                 } else
                 {
-                    SceneManager.LoadScene(scene);
+                    UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
                 }
             } catch (NullReferenceException e)
             {
@@ -86,19 +105,69 @@ namespace Damath
         IEnumerator Load(string scene, float delayInSeconds)
         {
             yield return new WaitForSeconds(delayInSeconds);
-            SceneManager.LoadScene(scene);
+            UnityEngine.SceneManagement.SceneManager.LoadScene(scene);
+            // CurrentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+        }
+
+        void CacheRuleset(Ruleset ruleset)
+        {
+            Ruleset = ruleset;
+            HasRuleset = true;
+        }
+
+        public void SetRuleset(Ruleset ruleset)
+        {
+            CacheRuleset(ruleset);
+        }
+
+        /// <summary>
+        /// Host a multiplayer match.
+        /// </summary>
+        public void HostMatch(RulesetType mode)
+        {
+            CacheRuleset(Ruleset.Create(mode));
+
+            Network.Main.StartHost();
+        }
+
+        public void JoinMatch(Lobby lobby, string address)
+        {
+            IsOnline = true;
+
+            CacheRuleset(lobby.Ruleset);
+
+            Network.Main.Connect(address);
+        }
+        
+        public void LoadGlobalScene(string sceneName)
+        {
+            if (Settings.EnableDebugMode)
+            {
+                Console.Log($"Loading scene {sceneName}");
+            }
+
+            InstanceFinder.SceneManager.LoadGlobalScenes( new(sceneName) );
+        }
+
+        public void UnloadGlobalScene(string sceneName)
+        {
+            if (Settings.EnableDebugMode)
+            {
+                Console.Log($"Unloading scene {sceneName}");
+            }
+
+            InstanceFinder.SceneManager.UnloadGlobalScenes( new(sceneName) );
         }
 
         /// <summary>
         /// Creates a match given a ruleset.
         /// </summary>
-        public void CreateMatch(Ruleset ruleset)
+        public void CreateMatch(RulesetType mode)
         {
+            CacheRuleset(Ruleset.Create(mode));
+
             LoadScene("Match", playTransition: true);
-            
-            Ruleset = ruleset;
-            Events.RulesetCreate(Ruleset);
-        }
+        }      
 
         private void SetMatch(MatchController match)
         {

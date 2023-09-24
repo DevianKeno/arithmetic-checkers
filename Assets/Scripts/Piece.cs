@@ -112,7 +112,7 @@ namespace Damath
             Cell = cell;
             Col = cell.Col;
             Row = cell.Row;
-
+            
             if (move)
             {
                 transform.position = cell.transform.position;

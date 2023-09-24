@@ -1,185 +1,149 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
-using UnityEngine.UI;
-// using Unity.Netcode;
-using System.Text.RegularExpressions;
+using FishNet.Object;
+using FishNet.Connection;
+using FishNet.Managing.Scened;
+using FishNet;
+using FishNet.Transporting;
 
 namespace Damath
 {
-    /*
-    public class LobbyManager : NetworkBehaviour
+    /// <summary>
+    /// Manages lobbies and its connections.
+    /// </summary>
+    public class LobbyManager : MonoBehaviour
     {
-        public Lobby Lobby;
-        [SerializeField] private Image readyBotImage;
-        [SerializeField] private Image readyTopImage;
-        [SerializeField] private ToggleButton button;
+        /// <summary>
+        /// Current selected lobby.
+        /// </summary>
+        public Lobby Lobby = null;
+        /// <summary>
+        /// List of available lobbies.
+        /// </summary>
+        private int[] LobbyList;
+        public bool HasLobby { get; private set; }
+        public bool EnableDebug = true;
 
-        void Awake()
+        [Space]
+        [SerializeField] private GameObject lobbyPrefab;
+        [SerializeField] private GameObject playerPrefab;
+
+        public event Action OnLobbyCreate;
+        public event Action OnLobbyUpdate;
+
+        void Start()
         {
-            // Don't forget to unsub!
-            Game.Events.OnLobbyHost += RetrieveLobby;
-            Game.Events.OnLobbyJoin += GiveLobby;
-            Game.Events.OnPlayerCreate += SetSides;
+            HasLobby = false;
+
+            InstanceFinder.ServerManager.OnRemoteConnectionState += ServerRemoteConnectionStateCallback;
+            // InstanceFinder.SceneManager.OnClientLoadedStartScenes += ClientLoadedStartScenesCallback;
         }
 
-        public void SetSides(Player player)
+        void OnDisable()
         {
-            if (!Network.Main.IsListening) return;
+            InstanceFinder.ServerManager.OnRemoteConnectionState -= ServerRemoteConnectionStateCallback;
+            // InstanceFinder.SceneManager.OnClientLoadedStartScenes -= ClientLoadedStartScenesCallback;
+        }
 
-            // This should is sides are swapped via rules
-            if (Lobby.IsHost)
+        void Update()
+        {
+            // if (Input.GetKeyDown(KeyCode.L))
+            // {
+            //     CheckOwnerServerRpc();
+            // }
+        }
+
+        // [ServerRpc]
+        // void CheckOwnerServerRpc(NetworkConnection connection = default)
+        // {
+        //     Game.Console.Log("[Debug]: Lobby manager owner check");
+        // }
+
+        void ServerRemoteConnectionStateCallback(NetworkConnection connection, RemoteConnectionStateArgs args)
+        {
+            if (args.ConnectionState == RemoteConnectionState.Started)
             {
-                player.SetSide(Side.Bot);
-                player.IsControllable = true; // It's inside so you can't control the other player!
-            } else if (Lobby.IsOpponent)
+                ConnectClientToLobby(connection);
+
+            } else if (args.ConnectionState == RemoteConnectionState.Started)
             {
-                player.SetSide(Side.Top);
-                player.IsControllable = true;
+                if (EnableDebug) Game.Console.Log($"[Debug]: Client {connection.ClientId} disconnected");
+
+                //
             }
         }
+
+
+
+        // [ServerRpc]
+        // void DoneLoadStartSceneRpc(NetworkConnection connection = default)
+        // {
+        //     if (EnableDebug) Game.Console.Log($"[Debug]: Client {connection.ClientId} has finished loading start scene");
+
+        //     SpawnPlayer(connection);
+        // }
         
-        public override void OnNetworkSpawn()
-        {
-            base.OnNetworkSpawn();
 
-            Network.Main.OnClientConnectedCallback += OnClientConnectedCallback;
-        }
-
-        public void RetrieveLobby(Lobby lobby)
-        {
-            Lobby = lobby;
-            Lobby.SetHost(Game.Network.LocalClientId);
-        }
-
-        public void GiveLobby(ulong clientId, Lobby lobby)
-        {
-            if (IsHost) return;
-            if (lobby == null) return;
-
-            ReceiveLobbyClientRpc(1);
-        }
-
-        [ClientRpc]
-        public void ReceiveLobbyClientRpc(int mode, ClientRpcParams clientRpcParams = default)
-        {
-            if (IsServer) return;
-            Game.Console.Log($"Received lobby with mode");
-        }
-
-        private void OnClientConnectedCallback(ulong clientId)
-        {
-            if (Lobby == null) return;
-            if (Lobby.Host == clientId) return;
-
-            if (IsServer)
-            {
-                if (Lobby.HasPlayer(clientId)) return;
-
-                if (!Lobby.HasOpponent)
-                {
-                    Lobby.SetOpponent(clientId);
-                    Game.Console.Log($"Client {clientId} joined lobby as opponent");
-                } else
-                {
-                    Lobby.ConnectPlayer(clientId);
-                }
-                
-                
-                ClientRpcParams clientRpcParams = new()
-                {
-                    Send = new ClientRpcSendParams
-                    {
-                        TargetClientIds = new ulong[]{clientId}
-                    }
-                };
-
-                Game.Console.Log("Passing ruleset to opponent");
-                // if (Lobby.Ruleset.Mode != Ruleset.Type.Custom)
-                // {
-                //     ReceiveLobbyInfoClientRpc((int)Lobby.Ruleset.Mode, clientRpcParams);
-                // } else
-                // {
-                //     ReceiveLobbyInfoClientRpc(Lobby.Ruleset, clientRpcParams);
-                // }
-            }
-        }
-        
-        [ClientRpc]
-        public void ReceiveLobbyInfoClientRpc(int mode, ClientRpcParams clientRpcParams)
-        {
-            Game.Console.Log($"Fetching ruleset from lobby");
-            if (IsOwner) return;
-            Game.Console.Log($"Fetched ruleset {mode} from lobby");
-
-            // This should handle other lobby information as well
-            // Lobby = new(new ((Ruleset.Type)mode));
-            // Game.Console.Log($"Joined lobby with match {Lobby.Ruleset.Mode}");
-        }
 
         /// <summary>
-        /// For custom matches.
+        /// Connect client to lobby.
         /// </summary>
-        [ClientRpc]
-        public void ReceiveLobbyInfoClientRpc(Ruleset ruleset, ClientRpcParams clientRpcParams)
+        public void ConnectClientToLobby(NetworkConnection connection)
         {
-            //
-        }
-
-        public void ToggleReady(bool value)
-        {
-            if (IsServer)
-            {
-                CheckOpponentReady();
-            } else
-            {
-                readyBotImage.gameObject.SetActive(value);
-                SendOpponentReadyStatusServerRpc(value);
-            }
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        public void SendOpponentReadyStatusServerRpc(bool value, ServerRpcParams serverRpcParams = default)
-        {
-            var clientId = serverRpcParams.Receive.SenderClientId;
-
-            if (Lobby.HasPlayer(clientId))
-            {
-                Lobby.SetOpponentReady(value);
-
-                if (IsServer)
+            if (Lobby == null) return;
+            
+            if (!Lobby.HasPlayer(connection.ClientId))
+            {    
+                // Join 2nd player as opponent        
+                if (!Lobby.HasOpponent)
                 {
-                    readyTopImage.gameObject.SetActive(value);
-                    Game.Console.Log($"Client id {clientId} ready: {value}");
+                    Lobby.ConnectPlayerAsOpponent(connection);
+                } else // Join succeeding player as spectator
+                {
+                    Lobby.ConnectPlayer(connection);
                 }
             }
         }
 
-        public void CheckOpponentReady()
+        public void DisconnectClientToLobby(NetworkConnection connection)
         {
             if (Lobby == null) return;
-
-            if (Lobby.OpponentIsReady)
+            
+            if (Lobby.HasPlayer(connection.ClientId))
             {
-                // Game.Network.OnClientConnectedCallback -= OnClientConnectedCallback;
-                BeginMatchClientRpc();
+                Lobby.DisconnectPlayer(connection);
             }
         }
-
-        public void BeginMatchClientRpc(ClientRpcParams clientRpcParams = default)
+        
+        public void CreateLobby(NetworkConnection hostConnection)
         {
-            button.gameObject.SetActive(false);
-            readyBotImage.gameObject.SetActive(false);
-            readyTopImage.gameObject.SetActive(false);
-            Game.Console.Log("Starting match");
-            Game.Main.StartMatch();
+            if (Lobby != null) return;
+            if (!Game.Main.HasRuleset) return;
+
+            GameObject go = Instantiate(lobbyPrefab);            
+            Lobby = go.GetComponent<Lobby>();
+            Lobby.ConnectPlayerAsHost(hostConnection);
+            Lobby.SetRuleset(Game.Main.Ruleset);
+            go.name = $"Lobby ({Lobby.Ruleset.Mode}) ";
+            InstanceFinder.ServerManager.Spawn(go, hostConnection);
+            HasLobby = true;
+            if (EnableDebug) Game.Console.Log($"Hosted lobby");
+            // OnLobbyCreate?.Invoke();
         }
 
-        [ServerRpc]
-        public void HadJoinedLobbyServerRpc(ServerRpcParams serverRpcParams = default)
-        {
-
-        }
+        // [TargetRpc]
+        // public void ReceiveLobbyDataRpc(NetworkConnection target)
+        // {
+        //     Game.Console.Log("Fetching lobby info...");
+        
+        //     Lobby = FindObjectOfType<Lobby>();
+            
+        //     if (Lobby != null)
+        //     {
+        //         Game.Console.Log($"Joined lobby with match {Lobby.Ruleset.Mode}");
+                
+        //         Game.Main.SetRuleset(Lobby.Ruleset);
+        //     }
+        // }
     }
-    */
 }

@@ -21,23 +21,17 @@ namespace Damath
             Value = value;
         }
     }
+
+    public enum RulesetType { Standard, Speed, Custom }
     
     /// <summary>
     /// Defines the rules for a match. 
-    /// Rules can be accessed by indexing the rule name.
+    /// Rule values can be accessed by indexing the rule name.
     /// </summary>
     public class Ruleset
     {
         public Dictionary<string, Rule> Rules = new ();
-
-        public bool AllowChainCapture;
-        public bool EnableTimer;
-        public bool EnableTurnTimer;
-        public bool EnableGlobalTimer;
-        public float GlobalTimerSeconds;
-        public float TurnTimerSeconds;
-        public Side FirstTurn;
-        public bool EnableCheats;
+        public RulesetType Mode;
         public Dictionary<Vector2, Operation> SymbolMap = new();
         public Dictionary<Vector2, PieceData> PieceMap = new();
 
@@ -47,18 +41,27 @@ namespace Damath
         public static Ruleset Standard { get; private set; }
         public static Ruleset Speed { get; private set; }
         
-        public object this[string name]
-        {
-            get { return Rules[name].Value; }
+        public object this[string name, bool value = true]
+        {            
+            get
+            {
+                if (value)
+                {
+                    return Rules[name].Value;
+                } else
+                {
+                    return Rules[name];
+                }
+            }
         }
-
-        void Start()
+        
+        public static void Init()
         {
-            Init();
-        }
+            if (Settings.EnableDebugMode)
+            {
+                Game.Console.Log("Initializing rulesets");
+            }
 
-        void Init()
-        {
             // 
             // These should read from a file that's easier to read and handle
             //
@@ -102,10 +105,10 @@ namespace Damath
                 { new (2, 7), Operation.Divide},
                 { new (4, 7), Operation.Subtract},
                 { new (6, 7), Operation.Add}
-        };
+            };
 
             PieceMapStandard = new()
-        {
+            {
                 // Bottom pieces
                 { new (1, 0), new ("-11", Side.Bot, false)},
                 { new (3, 0), new ("8", Side.Bot, false)},
@@ -133,15 +136,40 @@ namespace Damath
                 { new (2, 7), new ("-5", Side.Top, false)},
                 { new (4, 7), new ("8", Side.Top, false)},
                 { new (6, 7), new ("-11", Side.Top, false)}
-        };
+            };
 
             Standard = CreateStandard();
             Speed = CreateSpeed();
+            
+            if (Settings.EnableDebugMode)
+            {
+                Game.Console.Log("Initialized rulesets");
+            }
+        }
+
+        public static Ruleset Create(RulesetType mode)
+        {
+            if (mode == RulesetType.Standard)
+            {
+                return CreateStandard();
+
+            } else if (mode == RulesetType.Speed)
+            {
+                return CreateSpeed();
+            
+            } else if (mode == RulesetType.Custom)
+            {
+                // return CreateCustom();
+            }
+            return null;
         }
 
         public static Ruleset CreateStandard()
         {
-            Ruleset ruleset = new();
+            Ruleset ruleset = new()
+            {
+                Mode = RulesetType.Standard
+            };
 
             ruleset.AddRule(0, "AllowCapture", true);
             ruleset.AddRule(1, "AllowMandatoryCapture", true);
@@ -154,6 +182,7 @@ namespace Damath
             ruleset.AddRule(8, "EnableTurnTimer", true);
             ruleset.AddRule(9, "GlobalTimerSeconds", 1200f);
             ruleset.AddRule(10, "TurnTimerSeconds", 60f);
+            ruleset.AddRule(11, "FirstTurn", Side.Bot);
 
             ruleset.SymbolMap = SymbolMapStandard;
             ruleset.PieceMap = PieceMapStandard;
@@ -163,7 +192,10 @@ namespace Damath
         
         public static Ruleset CreateSpeed()
         {
-            Ruleset ruleset = new();
+            Ruleset ruleset = new()
+            {
+                Mode = RulesetType.Speed
+            };
 
             ruleset.AddRule(0, "AllowCapture", true);
             ruleset.AddRule(1, "AllowMandatoryCapture", true);
@@ -176,6 +208,7 @@ namespace Damath
             ruleset.AddRule(8, "EnableTurnTimer", true);
             ruleset.AddRule(9, "GlobalTimerSeconds", 300f);
             ruleset.AddRule(10, "TurnTimerSeconds", 15f);
+            ruleset.AddRule(11, "FirstTurn", Side.Bot);
 
             ruleset.SymbolMap = SymbolMapStandard;
             ruleset.PieceMap = PieceMapStandard;

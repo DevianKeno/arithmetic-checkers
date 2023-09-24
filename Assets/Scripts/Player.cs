@@ -44,11 +44,19 @@ namespace Damath
         public int TurnNumber = 0;
         [SerializeField] private float MouseHoldTime = 0f;
 
+
         void Start()
         {                
             Game.Events.OnLobbyStart += InitOnline;
             Game.Events.OnPieceDone += Deselect;
             Game.Events.OnChangeTurn += SetTurn;
+            Game.Events.OnNetworkSend += NetworkSend;
+
+            if (IsServer)
+            {
+                //subscribe network commands which can only be accessed by the server
+                Game.Events.OnChatSend += ReceiveChatRpc;
+            }
 
             Init();
         }
@@ -56,12 +64,6 @@ namespace Damath
         void Update()
         {
             DetectRaycast();
-
-            // Debug
-            if (Input.GetKeyDown(KeyCode.F1))
-            {
-                SetConsoleOperator(this);
-            }
             
         }
 
@@ -71,6 +73,7 @@ namespace Damath
             Game.Events.OnLobbyStart -= InitOnline;
             Game.Events.OnPieceDone -= Deselect;
             Game.Events.OnChangeTurn -= SetTurn;
+            Game.Events.OnNetworkSend -= NetworkSend;
         }
 
         public void InitOnline(Lobby lobby)
@@ -78,11 +81,14 @@ namespace Damath
             // Game.Events.OnPieceMove += IMadeAMove;
         }
 
+        void NetworkSend(string data)
+        {
+            NetworkSendRpc(data);
+        }
         public void Init()
         {
             Name = Game.Main.Nickname;
             name = $"{Game.Main.Nickname} (Player)";
-            SetConsoleOperator(this);
             Game.Events.PlayerCreate(this);
         }
 
@@ -112,8 +118,7 @@ namespace Damath
                 
                 case Pack.Chat:
                 {
-                    ReceiveChatRpc(conn, data);
-                    ReceiveChatRpc(null, data);
+                    Game.Events.ChatSend(conn, data);
                     break;
                 }
 
@@ -125,22 +130,22 @@ namespace Damath
             }
         }
         
-        [ObserversRpc(ExcludeOwner = true)][TargetRpc]
+        [ObserversRpc(ExcludeOwner = false)]
         void ReceiveChatRpc(NetworkConnection target, string data)
         {
             Pack type = Parser.Parse(data, out string[] args);
 
-            Game.Console.Log($"<{args[1]}> {args[2]}");
+            if(IsOwner) Game.Console.Log($"<{args[1]}> {args[2]}");
         }
 
-        void SetConsoleOperator(Player player)
+/*        void SetConsoleOperator(Player player)
         {
             if (!IsOwner) return;
 
             if (Settings.EnableDebugMode) Game.Console.Log($"Set {player.Name} as console operator");
             
             Game.Console.SetOperator(this);
-        }
+        }*/
 
         public string SetName(string value)
         {

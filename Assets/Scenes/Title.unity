@@ -7843,7 +7843,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EnableDebug: 1
-  playerPrefab: {fileID: 8192390590991075092, guid: 77738396a965bd541a08b2db11d00798, type: 3}
+  playerPrefab: {fileID: 8192390590991075092, guid: f5db79b2af7527b41ac5574be2c981cd, type: 3}
   lobbyManagerPrefab: {fileID: 3174536658052959403, guid: 562df2bbf98ec454283e34dc1585372f, type: 3}
 --- !u!4 &1736480364
 Transform:

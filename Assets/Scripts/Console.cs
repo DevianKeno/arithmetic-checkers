@@ -269,9 +269,9 @@ namespace Damath
             string data = $"{Game.Main.Nickname};{message}";
 
             // Invoke console command as player
-            if (Operator != null)
+            if (true)
             {
-                Operator.NetworkSendRpc(Parser.Pack(data, Pack.Chat));
+                Game.Events.NetworkSend(Parser.Pack(data, Pack.Chat));
             } else
             {
                 // Send chat locally

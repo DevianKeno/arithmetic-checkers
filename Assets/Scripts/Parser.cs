@@ -2,7 +2,7 @@ using System.Linq;
 
 namespace Damath
 {
-    public enum Pack {Ruleset, Chat, Command}
+    public enum Pack {Ruleset, Chat, Command, RuleType}
     public interface IParsable
     {
 
@@ -21,6 +21,7 @@ namespace Damath
                 Damath.Pack.Ruleset => "r",
                 Damath.Pack.Chat => "m",
                 Damath.Pack.Command => "c",
+                Damath.Pack.RuleType => "t",
                 _ => throw new System.Exception()
             };
 
@@ -39,6 +40,7 @@ namespace Damath
                 "r" => Damath.Pack.Ruleset,
                 "m" => Damath.Pack.Chat,
                 "c" => Damath.Pack.Command,
+                "t" => Damath.Pack.RuleType,
                 _ => throw new System.Exception()
             };
 

@@ -56,6 +56,7 @@ namespace Damath
             {
                 //subscribe network commands which can only be accessed by the server
                 Game.Events.OnChatSend += ReceiveChatRpc;
+                Game.Events.OnObserverSend += ObserverSendRpc;
             }
 
             Init();
@@ -124,12 +125,36 @@ namespace Damath
 
                 case Pack.Command:
                 {
-                    //
+                        //
                     break;
                 }
+
+                case Pack.RuleType:
+                    
+                    Game.Events.ObserverSend(conn, data);
+                    break;
             }
         }
         
+        [ObserversRpc(ExcludeOwner = false)]
+        void ObserverSendRpc(NetworkConnection conn, string data)
+        {
+            Pack type = Parser.Parse(data, out string[] args);
+
+            if (type == Damath.Pack.RuleType)
+            {
+                switch (args[1])
+                {
+                    case "0":
+                        Game.Main.SetRuleset(Ruleset.Standard);
+                        break;
+                    case "1":
+                        Game.Main.SetRuleset(Ruleset.Speed);
+                        break;
+                }
+            }
+        }
+
         [ObserversRpc(ExcludeOwner = false)]
         void ReceiveChatRpc(NetworkConnection target, string data)
         {

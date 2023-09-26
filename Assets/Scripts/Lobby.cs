@@ -42,14 +42,15 @@ namespace Damath
 
         void Start()
         {
+            Ruleset = Game.Main.Ruleset;
             button.onValueChanged.AddListener(ToggleReady);
         }
-        
+
         void Update()
         {
             if (Input.GetKeyDown(KeyCode.K))
             {
-                CheckOwnerServerRpc();
+                Game.Console.Log($"{Ruleset.Mode}");
             }
         }
 
@@ -66,7 +67,7 @@ namespace Damath
 
         public void SetRuleset(Ruleset ruleset)
         {
-            Ruleset = ruleset;
+            Ruleset = new Ruleset();
         }
 
         public Player SpawnPlayer(NetworkConnection owner)

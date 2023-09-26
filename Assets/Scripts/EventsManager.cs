@@ -46,7 +46,7 @@ namespace Damath
         public event Action<Player> OnClientStart;
         public event Action<string> OnNetworkSend;
         public event Action<NetworkConnection, string> OnChatSend;
-        public event Action<string> OnObserverSend;
+        public event Action<NetworkConnection, string> OnObserverSend;
         public event Action<NetworkObject, NetworkConnection> OnOwnershipRequest;
         public event Action<Lobby> OnLobbyCreate;
         public event Action<Lobby> OnLobbyHost;
@@ -222,10 +222,10 @@ namespace Damath
         {
             OnChatSend?.Invoke(conn, data);
         }
-        public void ObserverSend(string data)
+        public void ObserverSend(NetworkConnection conn, string data)
         {
             Debug.Log($"Test observer RPC {data}");
-            OnObserverSend?.Invoke(data);
+            OnObserverSend?.Invoke(conn, data);
         }
 
         public void OwnershipRequest(NetworkObject networkObject, NetworkConnection connection)

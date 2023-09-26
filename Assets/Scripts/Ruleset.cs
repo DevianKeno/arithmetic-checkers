@@ -231,6 +231,11 @@ namespace Damath
             return Rules[rule].Value;
         }
 
+        public int GetRulesetType()
+        {
+            return (int) Mode;
+        }
+
         public new string ToString()
         {
             string rulesetData = "";

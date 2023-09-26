@@ -34,7 +34,6 @@ namespace Damath
         void Start()
         {
             HasLobby = false;
-
             InstanceFinder.ServerManager.OnRemoteConnectionState += ServerRemoteConnectionStateCallback;
             // InstanceFinder.SceneManager.OnClientLoadedStartScenes += ClientLoadedStartScenesCallback;
         }
@@ -94,6 +93,7 @@ namespace Damath
             
             if (!Lobby.HasPlayer(connection.ClientId))
             {    
+               
                 // Join 2nd player as opponent        
                 if (!Lobby.HasOpponent)
                 {
@@ -102,6 +102,8 @@ namespace Damath
                 {
                     Lobby.ConnectPlayer(connection);
                 }
+                
+                Game.Events.NetworkSend(Parser.Pack("0", Pack.RuleType));
             }
         }
 
@@ -123,8 +125,7 @@ namespace Damath
             GameObject go = Instantiate(lobbyPrefab);            
             Lobby = go.GetComponent<Lobby>();
             Lobby.ConnectPlayerAsHost(hostConnection);
-            Lobby.SetRuleset(Game.Main.Ruleset);
-            go.name = $"Lobby ({Lobby.Ruleset.Mode}) ";
+            //Lobby.SetRuleset(Game.Main.Ruleset);
             InstanceFinder.ServerManager.Spawn(go, hostConnection);
             HasLobby = true;
             if (EnableDebug) Game.Console.Log($"Hosted lobby");

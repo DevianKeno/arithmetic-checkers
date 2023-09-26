@@ -14,7 +14,7 @@ namespace Damath
         /// <summary>
         /// Pack data for network transport.
         /// </summary>
-        public static string Pack(string data, Pack type)
+        public static string Pack(object data, Pack type)
         {
             var pack = type switch
             {

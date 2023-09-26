@@ -135,6 +135,7 @@ namespace Damath
             if (LobbyManager.Lobby != null)
             {
                 Player player = LobbyManager.Lobby.SpawnPlayer(connection);
+                Game.Events.NetworkSend(Parser.Pack(LobbyManager.Lobby.Ruleset.GetRulesetType(), Pack.RuleType));
             }
             
             // connection.OnLoadedStartScenes -= LoadedStartScenesCallback;

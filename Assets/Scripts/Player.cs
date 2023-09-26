@@ -108,7 +108,7 @@ namespace Damath
         public void NetworkSendRpc(string data, NetworkConnection conn = default)
         {
             Pack type = Parser.Parse(data, out string[] args);
-
+            //if (!IsOwner) return;
             switch (type)
             {
                 case Pack.Ruleset:
@@ -136,16 +136,17 @@ namespace Damath
             }
         }
         
-        [ObserversRpc(ExcludeOwner = false)]
+        [ObserversRpc(ExcludeOwner = true)]
         void ObserverSendRpc(NetworkConnection conn, string data)
         {
             Pack type = Parser.Parse(data, out string[] args);
-
+            Game.Console.Log($"Test RuleType No: {args[1]}");
             if (type == Damath.Pack.RuleType)
             {
                 switch (args[1])
                 {
                     case "0":
+                        
                         Game.Main.SetRuleset(Ruleset.Standard);
                         break;
                     case "1":

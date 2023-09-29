@@ -37,14 +37,22 @@ namespace Damath
 
         public void ReceiveRuleset(Ruleset rules)
         {
+            if (Game.Settings.EnableDebugMode) Game.Console.Log("[Debug: Indicators]: Received ruleset");
+            
             Rules = rules;
+            Init();
+        }
+
+        public void Init()
+        {
+
         }
 
         public void IndicateValidMoves(List<Move> moves)
         {
             foreach (Move move in moves)
             {
-                MoveIndicators.Add(CreateIndicator(IndicatorType.Circle, move.destinationCell, new Color(1, 0.92f, 0.016f, 1f)));
+                MoveIndicators.Add(CreateIndicator(IndicatorType.Circle, move.Destination, new Color(1, 0.92f, 0.016f, 1f)));
             }
         }
 
@@ -54,7 +62,7 @@ namespace Damath
             {
                 foreach (var move in moves)
                 {
-                    CaptureIndicators.Add(CreateIndicator(IndicatorType.Box, move.originCell, Colors.Lime));
+                    CaptureIndicators.Add(CreateIndicator(IndicatorType.Box, move.Origin, Colors.Lime));
                 }
             }
         }

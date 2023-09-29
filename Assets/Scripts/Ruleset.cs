@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Damath
 {
-    public static class XmlHelper
+    public static class JSONReader
     {
 
     }
@@ -20,27 +20,50 @@ namespace Damath
             Name = name;
             Value = value;
         }
+
+        public void SetValue(object value)
+        {
+            Value = value;
+        }
     }
 
+    /// <summary>
+    /// Pertains which predefined ruleset a ruleset is based on.
+    /// </summary>
     public enum RulesetType { Standard, Speed, Custom }
+
+    /// <summary>
+    /// Determines which/who're players are participating in the match. 
+    /// </summary>
+    public enum RulesetPlayersType { Solo, TwoPlayer, VersusAI}
+    
     
     /// <summary>
-    /// Defines the rules for a match. 
+    /// Serves as a holder for the rules that define a match. 
     /// Rule values can be accessed by indexing the rule name.
     /// </summary>
     public class Ruleset
     {
-        public Dictionary<string, Rule> Rules = new ();
-        public RulesetType Mode;
+        public RulesetType Type;
+        /// <summary>
+        /// The individual rules this ruleset holds. Access them by indexing.
+        /// </summary>
+        public Dictionary<string, Rule> Rules = new();
         public Dictionary<Vector2, Operation> SymbolMap = new();
         public Dictionary<Vector2, PieceData> PieceMap = new();
 
+        /// <summary>
+        /// These data is initialized from files at every start of the program (game).
+        /// </summary>
+        #region Predefined data
         static Dictionary<Vector2, Operation> SymbolMapStandard { get; set; }
         static Dictionary<Vector2, PieceData> PieceMapStandard { get; set; }
         
         public static Ruleset Standard { get; private set; }
         public static Ruleset Speed { get; private set; }
+        #endregion
         
+        // Indexer
         public object this[string name, bool value = true]
         {            
             get
@@ -55,12 +78,12 @@ namespace Damath
             }
         }
         
+        /// <summary>
+        /// Initializing function. This runs when the game is first being loaded.
+        /// </summary>
         public static void Init()
         {
-            if (Settings.EnableDebugMode)
-            {
-                Game.Console.Log("Initializing rulesets");
-            }
+            Game.Console.LogDebug("Initializing rulesets");
 
             // 
             // These should read from a file that's easier to read and handle
@@ -138,29 +161,23 @@ namespace Damath
                 { new (6, 7), new ("-11", Side.Top, false)}
             };
 
+            // These are pre-defined rulesets and
+            // must be first initialized at the start of the program
             Standard = CreateStandard();
             Speed = CreateSpeed();
             
-            if (Settings.EnableDebugMode)
-            {
-                Game.Console.Log("Initialized rulesets");
-            }
+            Game.Console.LogDebug("Initialized rulesets");
         }
 
+        /// <summary>
+        /// Create a ruleset given a ruleset type.
+        /// </summary>
+        /// <returns> A ruleset object. </returns>
         public static Ruleset Create(RulesetType mode)
         {
-            if (mode == RulesetType.Standard)
-            {
-                return CreateStandard();
-
-            } else if (mode == RulesetType.Speed)
-            {
-                return CreateSpeed();
-            
-            } else if (mode == RulesetType.Custom)
-            {
-                // return CreateCustom();
-            }
+            if (mode == RulesetType.Standard) return CreateStandard();
+            if (mode == RulesetType.Speed) return CreateSpeed();            
+            if (mode == RulesetType.Custom) return CreateCustom();
             return null;
         }
 
@@ -168,7 +185,7 @@ namespace Damath
         {
             Ruleset ruleset = new()
             {
-                Mode = RulesetType.Standard
+                Type = RulesetType.Standard
             };
 
             ruleset.AddRule(0, "AllowCapture", true);
@@ -183,6 +200,8 @@ namespace Damath
             ruleset.AddRule(9, "GlobalTimerSeconds", 1200f);
             ruleset.AddRule(10, "TurnTimerSeconds", 60f);
             ruleset.AddRule(11, "FirstTurn", Side.Bot);
+            ruleset.AddRule(12, "Players", RulesetPlayersType.Solo);
+            ruleset.AddRule(13, "AI", "Xena");
 
             ruleset.SymbolMap = SymbolMapStandard;
             ruleset.PieceMap = PieceMapStandard;
@@ -194,7 +213,7 @@ namespace Damath
         {
             Ruleset ruleset = new()
             {
-                Mode = RulesetType.Speed
+                Type = RulesetType.Speed
             };
 
             ruleset.AddRule(0, "AllowCapture", true);
@@ -209,12 +228,24 @@ namespace Damath
             ruleset.AddRule(9, "GlobalTimerSeconds", 300f);
             ruleset.AddRule(10, "TurnTimerSeconds", 15f);
             ruleset.AddRule(11, "FirstTurn", Side.Bot);
+            ruleset.AddRule(12, "Players", RulesetPlayersType.Solo);
+            ruleset.AddRule(13, "AI", "Xena");
 
             ruleset.SymbolMap = SymbolMapStandard;
             ruleset.PieceMap = PieceMapStandard;
 
             return ruleset;
         }
+
+        public static Ruleset CreateCustom()
+        {
+            Ruleset ruleset = CreateStandard();
+            ruleset.Type = RulesetType.Custom;
+
+            return ruleset;
+        }
+
+        #region Methods
 
         public void AddRule(int id, string name, object value)
         {
@@ -231,6 +262,16 @@ namespace Damath
             return Rules[rule].Value;
         }
 
+        public void SetRule(string rule, object value)
+        {
+            Rules[rule].SetValue(value);
+        }
+
+        public int GetRulesetType()
+        {
+            return (int) Type;
+        }
+
         public new string ToString()
         {
             string rulesetData = "";
@@ -243,5 +284,7 @@ namespace Damath
 
             return rulesetData;
         }
+
+        #endregion
     }
 }

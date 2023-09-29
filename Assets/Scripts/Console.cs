@@ -37,7 +37,7 @@ namespace Damath
         {
             if (Input.GetKeyDown(Settings.KeyBinds.OpenDeveloperConsole))
             {
-                if (!Settings.EnableConsole) return;
+                if (!Game.Settings.EnableConsole) return;
                 Window.Toggle();
                 if (Window.IsVisible) input.Select();
             }
@@ -183,7 +183,7 @@ namespace Damath
             CreateCommand("move <col> <row> <toCol> <toRow>",
                           "").AddCallback(Command_Move);
 
-            CreateCommand("name <name>",
+            CreateCommand("name <name> [side]",
                           "Change player name.").AddCallback(Command_Name);
 
             CreateCommand("piece <s|s> <col> <row> [value]",
@@ -220,15 +220,36 @@ namespace Damath
             input.Select();
         }
 
+        public void Write(string value)
+        {
+            messages.text += $"{value}";
+        }
+
+        public void WriteLine(string value)
+        {
+            messages.text += $"\n{value}";
+        }
+
         public void Log(object message)
         {
             try
             {
-                messages.text += $"\n{message}";
+                WriteLine($"{message}");
             } catch
             {
                 Debug.Log(message);
             }
+        }
+        
+        /// <summary>
+        /// Log a debug message into the game's console.
+        /// </summary>
+        /// <param name="message"></param>
+        public void LogDebug(object message)
+        {
+            if (!Game.Settings.EnableDebugMode) return;
+            
+            Log(message);
         }
 
         /// <summary>
@@ -383,42 +404,57 @@ namespace Damath
 
         void Command_Match(List<string> args)
         {
-            if (args[1] == "create")
+            switch (args[1])
             {
-                try
-                {
-                    RulesetType ruleset = args[2] switch
+                case "create":
+                    try
                     {
-                        "standard" or "1" => RulesetType.Standard,
-                        "speed" or "2" => RulesetType.Speed,
-                        // "custom" or "3" => RulesetType.Custom,
-                        _ => throw new Exception()
-                    };
+                        RulesetType ruleset = args[2] switch
+                        {
+                            "standard" or "1" => RulesetType.Standard,
+                            "speed" or "2" => RulesetType.Speed,
+                            // "custom" or "3" => RulesetType.Custom,
+                            _ => throw new Exception()
+                        };
 
-                    Game.Main.CreateMatch(ruleset);
+                        Game.Main.CreateMatch(ruleset);
 
-                } catch
-                {
-                    PromptInvalid(args[0]);
-                    return;
-                }
+                    } catch
+                    {
+                        PromptInvalid(args[0]);
+                        return;
+                    }
+                    break;
+                case "start":
+                    if (!Game.Main.IsPlaying)
+                    {
+                        Game.Main.StartMatch();
+                        return;
+                    }
 
-            } else if (args[1] == "start")
-            {
-                if (!Game.Main.IsPlaying)
-                {
-                    Game.Main.StartMatch();
-                    return;
-                }
-
-                if (Game.Main.Ruleset == null)
-                {
-                    Log("No match created. Create one with /match create <ruleset>");
-                }
-
-            } else if (args[1] == "get")
-            {
-                Log($"{Match}");
+                    if (Game.Main.Ruleset == null)
+                    {
+                        Log("No match created. Create one with /match create <ruleset>");
+                    }
+                    break;
+                default:
+                    try
+                    {
+                        RulesetType ruleset = args[1] switch
+                        {
+                            "standard" or "1" => RulesetType.Standard,
+                            "speed" or "2" => RulesetType.Speed,
+                            // "custom" or "3" => RulesetType.Custom,
+                            _ => throw new Exception()
+                        };
+                        
+                        Game.Main.CreateMatch(ruleset);
+                    } catch
+                    {
+                        PromptInvalid(args[0]);
+                        return;
+                    }
+                    break;
             }
         }
         
@@ -434,9 +470,10 @@ namespace Damath
         void Command_Name(List<string> args)
         {
             args.RemoveAt(0);
-            var name = string.Join(" ", args.ToArray());
-            Game.Main.SetNickname(name);
-            Game.Console.Log($"Set name to \"{name}\"");
+            Game.Console.Log("Broken command, pls fix.");
+            // var name = string.Join(" ", args.ToArray());
+            // // Game.Main.SetNickname(name);
+            // Game.Console.Log($"Set name to \"{name}\"");
         }
 
         void Command_Piece(List<string> args)

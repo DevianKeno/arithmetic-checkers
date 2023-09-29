@@ -6,9 +6,48 @@ using TMPro;
 
 namespace Damath
 {
+    /// <summary>
+    /// This class imlpements methods for score evalution.
+    /// </summary>
+    public class Score
+    {
+        public float Value { get; private set; }
+
+        public float Get()
+        {
+            return Value;
+        }
+
+        public void Set(float value)
+        {
+            Value = value;
+        }
+
+        public void Add(float value)
+        {
+            Value += value;
+        }
+
+        public void Remove(float value)
+        {
+            Value -= value;
+        }
+
+        public Score CompareHigher(Score score)
+        {
+            if (score.Get() > Value)
+            {
+                return score;
+            }
+
+            return this;
+        }
+    }
+
     public class Scoreboard : MonoBehaviour
     {
         Ruleset Rules { get; set; }
+        
         [SerializeField] private TextMeshProUGUI BlueScore;
         [SerializeField] private TextMeshProUGUI OrangeScore;
 
@@ -26,17 +65,32 @@ namespace Damath
 
         public void ReceiveRuleset(Ruleset rules)
         {
+            if (Game.Settings.EnableDebugMode) Game.Console.Log("[Debug: Scoreboard]: Received ruleset");
+
             Rules = rules;
-        }        
+            Init();
+        }
+
+        public void Init()
+        {
+            if (Rules == null)
+            {
+                Game.Console.Log("[Debug: Scoreboard]: Failed to initialize Scoreboard, no ruleset");
+                return;
+            }
+
+            if (Game.Settings.EnableDebugMode) Game.Console.Log("[Debug: Scoreboard]: Initializing Scoreboard");
+
+        }
 
         public void Refresh(Player player)
         {
             if (player.Side == Side.Bot)
             {
-                BlueScore.text = player.Score.ToString();
+                BlueScore.text = player.fScore.ToString();
             } else if (player.Side == Side.Top)
             {
-                OrangeScore.text = player.Score.ToString();
+                OrangeScore.text = player.fScore.ToString();
             }
         }
 
@@ -44,10 +98,10 @@ namespace Damath
         {
             float score;
             char operation;
-            float x = float.Parse(move.capturingPiece.Value);
-            float y = float.Parse(move.capturedPiece.Value);
+            float x = float.Parse(move.CapturingPiece.Value);
+            float y = float.Parse(move.CapturedPiece.Value);
 
-            (score, operation) = move.destinationCell.Operation switch
+            (score, operation) = move.Destination.Operation switch
             {
                 Operation.Add => (x + y, '+'),
                 Operation.Subtract => (x - y, '-'),
@@ -56,7 +110,7 @@ namespace Damath
                 _ => throw new NotImplementedException(),
             };
 
-            Game.Console.Log($"[ACTION]: {move.capturingPiece.Value} {operation} {move.capturedPiece.Value} = {score}");
+            Game.Console.Log($"[ACTION]: {move.CapturingPiece.Value} {operation} {move.CapturedPiece.Value} = {score}");
 
             move.SetScoreValue(score);
             AddScore(move.Player, score);
@@ -65,17 +119,17 @@ namespace Damath
 
         public void AddScore(Player player, float value)
         {
-            player.Score += value;
+            player.fScore += value;
         }
 
         public void RemoveScore(Player player, float value)
         {
-            player.Score -= value;
+            player.fScore -= value;
         }
 
         public float GetScore(Player player)
         {
-            return player.Score;
+            return player.fScore;
         }
     }
 }

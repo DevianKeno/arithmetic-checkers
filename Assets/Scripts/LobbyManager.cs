@@ -124,7 +124,7 @@ namespace Damath
             Lobby = go.GetComponent<Lobby>();
             Lobby.ConnectPlayerAsHost(hostConnection);
             Lobby.SetRuleset(Game.Main.Ruleset);
-            go.name = $"Lobby ({Lobby.Ruleset.Mode}) ";
+            go.name = $"Lobby ({Lobby.Ruleset.Type}) ";
             InstanceFinder.ServerManager.Spawn(go, hostConnection);
             HasLobby = true;
             if (EnableDebug) Game.Console.Log($"Hosted lobby");

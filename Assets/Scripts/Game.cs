@@ -19,9 +19,9 @@ namespace Damath
         public static Game Main { get; private set; }
         public static EventsManager Events { get; private set; }
         public static Console Console { get; private set; }
-        public static Network Network { get; private set; }
         public static UIHandler UI { get; private set; }
         public static AudioManager Audio { get; private set; }
+        public static Settings Settings { get; private set; }
 
         protected bool IsAlive { get; private set; }
         public bool IsPaused { get; private set; }
@@ -31,7 +31,11 @@ namespace Damath
         public bool HasRuleset { get; private set; }
         public bool HasMatch { get; private set; }
         public Ruleset Ruleset { get; private set; }
-        public string Nickname = "Player";
+        public Dictionary<Side, string> Nickname = new()
+        {
+            {Side.Bot, "Player"},
+            {Side.Top, "Opponent"}
+        };
         public MatchController Match { get; private set; }
         public Scene CurrentScene { get; private set; }
 
@@ -50,7 +54,7 @@ namespace Damath
                 Console = GetComponentInChildren<Console>();
                 UI = GetComponentInChildren<UIHandler>();
                 Audio = GetComponentInChildren<AudioManager>();
-                Network = GetComponentInChildren<Network>();
+                Settings = GetComponentInChildren<Settings>();
             }
         }
 
@@ -65,11 +69,16 @@ namespace Damath
                 Console.Enable();
             }
             
-            // Initialize
+            // Initialize components that needs to be initialized at run-time 
             Ruleset.Init();
             // Themes.Init();
-            
-            // Events.OnMatchCreate += SetMatch;
+
+            SubscribeToEvents();
+        }
+
+        public void SubscribeToEvents()
+        {
+            Events.OnMatchCreate += SetMatch;
             // Network.SceneManager.OnLoadEnd += RegisterScene;
         }
 
@@ -169,7 +178,7 @@ namespace Damath
             LoadScene("Match", playTransition: true);
         }      
 
-        private void SetMatch(MatchController match)
+        public void SetMatch(MatchController match)
         {
             HasMatch = true;
             Match = match;
@@ -180,15 +189,14 @@ namespace Damath
         /// </summary>
         public void StartMatch()
         {
-            if (HasMatch)
-            {
-                Match.Init();
-            }
+            if (!HasMatch) return;
+            
+            Match.Init();
         }
 
-        public void SetNickname(string value)
+        public void SetNickname(Side side, string value)
         {
-            Nickname = value;
+            Nickname[side] = value;
         }
         
         #region Debug

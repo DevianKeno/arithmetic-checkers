@@ -10,6 +10,14 @@ using Unity.VisualScripting;
 
 namespace Damath
 {
+    /// <summary>
+    /// This class implements conversion methods to convert a "string value" to a computable score value.
+    /// </summary>
+    public class PieceValue
+    {
+
+    }
+
     public struct PieceData
     {
         public string Value;
@@ -28,20 +36,40 @@ namespace Damath
     {
         public Cell Cell;
         public int Col, Row;
+        public Vector2 Coordinates;
+        public PieceValue ValueConvertible;
         public string Value;
         public Side Side;
         public bool IsKing = false;
+        /// <summary>
+        /// The player owner of this piece.
+        /// </summary>
         public Player Owner;
+        /// <summary>
+        /// Whether if the piece has a possible capture or not.
+        /// </summary>
         public bool CanCapture = false;
+        /// <summary>
+        /// Whether the piece had captured a piece on its previous turn. 
+        /// </summary>
         public bool HasCaptured = false;
+        /// <summary>
+        /// Represents the forward value of the piece. 1 (up) for bottom pieces, 0 (down) for top pieces.
+        /// </summary>
         public int Forward = 0;
-        public List<Move> Moves = new();
-        public List<Sprite> Sprites;
+        /// <summary>
+        /// Piece top color (ring). (Not implemented)
+        /// </summary>
         public Color Color;
+        /// <summary>
+        /// Piece shadow color. (Not implemented)
+        /// </summary>
         public Color Shadow;
-        public bool IsSelected = false;
-        public Player SelectedBy = null;
-        [SerializeField] RectTransform rect;
+        /// <summary>
+        /// Sprite placeholder for custom sprites. (Not implemented)
+        /// </summary>
+        public List<Sprite> Sprites;
+
         [SerializeField] TextMeshPro tmp;
         [SerializeField] SpriteRenderer overlayTop;
         [SerializeField] SpriteRenderer overlayShadow;
@@ -71,12 +99,6 @@ namespace Damath
                 overlayTop.sprite = Sprites[0];
             }
         }
-
-        // public static Piece Create(int col, int row)
-        // {
-        //     // Cell cell = Board.GetCell(col, row);
-        //     return Create(cell);
-        // }
         
         public static Piece Create(Cell cell)
         {
@@ -92,31 +114,33 @@ namespace Damath
             return newPiece;
         }
 
-        public void SetSortingLayer(int layerID)
+        /// <summary>
+        /// Drags the piece along the cursor.
+        /// </summary>
+        public void ToCursor()
         {
-
+            transform.position = Camera.main.ScreenToWorldPoint( new Vector3( Input.mousePosition.x, Input.mousePosition.y, 1));
         }
 
-        public void Init(Side side, string value, bool isKing)
-        {
-
-        }
-
+        /// <summary>
+        /// Sets the position of this piece back to its cell.
+        /// </summary>
         public void ResetPosition()
         {
             transform.position = Cell.transform.position;
         }
 
+        /// <summary>
+        /// Set this piece's "home cell".
+        /// </summary>
+        /// <param name="move"> Move the piece to its cell. </param>
         public void SetCell(Cell cell, bool move = true)
         {
             Cell = cell;
             Col = cell.Col;
             Row = cell.Row;
             
-            if (move)
-            {
-                transform.position = cell.transform.position;
-            }
+            if (move) transform.position = cell.transform.position;
         }
 
         public void SetValue(string value)

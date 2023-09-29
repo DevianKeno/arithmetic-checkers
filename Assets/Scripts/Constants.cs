@@ -8,7 +8,7 @@ namespace Damath
     {
         public const int MaximumColumns = 8;
         public const int MaximumRows = 8;
-        public const float PieceScale = 2.5f;
+        public const float PieceScale = 2.75f;
         public const float CellSize = 2.5f;
         public const float CellOffset = 1.5f;
         public const float ZLocation = -3f;

@@ -250,7 +250,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  m_IsOn: 0
+  m_IsOn: 1
   Value: 1
   SpeedInSeconds: 0.5
   BackgroundColorOff: {r: 0.37, g: 0.37, b: 0.37, a: 1}

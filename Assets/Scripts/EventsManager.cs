@@ -14,7 +14,7 @@ namespace Damath
         #region Global events
 
         public event Action<MatchController> OnMatchCreate;
-        public event Action<MatchController> OnMatchBegin;
+        public event Action OnMatchBegin;
         public event Action OnMatchEnd;
         public event Action OnBoardCreate;
         public event Action<Ruleset> OnRulesetDistribute;
@@ -74,7 +74,7 @@ namespace Damath
         public event Action<MoveType> OnMoveTypeRequest;
         public event Action<bool> OnRequireCapture;
         public event Action OnRefresh;
-        public event Action<Side> OnChangeTurn;
+        public event Action<Side> OnTurnChanged;
         public event Action OnBoardFlip;
 
         #endregion
@@ -83,7 +83,7 @@ namespace Damath
         #region Global event methods
         
         /// <summary>
-        /// Called when a match is created.
+        /// Fired when a match is created.
         /// </summary>
         public void MatchCreate(MatchController match)
         {
@@ -91,15 +91,15 @@ namespace Damath
         }
 
         /// <summary>
-        /// Called when a match begins.
+        /// Fired when a match begins.
         /// </summary>
-        public void MatchBegin(MatchController match)
+        public void MatchBegin()
         {
-            OnMatchBegin?.Invoke(match);
+            OnMatchBegin?.Invoke();
         }
 
         /// <summary>
-        /// Called when a ruleset is created. 
+        /// Fired when a match receives a ruleset. 
         /// </summary>
         /// <param name="value"></param>
         public void RulesetDistribute(Ruleset value)
@@ -112,7 +112,7 @@ namespace Damath
         #region Player event methods
 
         /// <summary>
-        /// Called when a new player joins.
+        /// Fired when a new player joins.
         /// </summary>
         public void PlayerJoin(Player player)
         {
@@ -120,7 +120,7 @@ namespace Damath
         }
 
         /// <summary>
-        /// Called when a new player is created.
+        /// Fired when a new player is created.
         /// </summary>
         public void PlayerCreate(Player player)
         {
@@ -271,7 +271,7 @@ namespace Damath
         }
 
         /// <summary>
-        /// Called when a cell is selected.
+        /// Fired when a cell is selected.
         /// </summary>
         public void CellSelect(Cell cell)
         {
@@ -279,7 +279,7 @@ namespace Damath
         }
 
         /// <summary>
-        /// Called when a cell is deselected.
+        /// Fired when a cell is deselected.
         /// </summary>
         public void CellDeselect(Cell cell)
         {
@@ -297,7 +297,7 @@ namespace Damath
         }
 
         /// <summary>
-        /// Called when a piece is deselected.
+        /// Fired when a piece is deselected.
         /// </summary>
         public void PieceDeselect(Piece piece)
         {
@@ -305,7 +305,7 @@ namespace Damath
         }
 
         /// <summary>
-        /// Called when piece is waiting for an action.
+        /// Fired when piece is waiting for an action.
         /// </summary>
         public void PieceWait(Piece piece)
         {
@@ -313,7 +313,7 @@ namespace Damath
         }
 
         /// <summary>
-        /// Called when a piece is moved.
+        /// Fired when a piece is moved.
         /// </summary>
         public void PieceMove(Move move)
         {
@@ -321,7 +321,7 @@ namespace Damath
         }
 
         /// <summary>
-        /// Called when a piece has no more actions to take.
+        /// Fired when a piece has no more actions to take.
         /// </summary>
         public void PieceDone(Piece piece)
         {
@@ -329,7 +329,7 @@ namespace Damath
         }
         
         /// <summary>
-        /// Called when the Board updates all its valid moves.
+        /// Fired when the Board updates all its valid moves.
         /// </summary>
         public void BoardUpdateValidMoves(List<Move> moves)
         {
@@ -341,7 +341,7 @@ namespace Damath
             OnBoardUpdateCaptureables?.Invoke(moves);
         }
         /// <summary>
-        /// Called when the Board updates all its valid moves.
+        /// Fired when the Board updates all its valid moves.
         /// </summary>
         public void BoardUpdateCellmap(Cellmap<Cell> cellmap)
         {
@@ -362,14 +362,11 @@ namespace Damath
         }
 
         /// <summary>
-        /// Called when the Board requests for a turn that has a mandatory capture.
+        /// Fired when the Board requests for a turn that has a mandatory capture.
         /// </summary>
         public void RequireCapture(bool value)
         {
-            if (OnRequireCapture != null)
-            {
-                OnRequireCapture(value);
-            }
+            OnRequireCapture?.Invoke(value);
         }
 
         public void Refresh()
@@ -380,14 +377,19 @@ namespace Damath
             }
         }
 
-        public void ChangeTurn(Side side)
+        /// <summary>
+        /// Fired every time the turns are changed.
+        /// The side is who the current turn is.
+        /// </summary>
+        /// <param name="side"></param>
+        public void TurnChanged(Side side)
         {
-            if (OnChangeTurn != null)
-            {
-                OnChangeTurn(side);
-            }
+            OnTurnChanged?.Invoke(side);
         }
 
+        /// <summary>
+        /// Fired everytime the board is flipped.
+        /// </summary>
         public void BoardFlip()
         {
             OnBoardFlip?.Invoke();

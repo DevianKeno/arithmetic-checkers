@@ -15,60 +15,54 @@ namespace Damath
         void Awake()
         {
             Game.Events.OnRulesetDistribute += ReceiveRuleset;
-            Game.Events.OnMatchBegin += Init;
-            Game.Events.OnChangeTurn += SwapTurnTimer;
+            Game.Events.OnMatchBegin += Begin;
+            Game.Events.OnTurnChanged += SwapTurnTimer;
         }
 
         void OnDisable()
         {
             Game.Events.OnRulesetDistribute -= ReceiveRuleset;
-            Game.Events.OnMatchBegin -= Init;
-            Game.Events.OnChangeTurn -= SwapTurnTimer;
+            Game.Events.OnMatchBegin -= Begin;
+            Game.Events.OnTurnChanged -= SwapTurnTimer;
         }
 
-        void ReceiveRuleset(Ruleset value)
+        void ReceiveRuleset(Ruleset rules)
         {
-            if (Settings.EnableDebugMode)
-            {
-                Game.Console.Log($"[DEBUG]: Received ruleset");
-            }
-            Rules = value;
+            if (Game.Settings.EnableDebugMode) Game.Console.Log($"[Debug: Timers]: Received ruleset");
+
+            Rules = rules;
         }
         
-        public void Init()
+        public void Begin()
         {
-            if ((bool) Rules["EnableTimer"]) 
-            {
-                if ((bool) Rules["EnableTurnTimer"])
-                {
-                    GlobalTimer.SetFormat(Format.MM_SS);
-                    GlobalTimer.SetTime((float) Rules["GlobalTimerSeconds"]);
-                    GlobalTimer.Begin();
-                }
-                if ((bool) Rules["EnableTurnTimer"])
-                {
-                    BlueTimer.SetFormat(Format.SS);
-                    BlueTimer.SetTime((float) Rules["TurnTimerSeconds"]);
-                    
-                    OrangeTimer.SetFormat(Format.SS);
-                    OrangeTimer.SetTime((float) Rules["TurnTimerSeconds"]);
+            if (!(bool) Rules["EnableTimer"]) return;
 
-                    if ((Side) Rules["FirstTurn"] == Side.Bot)
-                    {
-                        BlueTimer.Begin();
-                        OrangeChip.SetActive(false);
-                    } else if ((Side) Rules["FirstTurn"] == Side.Top)
-                    {
-                        OrangeTimer.Begin();
-                        BlueChip.SetActive(false);
-                    }
+            if ((bool) Rules["EnableGlobalTimer"])
+            {
+                GlobalTimer.SetFormat(Format.MM_SS);
+                GlobalTimer.SetTime((float) Rules["GlobalTimerSeconds"]);
+                GlobalTimer.Begin();
+            }
+            
+            if ((bool) Rules["EnableTurnTimer"])
+            {
+                BlueTimer.SetFormat(Format.SS);
+                BlueTimer.SetTime((float) Rules["TurnTimerSeconds"]);
+                
+                OrangeTimer.SetFormat(Format.SS);
+                OrangeTimer.SetTime((float) Rules["TurnTimerSeconds"]);
+
+                if ((Side) Rules["FirstTurn"] == Side.Bot)
+                {
+                    BlueTimer.Begin();
+                    OrangeChip.SetActive(false);
+                } else if ((Side) Rules["FirstTurn"] == Side.Top)
+                {
+                    OrangeTimer.Begin();
+                    BlueChip.SetActive(false);
                 }
             }
-        }
-
-        public void Init(MatchController match)
-        {
-            Init();
+            
         }
 
         public void SwapTurnTimer(Side turnOf)

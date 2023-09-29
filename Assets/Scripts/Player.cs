@@ -7,12 +7,18 @@ using FishNet.Connection;
 
 namespace Damath
 {
+    /// <summary>
+    /// This is used for network transport.
+    /// </summary>
     public struct PlayerData
     {
         // public Image image;
         public string Name;
     }
 
+    /// <summary>
+    /// An actor can represent either a player or just a spectator.
+    /// </summary>
     public class Actor : NetworkBehaviour
     {
         public string Name = "Actor";
@@ -26,54 +32,82 @@ namespace Damath
 
     public class Player : Actor
     {
-        public Side Side;
+        [field: Header("Information")]
+        public Side Side { get; private set; }
+        /// <summary>
+        /// The player's current alive pieces.
+        /// </summary>
         public List<Piece> Pieces;
+        /// <summary>
+        /// The player's current captured pieces. Note that this should contain enemy pieces.
+        /// </summary>
         public List<Piece> CapturedPieces;
-        public float Score = 0f;
+        /// <summary>
+        /// Represents the player's current score.
+        /// </summary>
+        public Score Score;
+        /// <summary>
+        /// The player's current score represent in float. (Subject to removal)
+        /// </summary>
+        public float fScore = 0f;
+        /// <summary>
+        /// Whether if the player is participating in the match.
+        /// </summary>
         public bool IsPlaying = false;
         public bool IsModerator = false;
         public bool IsControllable = false;
+        /// <summary>
+        /// Whether if the player is an AI.
+        /// </summary>
         public bool IsAI = false;
         public Cell SelectedCell = null;
+        /// <summary>
+        /// The player's currently selected piece.
+        /// </summary>
         public Piece SelectedPiece = null;
         public Piece HeldPiece = null;
+        /// <summary>
+        /// The piece this player had moved previously.
+        /// </summary>
         public Piece MovedPiece = null;
+        /// <summary>
+        /// Whether if the player is currently holding down the mouse button.
+        /// </summary>
         public bool IsHolding = false;
-        public bool HasCapture = false;
-        public bool IsTurn = false;
+        /// <summary>
+        /// The player's turn count.
+        /// </summary>
         public int TurnNumber = 0;
-        [SerializeField] private float MouseHoldTime = 0f;
+        /// <summary>
+        /// Whether if it's this player's turn or not.
+        /// </summary>
+        public bool IsTurn;
 
+        [SerializeField] private float MouseHoldTime = 0f;
 
         void Start()
         {                
-            Game.Events.OnLobbyStart += InitOnline;
-            Game.Events.OnPieceDone += Deselect;
-            Game.Events.OnChangeTurn += SetTurn;
-            Game.Events.OnNetworkSend += NetworkSend;
-
-            if (IsServer)
-            {
-                //subscribe network commands which can only be accessed by the server
-                Game.Events.OnChatSend += ReceiveChatRpc;
-            }
-
             Init();
         }
 
         void Update()
         {
             DetectRaycast();
-            
+        }
+
+        void OnEnable()
+        {
+            Game.Events.OnTurnChanged += OnTurnChanged;
+            Game.Events.OnLobbyStart += InitOnline;
+            Game.Events.OnPieceDone += Deselect;
         }
 
         void OnDisable()
         {
             // Game.Events.OnPieceMove -= IMadeAMove;
+            Game.Events.OnTurnChanged -= OnTurnChanged;
             Game.Events.OnLobbyStart -= InitOnline;
             Game.Events.OnPieceDone -= Deselect;
-            Game.Events.OnChangeTurn -= SetTurn;
-            Game.Events.OnNetworkSend -= NetworkSend;
         }
 
         public void InitOnline(Lobby lobby)
@@ -81,71 +115,15 @@ namespace Damath
             // Game.Events.OnPieceMove += IMadeAMove;
         }
 
-        void NetworkSend(string data)
-        {
-            NetworkSendRpc(data);
-        }
         public void Init()
         {
-            Name = Game.Main.Nickname;
+            // Name = Game.Main.Nickname;
             name = $"{Game.Main.Nickname} (Player)";
+            Score = new();
             Game.Events.PlayerCreate(this);
         }
 
-        public void SetTurn(Side currentTurn)
-        {
-            if (currentTurn == Side)
-            {
-                IsTurn = true;
-            } else
-            {
-                IsTurn = false;
-            }
-        }
-
-        [ServerRpc]
-        public void NetworkSendRpc(string data, NetworkConnection conn = default)
-        {
-            Pack type = Parser.Parse(data, out string[] args);
-
-            switch (type)
-            {
-                case Pack.Ruleset:
-                {
-                    //
-                    break;
-                }
-                
-                case Pack.Chat:
-                {
-                    Game.Events.ChatSend(conn, data);
-                    break;
-                }
-
-                case Pack.Command:
-                {
-                    //
-                    break;
-                }
-            }
-        }
-        
-        [ObserversRpc(ExcludeOwner = false)]
-        void ReceiveChatRpc(NetworkConnection target, string data)
-        {
-            Pack type = Parser.Parse(data, out string[] args);
-
-            if(IsOwner) Game.Console.Log($"<{args[1]}> {args[2]}");
-        }
-
-/*        void SetConsoleOperator(Player player)
-        {
-            if (!IsOwner) return;
-
-            if (Settings.EnableDebugMode) Game.Console.Log($"Set {player.Name} as console operator");
-            
-            Game.Console.SetOperator(this);
-        }*/
+        #region Public
 
         public string SetName(string value)
         {
@@ -166,41 +144,71 @@ namespace Damath
 
         public void SetScore(float value)
         {
-            Score = value;
+            fScore = value;
         }
+
+        /// <summary>
+        /// Whenever the board calls for a turn change, listen if it's this player's turn.
+        /// </summary>
+        public void OnTurnChanged(Side side)
+        {
+            if (Side == side)
+            {
+                IsControllable = true;
+                IsTurn = true;
+            } else
+            {
+                IsControllable = false;
+                IsTurn = false;
+            }
+        }
+
+        #endregion
 
         void DetectRaycast()
         {
+            // Left click
             if (Input.GetMouseButtonDown(0))
             {
+                // Check if there's a piece currently selected and if the player is not holding the mouse button
+                // This is to avoid selecting the moved piece again after selecting a cell via left click
+                if (SelectedPiece != null && !IsHolding) return;
+
                 CastRay();
                 Game.Events.PlayerLeftClick(this);    
             }
             
+            // Right click
             if (Input.GetMouseButtonDown(1))
             {
                 CastRay();
                 Game.Events.PlayerRightClick(this);    
             }
 
+            // Left click and hold
             if (Input.GetMouseButton(0))
             {
+                if (!Game.Settings.AllowPieceDragging) return;
+
                 MouseHoldTime += 1 * Time.deltaTime;
 
-                if (MouseHoldTime >= Settings.PieceGrabDelay)
+                if (MouseHoldTime >= Game.Settings.PieceGrabDelay)
                 {
+                    MouseHoldTime = Game.Settings.PieceGrabDelay; // Inhibit value to max hold time
                     IsHolding = true;
 
+                    // If there's a piece already held, move it along the cursor
                     if (HeldPiece != null)
                     {
-                        HeldPiece.transform.position = Camera.main.ScreenToWorldPoint( new Vector3( Input.mousePosition.x, Input.mousePosition.y, 1));
-                    } else
+                        HeldPiece.ToCursor();
+                    } else // "hold" the selected piece first 
                     {
                         HeldPiece = SelectedPiece;
                     }
                 }
             }
 
+            // Left click release
             if (Input.GetMouseButtonUp(0))
             {
                 MouseHoldTime = 0f;
@@ -213,6 +221,7 @@ namespace Damath
                 }
             }
 
+            // Right click release
             if (Input.GetMouseButtonUp(1))
             {
                 // CastRay();
@@ -220,14 +229,16 @@ namespace Damath
         }
         
         /// <summary>
-        /// Casts a ray then caches hit object.
+        /// Perform a raycast, then cache any hit objects (single).
         /// </summary>
         void CastRay()
         {
+            // If network is online (an instance of a client is active)
+            // only allow control of owned player object
+            if (IsClient && !IsOwner) return;
             if (!IsControllable) return;
 
             Hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);  
-
             if (Hit.collider == null) return;
 
             if (Hit.collider.CompareTag("Cell"))
@@ -242,6 +253,9 @@ namespace Damath
             }
         }
 
+        /// <summary>
+        /// Select a cell objcet.
+        /// </summary>
         public void SelectCell(Cell cell)
         {
             SelectedCell = cell;
@@ -255,58 +269,98 @@ namespace Damath
             }
         }
 
+        /// <summary>
+        /// Select a piece object.
+        /// </summary>
         public void SelectPiece(Piece piece)
         {
-            if (SelectedCell.Piece.Side == Side)
+            if (!OwnsPiece(piece))
             {
-                if (SelectedPiece != null)
-                {
-                    if (SelectedPiece == piece)
-                    {
-                        ReleaseHeldPiece();
-                        return;
-                    } else
-                    {
-                        Deselect();
-                        return;
-                    }
-                }
+                Deselect();
+                return;
+            }
 
-                if (MovedPiece != null)
+            if (SelectedPiece != null)
+            {
+                if (SelectedPiece == piece)
                 {
-                    if (piece != MovedPiece)
-                    {
-                        Deselect();
-                        return;
-                    }
+                    ReleaseHeldPiece();
+                    return;
                 } else
                 {
-                    SelectedPiece = piece;
-                    Game.Events.PlayerSelectPiece(this, SelectedPiece);
-                    Game.Audio.PlaySound("Select");
+                    Deselect();
                     return;
                 }
             }
 
+            if (MovedPiece != null)
+            {
+                if (piece != MovedPiece)
+                {
+                    Deselect();
+                    return;
+                }
+            } else
+            {
+                SelectedPiece = piece;
+                Game.Events.PlayerSelectPiece(this, SelectedPiece);
+                Game.Audio.PlaySound("Select");
+                return;
+            }
         }
 
+        /// <summary>
+        /// A movecell is a basically a cell, but is marked as a valid move.
+        /// </summary>
+        /// <param name="cell"></param>
         public void SelectMovecell(Cell cell = null)
         {
+            if (SelectedPiece == null) return;
+            if (!OwnsSelectedPiece(SelectedPiece)) return;
+
             if (cell != null) SelectedCell = cell;
 
             if (SelectedCell.IsValidMove)
             {
-                if (!IsTurn) return;
+                if (IsTurn) // it's a normal move
+                {
+                    Game.Events.PlayerSelectMovecell(this, SelectedCell);
+                    Game.Audio.PlaySound("Move");
+                    return;
 
-                Debug.Log("move");
-                Game.Events.PlayerSelectMovecell(this, SelectedCell);
-                Game.Audio.PlaySound("Move");
-                return;
+                } else // it's a premove
+                {
+                    // Premove logic
+                    return;
+                }
+            } else
+            {
+                Deselect();
             }
-
-            Deselect();
         }
 
+        /// <summary>
+        /// Check if this player owns the piece it has currently selected.
+        /// </summary>
+        public bool OwnsSelectedPiece(Piece piece)
+        {
+            if (SelectedPiece == null) return false;
+            if (SelectedPiece.Side == Side) return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Check if this player owns this piece.
+        /// </summary>
+        public bool OwnsPiece(Piece piece)
+        {
+            if (piece.Side == Side) return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Release the piece this player is holding.
+        /// </summary>
         public void ReleaseHeldPiece()
         {
             HeldPiece?.ResetPosition();       
@@ -326,51 +380,5 @@ namespace Damath
         {
             Deselect();
         }
-
-        // private void IMadeAMove(Move move)
-        // {
-        //     Debug.Log($"I made a move");
-            
-        //     int[] moveData = new int[]
-        //     {
-        //         move.originCell.Col,
-        //         move.originCell.Row,
-        //         move.destinationCell.Col,
-        //         move.destinationCell.Row
-        //     };
-          
-        //     Game.Console.Log("Sending move data to server...");
-        //     SendMoveDataServerRpc(moveData);
-        // }
-
-        // [ServerRpc(RequireOwnership = false)]
-        // public void SendMoveDataServerRpc(int[] moveData, ServerRpcParams serverRpcParams = default)
-        // {
-        //     Game.Console.Log("Received move data");
-        //     var senderClientId = serverRpcParams.Receive.SenderClientId;
-
-        //     Game.Console.Log("Sending move data to clients...");
-        //     ReceiveMoveDataClientRpc(moveData, GetClientsExcept(senderClientId));
-        // }
-
-        // private ClientRpcParams GetClientsExcept(ulong exceptedClientId)
-        // {
-        //     var target = new ClientRpcParams()
-        //     {
-        //         Send = new ClientRpcSendParams()
-        //         {
-        //             // This should get players from the lobby tho (?)
-        //             TargetClientIds = Network.Main.ConnectedClientsIds.Where(x => x != exceptedClientId).ToArray()
-        //         }
-        //     };
-        //     return target;
-        // }
-
-        // [ClientRpc]
-        // public void ReceiveMoveDataClientRpc(int[] command, ClientRpcParams clientRpcParams)
-        // {
-        //     Game.Console.Log("Received client rpc");
-        //     Game.Console.Log($"Someone made a move {command}");
-        // }
     }
 }

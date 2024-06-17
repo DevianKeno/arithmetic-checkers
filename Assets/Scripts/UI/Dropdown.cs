@@ -41,7 +41,7 @@ namespace Damath.UI
 
         public void Open()
         {
-            LeanTween.value(dropdownRect.gameObject, heightMin, heightMax, Game.Settings.AnimationFactor)
+            LeanTween.value(dropdownRect.gameObject, heightMin, heightMax, Game.Main.Settings.AnimationFactor)
             .setEaseOutExpo()
             .setOnUpdate( (i) =>
             {

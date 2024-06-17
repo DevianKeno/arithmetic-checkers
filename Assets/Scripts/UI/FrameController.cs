@@ -30,9 +30,9 @@ namespace Damath.UI
                 if (IsTransitioning) return;
                 IsTransitioning = true;
 
-                if (Game.Settings.EnableAnimations)
+                if (Game.Main.Settings.EnableAnimations)
                 {
-                    LeanTween.move(CurrentFrame.rect, new Vector3(-1920f, 0f, 0f), Game.Settings.AnimationFactor)
+                    LeanTween.move(CurrentFrame.rect, new Vector3(-1920f, 0f, 0f), Game.Main.Settings.AnimationFactor)
                     .setEaseOutExpo()
                     .setOnComplete( () =>
                     {
@@ -43,7 +43,7 @@ namespace Damath.UI
 
                     frame.gameObject.SetActive(true);
                     frame.gameObject.transform.SetParent(transform);
-                    LeanTween.move(frame.rect, new Vector3(0f, 0f, 0f), Game.Settings.AnimationFactor)
+                    LeanTween.move(frame.rect, new Vector3(0f, 0f, 0f), Game.Main.Settings.AnimationFactor)
                     .setEaseOutExpo()
                     .setOnComplete( () =>
                     {

@@ -100,7 +100,7 @@ namespace Damath.Systems
         {
             if (!IsMultiplayer)
             {
-                switch (Ruleset["Players"])
+                switch (Ruleset.GetValue<RulesetPlayersType>("PlayersType"))
                 {
                     case RulesetPlayersType.Solo:
                         StartSolo();
@@ -120,6 +120,10 @@ namespace Damath.Systems
             }
             board.BeginMatch();
             timerManager.BeginMatch();
+            if (Ruleset.GetValue<bool>("EnableCheats"))
+            {
+                Game.Console.Log("Cheats enabled.");
+            }
             IsPlaying = true;
         }
 

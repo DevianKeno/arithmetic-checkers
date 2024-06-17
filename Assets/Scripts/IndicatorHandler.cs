@@ -9,7 +9,7 @@ namespace Damath
 
     public class IndicatorHandler : MonoBehaviour
     {
-        public Ruleset Rules { get; private set; }
+        public Ruleset Ruleset { get; private set; }
         public List<Indicator> MoveIndicators = new();
         public List<Indicator> CaptureIndicators = new();
 
@@ -38,9 +38,9 @@ namespace Damath
 
         public void ReceiveRuleset(Ruleset rules)
         {
-            if (Game.Settings.EnableDebugMode) Game.Console.Log("[Debug: Indicators]: Received ruleset");
+            if (Game.Main.Settings.EnableDebugMode) Game.Console.Log("[Debug: Indicators]: Received ruleset");
             
-            Rules = rules;
+            Ruleset = rules;
             Init();
         }
 
@@ -59,7 +59,7 @@ namespace Damath
 
         public void IndicateCapturingPieces(List<Move> moves)
         {
-            if ((bool) Rules["AllowMandatoryCapture"])
+            if (Ruleset.GetValue<bool>("AllowMandatoryCapture"))
             {
                 foreach (var move in moves)
                 {

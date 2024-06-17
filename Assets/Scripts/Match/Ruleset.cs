@@ -9,20 +9,20 @@ namespace Damath
 
     }
     
-    public struct Rule
+    public struct Rule<T>
     {
         public int Id { get; private set; }
         public string Name { get; private set; }
-        public object Value { get; private set; }
+        public T Value { get; private set; }
 
-        public Rule(int id, string name, object value)
+        public Rule(int id, string name, T value)
         {
             Id = id;
             Name = name;
             Value = value;
         }
 
-        public void SetValue(object value)
+        public void SetValue(T value)
         {
             Value = value;
         }
@@ -36,9 +36,8 @@ namespace Damath
     /// <summary>
     /// Determines which/who're players are participating in the match. 
     /// </summary>
-    public enum RulesetPlayersType { Solo, TwoPlayer, VersusAI}
-    
-    
+    public enum RulesetPlayersType { Solo, TwoPlayer, VersusAI }
+        
     /// <summary>
     /// Serves as a holder for the rules that define a match. 
     /// Rule values can be accessed by indexing the rule name.
@@ -48,9 +47,9 @@ namespace Damath
     {
         public RulesetType Type;
         /// <summary>
-        /// The individual rules this ruleset holds. Access them by indexing.
+        /// The individual rules this ruleset holds. Accessible by indexing.
         /// </summary>
-        public Dictionary<string, Rule> Rules = new();
+        public Dictionary<string, object> Rules = new();
         public Dictionary<Vector2, Operation> SymbolMap = new();
         public Dictionary<Vector2, PieceData> PieceMap = new();
 
@@ -64,22 +63,7 @@ namespace Damath
         public static Ruleset Standard { get; private set; }
         public static Ruleset Speed { get; private set; }
         #endregion
-        
-        /// Indexer
-        public object this[string name, bool value = true]
-        {            
-            get
-            {
-                if (value)
-                {
-                    return Rules[name].Value;
-                } else
-                {
-                    return Rules[name];
-                }
-            }
-        }
-        
+                
         /// <summary>
         /// Initializing function. This runs when the game is first being loaded.
         /// </summary>
@@ -200,8 +184,9 @@ namespace Damath
             ruleset.AddRule(9, "GlobalTimerSeconds", 1200f);
             ruleset.AddRule(10, "TurnTimerSeconds", 60f);
             ruleset.AddRule(11, "FirstTurn", Side.Blue);
-            ruleset.AddRule(12, "Players", RulesetPlayersType.Solo);
+            ruleset.AddRule(12, "PlayersType", RulesetPlayersType.Solo);
             ruleset.AddRule(13, "AI", "Xena");
+            ruleset.AddRule(14, "EnableCheats", false);
 
             ruleset.SymbolMap = SymbolMapStandard;
             ruleset.PieceMap = PieceMapStandard;
@@ -228,8 +213,9 @@ namespace Damath
             ruleset.AddRule(9, "GlobalTimerSeconds", 300f);
             ruleset.AddRule(10, "TurnTimerSeconds", 15f);
             ruleset.AddRule(11, "FirstTurn", Side.Blue);
-            ruleset.AddRule(12, "Players", RulesetPlayersType.Solo);
+            ruleset.AddRule(12, "PlayersType", RulesetPlayersType.Solo);
             ruleset.AddRule(13, "AI", "Xena");
+            ruleset.AddRule(14, "EnableCheats", false);
 
             ruleset.SymbolMap = SymbolMapStandard;
             ruleset.PieceMap = PieceMapStandard;
@@ -247,24 +233,48 @@ namespace Damath
 
         #region Methods
 
-        public void AddRule(int id, string name, object value)
+        public void AddRule<T>(int id, string name, T value)
         {
-            Rules.Add(name, new(id, name, value));
+            Rules.Add(name, new Rule<T>(id, name, value));
         }
 
-        public void AddRule(Rule rule)
+        public void AddRule<T>(Rule<T> rule)
         {
             Rules.Add(rule.Name, rule);
         }
 
-        public object GetRule(string rule)
+        public bool TryGetRule<T>(string rulename, out Rule<T> rule)
         {
-            return Rules[rule].Value;
+            if (Rules.ContainsKey(rulename))
+            {
+                rule = (Rule<T>) Rules[rulename];
+                return true;
+            } else
+            {                
+                rule = default;
+                return false;
+            }
         }
 
-        public void SetRule(string rule, object value)
+        public object GetRule(string rulename)
         {
-            Rules[rule].SetValue(value);
+            if (Rules.ContainsKey(rulename))
+            {
+                return Rules[rulename];
+            }
+            return default;
+        }
+
+        public T GetValue<T>(string rulename)
+        {
+            var rule = (Rule<T>) GetRule(rulename);
+            return rule.Value;
+        }
+
+        public void SetRule<T>(string rule, T value)
+        {
+            var x = (Rule<T>) Rules[rule];
+            x.SetValue(value);
         }
 
         public int GetRulesetType()
@@ -272,18 +282,18 @@ namespace Damath
             return (int) Type;
         }
 
-        public new string ToString()
-        {
-            string rulesetData = "";
+        // public new string ToString()
+        // {
+        //     string rulesetData = "";
 
-            foreach (var r in Rules)
-            {
-                Rule rule = r.Value;
-                rulesetData += $";{rule.Id},{rule.Value}";
-            }
+        //     foreach (var r in Rules)
+        //     {
+        //         object rule = r.Value;
+        //         rulesetData += $";{rule.Id},{rule.Value}";
+        //     }
 
-            return rulesetData;
-        }
+        //     return rulesetData;
+        // }
 
         #endregion
     }

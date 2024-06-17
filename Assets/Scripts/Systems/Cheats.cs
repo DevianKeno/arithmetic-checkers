@@ -48,13 +48,13 @@ namespace Damath.Systems
             if (SelectedCell.Piece == null)
             {        
                  if (PieceMenu != null)
-            {
-                Destroy(PieceMenu.gameObject);
-                PieceMenu = Game.UI.CreateChoiceWindow();
-            } else
-            {
-                PieceMenu = Game.UI.CreateChoiceWindow();
-            }
+                {
+                    Destroy(PieceMenu.gameObject);
+                    PieceMenu = Game.UI.CreateChoiceWindow();
+                } else
+                {
+                    PieceMenu = Game.UI.CreateChoiceWindow();
+                }
             }
         }
         public void RemovePiece()

@@ -191,13 +191,13 @@ namespace Damath
             /// Left click and hold
             if (Input.GetMouseButton(0))
             {
-                if (!Game.Settings.AllowPieceDragging) return;
+                if (!Game.Main.Settings.AllowPieceDragging) return;
 
                 MouseHoldTime += 1 * Time.deltaTime;
 
-                if (MouseHoldTime >= Game.Settings.PieceGrabDelay)
+                if (MouseHoldTime >= Game.Main.Settings.PieceGrabDelay)
                 {
-                    MouseHoldTime = Game.Settings.PieceGrabDelay; /// Inhibit value to max hold time
+                    MouseHoldTime = Game.Main.Settings.PieceGrabDelay; /// Inhibit value to max hold time
                     IsHolding = true;
 
                     /// If there's a piece already held, move it along the cursor

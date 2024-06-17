@@ -8,11 +8,11 @@ namespace Damath
 {
     public class Board : MonoBehaviour
     {
-        [Header("Board Game.Settings")]
+        [Header("Board Game.Main.Settings")]
         [SerializeField] int MaxColumns = 8;
         [SerializeField] int MaxRows = 8;
 
-        Ruleset Rules { get; set; }
+        Ruleset Ruleset { get; set; }
         public Themes Theme;
 
         public Dictionary<Vector2, Cell> Cells = new();
@@ -82,26 +82,26 @@ namespace Damath
         
         internal void SetRuleset(Ruleset rules)
         {            
-            if (Game.Settings.EnableDebugMode) Game.Console.Log("[Debug: Board]: Received ruleset");
-            Rules = rules;
+            if (Game.Main.Settings.EnableDebugMode) Game.Console.Log("[Debug: Board]: Received ruleset");
+            Ruleset = rules;
         }
 
         internal void Initialize()
         {
-            if (Rules == null)
+            if (Ruleset == null)
             {
                 Game.Console.Log("[Debug: Board]: Failed to initialize board, no ruleset");
                 return;
             }
 
-            if (Game.Settings.EnableDebugMode) Game.Console.Log("[Debug: Board]: Initializing Board");
+            if (Game.Main.Settings.EnableDebugMode) Game.Console.Log("[Debug: Board]: Initializing Board");
 
             GenerateCells();
             GeneratePieces();
             ToggleSymbolVisibility(false);
             TogglePieceVisibility(false);
 
-            if (Game.Settings.EnableDebugMode) Game.Console.Log("[Debug: Board]: Initialized Board");
+            if (Game.Main.Settings.EnableDebugMode) Game.Console.Log("[Debug: Board]: Initialized Board");
         }
 
         /// <summary>
@@ -130,9 +130,9 @@ namespace Damath
                     // Cell initialization
                     newCell.SetColRow(col, row);
 
-                    if (Rules.SymbolMap.ContainsKey(coords))
+                    if (Ruleset.SymbolMap.ContainsKey(coords))
                     {
-                        newCell.SetOperation(Rules.SymbolMap[coords]);
+                        newCell.SetOperation(Ruleset.SymbolMap[coords]);
                     }
 
                     Cells[coords] = newCell;
@@ -147,7 +147,7 @@ namespace Damath
         /// </summary>
         void GeneratePieces()
         {
-            foreach (var entry in Rules.PieceMap)
+            foreach (var entry in Ruleset.PieceMap)
             {
                 Vector2 coords = entry.Key;
                 PieceData pieceData = entry.Value;
@@ -181,7 +181,7 @@ namespace Damath
         public void Reset()
         {
             TurnNumber = 0;
-            ChangeTurnTo((Side) Rules["FirstTurn"]);
+            ChangeTurnTo(Ruleset.GetValue<Side>("FirstTurn"));
         }
 
         public void ChangeTurns()
@@ -385,7 +385,7 @@ namespace Damath
             Debug.Log($"[ACTION]: {move.CapturingPiece} captured {move.CapturedPiece}");
             AnimateCapture(move);
 
-            if ((bool) Rules["AllowChainCapture"])
+            if (Ruleset.GetValue<bool>("AllowChainCapture"))
             {            
                 /// Check for chain captures
                 ValidMoves = GetPieceMoves(move.Piece, MoveType.Capture);
@@ -433,7 +433,7 @@ namespace Damath
 
             // (move.originCell.Piece, move.destinationCell.Piece) = (move.destinationCell.Piece, move.originCell.Piece);
 
-            if (Game.Settings.EnableAnimations)
+            if (Game.Main.Settings.EnableAnimations)
             {
                 LeanTween.move(move.Destination.Piece.gameObject, move.Destination.transform.position, 0.5f).setEaseOutExpo();
             }
@@ -458,7 +458,7 @@ namespace Damath
                 rect.anchorMax = new Vector2(1f, 1f);
                 rect.localScale = new Vector2(1.5f, 1.5f);
 
-                if (Game.Settings.EnableAnimations)
+                if (Game.Main.Settings.EnableAnimations)
                 {
                     if (graveyardB.transform.childCount > 0)
                     {
@@ -477,7 +477,7 @@ namespace Damath
                 {
                     MoveGraveyardChildren(graveyardB);
                 }
-                if (Game.Settings.EnableAnimations)
+                if (Game.Main.Settings.EnableAnimations)
                 {
                     LeanTween.move(capturedPiece.gameObject, graveyardB.transform.position, 0.5f).setEaseOutExpo();
                 } else
@@ -506,7 +506,7 @@ namespace Damath
                     child.transform.position.z
                 );
 
-                if (Game.Settings.EnableAnimations)
+                if (Game.Main.Settings.EnableAnimations)
                 {
                     LeanTween.move(child, targetPosition, 0.5f).setEaseOutExpo();
                 } else

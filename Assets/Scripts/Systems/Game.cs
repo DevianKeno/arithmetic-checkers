@@ -19,13 +19,13 @@ namespace Damath
     public class Game : MonoBehaviour
     {
         public static Game Main { get; private set; }
+        [field: SerializeField] public Settings Settings { get; private set; }
 
         public static Lang Lang { get; private set; }
         public static EventsManager Events { get; private set; }
         public static Systems.Console Console { get; private set; }
         public static UIManager UI { get; private set; }
         public static AudioManager Audio { get; private set; }
-        public static Settings Settings { get; private set; }
 
         protected bool IsAlive { get; private set; }
         public bool IsPaused { get; private set; }
@@ -63,7 +63,6 @@ namespace Damath
                 Console = GetComponentInChildren<Systems.Console>();
                 UI = GetComponentInChildren<UIManager>();
                 Audio = GetComponentInChildren<AudioManager>();
-                Settings = GetComponentInChildren<Settings>();
             }
             mainInput = GetComponent<PlayerInput>();
         }
@@ -193,13 +192,19 @@ namespace Damath
         }
 
         /// <summary>
-        /// Creates a match given a ruleset.
+        /// Creates a match given a ruleset type.
         /// </summary>
         public void CreateMatch(RulesetType mode)
         {
             CacheRuleset(Ruleset.Create(mode));
-
-            LoadScene("Match", playTransition: true);
+        }
+        
+        /// <summary>
+        /// Creates a match given a ruleset.
+        /// </summary>
+        public void CreateMatch(Ruleset ruleset)
+        {
+            CacheRuleset(ruleset);
         }      
 
         public void SetMatch(MatchController match)

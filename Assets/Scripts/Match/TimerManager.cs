@@ -31,34 +31,36 @@ namespace Damath
         
         public void BeginMatch()
         {
-            if (!(bool) Ruleset["EnableTimer"]) return;
-
-            if ((bool) Ruleset["EnableGlobalTimer"])
+            if (!Ruleset.GetValue<bool>("EnableTimer"))
             {
+                return;
+            }
+
+            if (!Ruleset.GetValue<bool>("EnableGlobalTimer"))
+            {
+                GlobalTimer.SetTime(Ruleset.GetValue<float>("GlobalTimerSeconds"));
                 GlobalTimer.SetFormat(TimerFormat.MM_SS);
-                GlobalTimer.SetTime((float) Ruleset["GlobalTimerSeconds"]);
                 GlobalTimer.Begin();
             }
             
-            if ((bool) Ruleset["EnableTurnTimer"])
+            if (!Ruleset.GetValue<bool>("EnableTurnTimer"))
             {
+                BlueTimer.SetTime(Ruleset.GetValue<float>("TurnTimerSeconds"));
                 BlueTimer.SetFormat(TimerFormat.SS);
-                BlueTimer.SetTime((float) Ruleset["TurnTimerSeconds"]);
                 
+                OrangeTimer.SetTime(Ruleset.GetValue<float>("TurnTimerSeconds"));
                 OrangeTimer.SetFormat(TimerFormat.SS);
-                OrangeTimer.SetTime((float) Ruleset["TurnTimerSeconds"]);
 
-                if ((Side) Ruleset["FirstTurn"] == Side.Blue)
+                if (Ruleset.GetValue<Side>("FirstTurn") == Side.Blue)
                 {
                     BlueTimer.Begin();
                     OrangeChip.SetActive(false);
-                } else if ((Side) Ruleset["FirstTurn"] == Side.Orange)
+                } else if (Ruleset.GetValue<Side>("FirstTurn") == Side.Orange)
                 {
                     OrangeTimer.Begin();
                     BlueChip.SetActive(false);
                 }
             }
-            
         }
 
         public void SwapTurnTimer(Side turnOf)

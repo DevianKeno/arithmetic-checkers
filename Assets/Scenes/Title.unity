@@ -2799,6 +2799,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78d7063473206de4d96e24026f011f5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Ruleset:
+    Type: 0
 --- !u!1 &629935840
 GameObject:
   m_ObjectHideFlags: 0
@@ -5263,6 +5265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c87bbb754941e3242863ff132f3e82cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <Settings>k__BackingField: {fileID: 11400000, guid: 5139b6e58456d9c4eba6a49b6811697a, type: 2}
   mainInput: {fileID: 930963973}
 --- !u!114 &930963973
 MonoBehaviour:
@@ -7234,11 +7237,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsEnabled: 0
-  command: 
   SelectedCell: {fileID: 0}
-  Window: {fileID: 0}
-  input: {fileID: 0}
-  messages: {fileID: 0}
 --- !u!1 &1391382336
 GameObject:
   m_ObjectHideFlags: 0
@@ -9925,8 +9924,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5652cd1a3ea89da4bbd1b40b563e3748, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SpinSpeed: 5
+  ResetTime: 2
+  timer: 0
+  _startTimer: 0
   rect: {fileID: 1777161136}
-  button: {fileID: 0}
 --- !u!114 &1777161140
 MonoBehaviour:
   m_ObjectHideFlags: 0

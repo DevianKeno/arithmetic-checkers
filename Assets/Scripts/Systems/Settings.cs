@@ -1,24 +1,22 @@
+using System;
 using UnityEngine;
 
 namespace Damath.Systems
 {
-    public class Settings : MonoBehaviour
+    [Serializable]
+    [CreateAssetMenu(fileName = "Settings", menuName = "Damath/Settings")]
+    public class Settings : ScriptableObject
     {
+        public bool EnableConsole = true;
         public bool EnableDebugMode = true;
 
-        [Space]
-        public bool EnableConsole = true;
-        [Range(0f, 1f)] public float masterVolume = 1.0f;
-        [Range(0f, 1f)] public float soundVolume = 1.0f;        
-        [Range(0f, 1f)] public float musicVolume = 1.0f;
+        [Space(10)]
+        [Range(0, 100)] public int MasterVolume = 100;
+        [Range(0, 100)] public int SoundVolume = 100;        
+        [Range(0, 100)] public int MusicVolume = 100;
         public bool EnableAnimations = true;
         public float AnimationFactor = 0.5f;
         public bool AllowPieceDragging = false;
         public float PieceGrabDelay = 0.1f; // milliseconds
-
-        public class KeyBinds
-        {
-            public static KeyCode OpenDeveloperConsole = KeyCode.BackQuote;
-        }
     }
 }

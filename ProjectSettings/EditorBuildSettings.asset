@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Match.unity
     guid: 265486a836aa51941805d090f5cdfaf5
+  - enabled: 1
+    path: Assets/Scenes/Sandbox.unity
+    guid: 686e985a5eb91924bb19a312b932823e
   m_configObjects: {}

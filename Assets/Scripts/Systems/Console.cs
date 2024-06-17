@@ -151,7 +151,7 @@ namespace Damath.Systems
         /// <param name="message"></param>
         public void LogDebug(object message)
         {
-            if (!Game.Settings.EnableDebugMode) return;
+            if (!Game.Main.Settings.EnableDebugMode) return;
             
             Log(message);
         }

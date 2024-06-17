@@ -66,6 +66,10 @@ namespace Damath.Systems
                           "Piece actions.")
                           .AddCallback(Command_Piece);
 
+            CreateCommand("sandbox",
+                          "Enter sandbox.")
+                          .AddCallback(Command_Sandbox);
+
             CreateCommand("select <col> <row>",
                           "Select a cell.")
                           .AddCallback(Command_Select);
@@ -209,6 +213,7 @@ namespace Damath.Systems
                         };
 
                         Game.Main.CreateMatch(ruleset);
+                        Game.Main.LoadScene("Match", playTransition: true);
 
                     } catch
                     {
@@ -242,6 +247,7 @@ namespace Damath.Systems
                         };
                         
                         Game.Main.CreateMatch(ruleset);
+                        Game.Main.LoadScene("Match", playTransition: true);
                     } catch
                     {
                         PromptInvalid(args[0]);
@@ -278,6 +284,18 @@ namespace Damath.Systems
             {
                 Log(Match);
             }
+        }
+
+        void Command_Sandbox(List<string> args)
+        {
+            var ruleset = Ruleset.Create(RulesetType.Standard);
+            if (ruleset.TryGetRule("EnableCheats", out Rule<bool> rule))
+            {
+                rule.SetValue(true);
+            }
+
+            Game.Main.CreateMatch(ruleset);
+            Game.Main.LoadScene("Match", playTransition: true);
         }
 
         void Command_Select(List<string> args)

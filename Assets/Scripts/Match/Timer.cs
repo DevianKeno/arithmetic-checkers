@@ -7,35 +7,36 @@ using TMPro;
 
 namespace Damath
 {
-    public enum Format {MM_SS, SS}
+    public enum TimerFormat {MM_SS, SS}
 
     public class Timer : MonoBehaviour
     {
-        public Format Format = Format.MM_SS;
-        public float startingTimeInSeconds = 0f;
-        public float currentTime = 0f;
+        public TimerFormat Format = TimerFormat.MM_SS;
+        public float StartTimeInSeconds = 0f;
+        public float CurrentTime = 0f;
         public bool IsEnabled = false;
         public bool IsRunning = false;
-        public List<UnityAction> Callbacks = new List<UnityAction>();
+
+        public List<UnityAction> Callbacks = new();
         public TextMeshProUGUI TMPComponent = null;
 
         void Update()
         {
             if (!IsRunning) return;
             
-            currentTime -= 1 * Time.deltaTime;
+            CurrentTime -= 1 * Time.deltaTime;
 
             if (TMPComponent != null)
             {
                 TMPComponent.text = Format switch
                 {
-                    Format.MM_SS => ToMM_SS(),
-                    Format.SS => ToSS(),
+                    TimerFormat.MM_SS => ToMM_SS(),
+                    TimerFormat.SS => ToSS(),
                     _ => ToSS()
                 };
             }
 
-            if (currentTime < 0)
+            if (CurrentTime < 0)
             {
                 Finish();
             }
@@ -43,24 +44,24 @@ namespace Damath
 
         public void Init(float value)
         {
-            currentTime = value;
+            CurrentTime = value;
         }
 
-        public void SetFormat(Format format)
+        public void SetFormat(TimerFormat format)
         {
             Format = format;
         }
 
         public string ToMM_SS()
         {
-            TimeSpan time = TimeSpan.FromSeconds(currentTime);
+            TimeSpan time = TimeSpan.FromSeconds(CurrentTime);
 
             return time.ToString("mm':'ss");
         }
 
         public string ToSS()
         {
-            TimeSpan time = TimeSpan.FromSeconds(currentTime);
+            TimeSpan time = TimeSpan.FromSeconds(CurrentTime);
 
             return time.ToString("%s");
         }
@@ -79,7 +80,7 @@ namespace Damath
 
         public void Reset(bool start = false)
         {
-            currentTime = startingTimeInSeconds;
+            CurrentTime = StartTimeInSeconds;
             IsRunning = start;
         }
         
@@ -98,18 +99,18 @@ namespace Damath
 
         public float GetTime()
         {
-            return currentTime;
+            return CurrentTime;
         }
 
         public void SetTime(float valueInSeconds)
         {
-            startingTimeInSeconds = valueInSeconds;
-            currentTime = valueInSeconds;
+            StartTimeInSeconds = valueInSeconds;
+            CurrentTime = valueInSeconds;
         }
 
         public void ChangeTime(float valueInSeconds)
         {
-            currentTime = valueInSeconds;
+            CurrentTime = valueInSeconds;
         }
         
         public void Invoke()
@@ -122,12 +123,12 @@ namespace Damath
         
         public void AddTime(float valueInSeconds)
         {
-            currentTime += valueInSeconds;
+            CurrentTime += valueInSeconds;
         }
         
         public void RemoveTime(float valueInSeconds)
         {
-            currentTime -= valueInSeconds;
+            CurrentTime -= valueInSeconds;
         }
 
         public void AddCallback(UnityAction function)

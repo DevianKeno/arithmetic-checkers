@@ -11,8 +11,9 @@ namespace Damath
         [Header("Board Game.Settings")]
         [SerializeField] int MaxColumns = 8;
         [SerializeField] int MaxRows = 8;
-        public Themes Theme;
+
         Ruleset Rules { get; set; }
+        public Themes Theme;
 
         public Dictionary<Vector2, Cell> Cells = new();
         [SerializeField] private Cell SelectedCell = null;
@@ -21,10 +22,12 @@ namespace Damath
         public List<Move> ValidMoves = new();
         public MoveType MovesToGet = MoveType.All;
         public bool TurnRequiresCapture = false;
-        public bool IsFlipped = false;
-        private readonly Dictionary<Side, Player> Players = new();
+        public bool IsFlipped { get; private set; }
         public int TurnNumber = -1;
         public Side TurnOf;
+
+        public event EventHandler<Side> OnTurnChange;
+        public event EventHandler<Move> OnPieceCapture;
 
         private bool SymbolVisible;
         private bool PieceVisible;
@@ -77,6 +80,12 @@ namespace Damath
 
         #region Initializing methods
         
+        internal void SetRuleset(Ruleset rules)
+        {            
+            if (Game.Settings.EnableDebugMode) Game.Console.Log("[Debug: Board]: Received ruleset");
+            Rules = rules;
+        }
+
         internal void Initialize()
         {
             if (Rules == null)
@@ -186,6 +195,7 @@ namespace Damath
             }
             TurnNumber++;
             ClearValidMoves();
+            OnTurnChange?.Invoke(this, TurnOf);
             Game.Events.TurnChanged(TurnOf);
         }
 
@@ -369,6 +379,7 @@ namespace Damath
         /// </summary>
         public void CapturePiece(Move move)
         {
+            OnPieceCapture?.Invoke(this, move);
             Game.Events.PieceCapture(move);
             Game.Audio.PlaySound("Capture");
             Debug.Log($"[ACTION]: {move.CapturingPiece} captured {move.CapturedPiece}");
@@ -376,10 +387,10 @@ namespace Damath
 
             if ((bool) Rules["AllowChainCapture"])
             {            
-                // Check for chain captures
+                /// Check for chain captures
                 ValidMoves = GetPieceMoves(move.Piece, MoveType.Capture);
 
-                if (ValidMoves.Count != 0) // Has succeeding capture
+                if (ValidMoves.Count != 0) /// Has succeeding capture
                 {
                     Game.Events.BoardUpdateCaptureables(ValidMoves);
                     Game.Events.RequireCapture(true);
@@ -396,11 +407,11 @@ namespace Damath
         {
             ValidMoves = CheckIfCaptureable(piece);
 
-            if (ValidMoves.Count == 0) // Piece is NOT captureable
+            if (ValidMoves.Count == 0) /// Piece is NOT captureable
             {
                 Game.Events.RequireCapture(false);
                 ClearValidMoves();
-            } else // Piece is captureable
+            } else /// Piece is captureable
             {
                 Game.Events.BoardUpdateCaptureables(ValidMoves);
                 Game.Events.RequireCapture(true);
@@ -440,30 +451,32 @@ namespace Damath
             Piece capturedPiece = move.CapturedPiece;
             RectTransform rect = capturedPiece.GetComponent<RectTransform>();
 
-            if (capturedPiece.Side == Side.Blue) // Blue player captured
+            if (capturedPiece.Side == Side.Blue) /// Blue player captured
             {
                 capturedPiece.gameObject.transform.SetParent(graveyardT.transform);
                 rect.anchorMin = new Vector2(1f, 0.5f);
                 rect.anchorMax = new Vector2(1f, 1f);
-
                 rect.localScale = new Vector2(1.5f, 1.5f);
+
                 if (Game.Settings.EnableAnimations)
                 {
-                    if (graveyardB.transform.childCount > 0){
+                    if (graveyardB.transform.childCount > 0)
+                    {
                         MoveGraveyardChildren(graveyardT);
                     }
                     LeanTween.move(capturedPiece.gameObject, graveyardT.transform.position, 0.5f).setEaseOutExpo();
                 }
-            } else // Orange player captured
+            } else /// Orange player captured
             {
                 capturedPiece.gameObject.transform.SetParent(graveyardB.transform);
                 rect.anchorMin = new Vector2(0.5f, 0f);
-                rect.anchorMax = new Vector2(0.5f, 0f);
-                
+                rect.anchorMax = new Vector2(0.5f, 0f);                
                 rect.localScale = new Vector2(1.5f, 1.5f);
-                if (graveyardB.transform.childCount > 0){
-                        MoveGraveyardChildren(graveyardB);
-                    }
+
+                if (graveyardB.transform.childCount > 0)
+                {
+                    MoveGraveyardChildren(graveyardB);
+                }
                 if (Game.Settings.EnableAnimations)
                 {
                     LeanTween.move(capturedPiece.gameObject, graveyardB.transform.position, 0.5f).setEaseOutExpo();
@@ -480,12 +493,18 @@ namespace Damath
             move.CapturingPiece.CanCapture = false;
         }
 
-        void MoveGraveyardChildren(GameObject graveyard){
-            for (int i = 0; i < graveyard.transform.childCount; i++){
+        void MoveGraveyardChildren(GameObject graveyard)
+        {
+            for (int i = 0; i < graveyard.transform.childCount; i++)
+            {
                 GameObject child = graveyard.transform.GetChild(i).gameObject;
                 float childPositionX = child.transform.position.x;
 
-                Vector3 targetPosition = new Vector3(childPositionX -= 0.5f, child.transform.position.y, child.transform.position.z);
+                Vector3 targetPosition = new(
+                    childPositionX -= 0.5f,
+                    child.transform.position.y,
+                    child.transform.position.z
+                );
 
                 if (Game.Settings.EnableAnimations)
                 {
@@ -549,18 +568,18 @@ namespace Damath
 
             if (piece.Side == Side.Blue)
             {
-                // Forward check
+                /// Forward check
                 moves.AddRange(CheckLeft(piece, above, up, MovesToGet));
                 moves.AddRange(CheckRight(piece, above, up, MovesToGet));
-                // Backward check
+                /// Backward check
                 moves.AddRange(CheckLeft(piece, below, down, MovesToGet));
                 moves.AddRange(CheckRight(piece, below, down, MovesToGet));
             } else if (piece.Side == Side.Orange)
             {
-                // Forward check
+                /// Forward check
                 moves.AddRange(CheckLeft(piece, below, down, MovesToGet));
                 moves.AddRange(CheckRight(piece, below, down, MovesToGet));
-                // Backward check
+                /// Backward check
                 moves.AddRange(CheckLeft(piece, above, up, MovesToGet));
                 moves.AddRange(CheckRight(piece, above, up, MovesToGet));
             }
@@ -580,18 +599,18 @@ namespace Damath
 
             if (piece.Side == Side.Blue)
             {
-                // Forward check
+                /// Forward check
                 moves.AddRange(CheckLeft(piece, above, up, moveType));
                 moves.AddRange(CheckRight(piece, above, up, moveType));
-                // Backward check
+                /// Backward check
                 moves.AddRange(CheckLeft(piece, below, down, moveType));
                 moves.AddRange(CheckRight(piece, below, down, moveType));
             } else if (piece.Side == Side.Orange)
             {
-                // Forward check
+                /// Forward check
                 moves.AddRange(CheckLeft(piece, below, down, moveType));
                 moves.AddRange(CheckRight(piece, below, down, moveType));
-                // Backward check
+                /// Backward check
                 moves.AddRange(CheckLeft(piece, above, up, moveType));
                 moves.AddRange(CheckRight(piece, above, up, moveType));
             }
@@ -611,15 +630,15 @@ namespace Damath
 
             for (int row = startingRow ; row < MaxRows ; row += yDirection)
             {
-                if (left < 0 || left > 7) break;    //
-                if (row < 0 || row > 7) break;      // Out of bounds
-                if (nextEnemyPiece > 1) break;      // Two successive enemy pieces
+                if (left < 0 || left > 7) break;    ///
+                if (row < 0 || row > 7) break;      /// Out of bounds
+                if (nextEnemyPiece > 1) break;      /// Two successive enemy pieces
 
                 Cell cellToCheck = GetCell(left, row);
 
-                if (cellToCheck.Piece == null) // Next cell is empty cell
+                if (cellToCheck.Piece == null) /// Next cell is empty cell
                 {
-                    if (cellToCapture != null)  // There's a captureable cell
+                    if (cellToCapture != null)  /// There's a captureable cell
                     {
                         piece.CanCapture = true;
                         captureMoves.Add(new Move(GetCell(piece.Col, piece.Row), cellToCheck, cellToCapture.Piece));
@@ -635,15 +654,15 @@ namespace Damath
 
                     if (!piece.IsKing) break;
 
-                } else if (cellToCheck.Piece.Side == piece.Side) // Next cell has allied piece
+                } else if (cellToCheck.Piece.Side == piece.Side) /// Next cell has allied piece
                 {
                     break;
-                } else // Next cell has enemy piece
+                } else /// Next cell has enemy piece
                 {
                     nextEnemyPiece += 1;
                     cellToCapture = cellToCheck;
                 }
-                left -= 1;  // Move selector diagonally
+                left -= 1;  /// Move selector diagonally
             }
 
             return moveType switch
@@ -668,15 +687,15 @@ namespace Damath
 
             for (int row = startingRow; row < MaxRows ; row += yDirection)
             {
-                if (right < 0 || right > 7) break;      //
-                if (row < 0 || row > 7) break;          // Out of bounds
-                if (nextEnemyPiece > 1) break;          // Two successive enemy pieces
+                if (right < 0 || right > 7) break;      ///
+                if (row < 0 || row > 7) break;          /// Out of bounds
+                if (nextEnemyPiece > 1) break;          /// Two successive enemy pieces
 
                 Cell cellToCheck = GetCell(right, row);
 
-                if (cellToCheck.Piece == null)  // Next cell is empty cell
+                if (cellToCheck.Piece == null)  /// Next cell is empty cell
                 {
-                    if (cellToCapture != null)  // There's a captureable cell
+                    if (cellToCapture != null)  /// There's a captureable cell
                     {
                         piece.CanCapture = true;
                         captureMoves.Add(new Move(GetCell(piece.Col, piece.Row), cellToCheck, cellToCapture.Piece));
@@ -692,15 +711,15 @@ namespace Damath
 
                     if (!piece.IsKing) break;
 
-                } else if (cellToCheck.Piece.Side == piece.Side)    // Next cell has allied piece
+                } else if (cellToCheck.Piece.Side == piece.Side)    /// Next cell has allied piece
                 {
                     break;
-                } else  // Next cell has enemy piece
+                } else  /// Next cell has enemy piece
                 {
                     nextEnemyPiece += 1;
                     cellToCapture = cellToCheck;
                 }
-                right += 1;  // Move selector diagonally
+                right += 1;  /// Move selector diagonally
             }
 
             return moveType switch
@@ -711,6 +730,7 @@ namespace Damath
                 _ => null,
             };
         }
+
         public Piece RemovePiece(Cell cell)
         {
             return cell.RemovePiece();
@@ -756,12 +776,6 @@ namespace Damath
         public Cell GetCell(Piece piece)
         {
             return Cells[new (piece.Col, piece.Row)];
-        }
-
-        internal void SetRuleset(Ruleset rules)
-        {            
-            if (Game.Settings.EnableDebugMode) Game.Console.Log("[Debug: Board]: Received ruleset");
-            Rules = rules;
         }
     }
 }

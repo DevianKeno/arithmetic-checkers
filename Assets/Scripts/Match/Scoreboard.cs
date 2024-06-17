@@ -6,81 +6,26 @@ using TMPro;
 
 namespace Damath
 {
-    /// <summary>
-    /// This class imlpements methods for score evalution.
-    /// </summary>
-    public class Score
-    {
-        public float Value { get; private set; }
-
-        public float Get()
-        {
-            return Value;
-        }
-
-        public void Set(float value)
-        {
-            Value = value;
-        }
-
-        public void Add(float value)
-        {
-            Value += value;
-        }
-
-        public void Remove(float value)
-        {
-            Value -= value;
-        }
-
-        public Score CompareHigher(Score score)
-        {
-            if (score.Get() > Value)
-            {
-                return score;
-            }
-
-            return this;
-        }
-    }
-
     public class Scoreboard : MonoBehaviour
     {
-        Ruleset Rules { get; set; }
+        Ruleset Ruleset { get; set; }
         
         [SerializeField] private TextMeshProUGUI BlueScore;
         [SerializeField] private TextMeshProUGUI OrangeScore;
 
-        void OnEnable()
+        internal void SetRuleset(Ruleset ruleset)
         {
-            Game.Events.OnRulesetDistribute -= ReceiveRuleset;
-            Game.Events.OnPieceCapture += Compute;
+            Ruleset = ruleset;
         }
 
-        void OnDisable()
+        internal void Initialize()
         {
-            Game.Events.OnRulesetDistribute -= ReceiveRuleset;
-            Game.Events.OnPieceCapture -= Compute;
+
         }
 
-        public void ReceiveRuleset(Ruleset rules)
+        internal void OnPieceCaptureCallback(object sender, Move e)
         {
-            if (Game.Settings.EnableDebugMode) Game.Console.Log("[Debug: Scoreboard]: Received ruleset");
-
-            Rules = rules;
-            Init();
-        }
-
-        public void Init()
-        {
-            if (Rules == null)
-            {
-                Game.Console.Log("[Debug: Scoreboard]: Failed to initialize Scoreboard, no ruleset");
-                return;
-            }
-
-            if (Game.Settings.EnableDebugMode) Game.Console.Log("[Debug: Scoreboard]: Initializing Scoreboard");
-
+            Compute(e);
         }
 
         public void Refresh(Player player)

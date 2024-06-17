@@ -65,7 +65,7 @@ namespace Damath
         public static Ruleset Speed { get; private set; }
         #endregion
         
-        // Indexer
+        /// Indexer
         public object this[string name, bool value = true]
         {            
             get
@@ -86,10 +86,8 @@ namespace Damath
         public static void Init()
         {
             Game.Console.LogDebug("Initializing rulesets");
-
-            // 
-            // These should read from a file that's easier to read and handle
-            //
+            
+            /// These should read from a file that's easier to read and handle            
             // foreach (var entry in data)
             // {
             //     dict.Add(entry.cell, entry.data);
@@ -134,7 +132,7 @@ namespace Damath
 
             PieceMapStandard = new()
             {
-                // Bottom pieces
+                /// Bottom pieces
                 { new (1, 0), new ("-11", Side.Blue, false)},
                 { new (3, 0), new ("8", Side.Blue, false)},
                 { new (5, 0), new ("-5", Side.Blue,false)},
@@ -148,7 +146,7 @@ namespace Damath
                 { new (5, 2), new ("-1", Side.Blue, false)},
                 { new (7, 2), new ("4", Side.Blue, false)},
 
-                // Top pieces
+                /// Top pieces
                 { new (0, 5), new ("4", Side.Orange, false)},
                 { new (2, 5), new ("-1", Side.Orange, false)},
                 { new (4, 5), new ("6", Side.Orange, false)},
@@ -163,8 +161,8 @@ namespace Damath
                 { new (6, 7), new ("-11", Side.Orange, false)}
             };
 
-            // These are pre-defined rulesets and
-            // must be first initialized at the start of the program
+            /// These are pre-defined rulesets and
+            /// must be first initialized at the start of the program
             Standard = CreateStandard();
             Speed = CreateSpeed();
             

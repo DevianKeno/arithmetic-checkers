@@ -26,17 +26,13 @@ namespace Damath
         public string @string = "ds";
         public string Name = "Actor";
         public RaycastHit2D Hit;
-
-        public static int Init()
-        {
-            return 0;
-        }
     }
 
     public class Spectator : Actor
     {
         public bool IsModerator = false;
     }
+
     public class Player : Actor
     {
         [field: Header("Information")]
@@ -174,25 +170,25 @@ namespace Damath
 
         void DetectRaycast()
         {
-            // Left click
+            /// Left click
             if (Input.GetMouseButtonDown(0))
             {
-                // Check if there's a piece currently selected and if the player is not holding the mouse button
-                // This is to avoid selecting the moved piece again after selecting a cell via left click
+                /// Check if there's a piece currently selected and if the player is not holding the mouse button
+                /// This is to avoid selecting the moved piece again after selecting a cell via left click
                 if (SelectedPiece != null && !IsHolding) return;
 
                 CastRay();
                 Game.Events.PlayerLeftClick(this);    
             }
             
-            // Right click
+            /// Right click
             if (Input.GetMouseButtonDown(1))
             {
                 CastRay();
                 Game.Events.PlayerRightClick(this);    
             }
 
-            // Left click and hold
+            /// Left click and hold
             if (Input.GetMouseButton(0))
             {
                 if (!Game.Settings.AllowPieceDragging) return;
@@ -201,21 +197,21 @@ namespace Damath
 
                 if (MouseHoldTime >= Game.Settings.PieceGrabDelay)
                 {
-                    MouseHoldTime = Game.Settings.PieceGrabDelay; // Inhibit value to max hold time
+                    MouseHoldTime = Game.Settings.PieceGrabDelay; /// Inhibit value to max hold time
                     IsHolding = true;
 
-                    // If there's a piece already held, move it along the cursor
+                    /// If there's a piece already held, move it along the cursor
                     if (HeldPiece != null)
                     {
                         HeldPiece.ToCursor();
-                    } else // "hold" the selected piece first 
+                    } else /// "hold" the selected piece first 
                     {
                         HeldPiece = SelectedPiece;
                     }
                 }
             }
 
-            // Left click release
+            /// Left click release
             if (Input.GetMouseButtonUp(0))
             {
                 MouseHoldTime = 0f;
@@ -228,7 +224,7 @@ namespace Damath
                 }
             }
 
-            // Right click release
+            /// Right click release
             if (Input.GetMouseButtonUp(1))
             {
                 // CastRay();
@@ -240,8 +236,8 @@ namespace Damath
         /// </summary>
         void CastRay()
         {
-            // If network is online (an instance of a client is active)
-            // only allow control of owned player object
+            /// If network is online (an instance of a client is active)
+            /// only allow control of owned player object
             if (IsClient && !IsOwner) return;
             if (!IsControllable) return;
 
@@ -329,15 +325,15 @@ namespace Damath
 
             if (SelectedCell.IsValidMove)
             {
-                if (IsTurn) // it's a normal move
+                if (IsTurn) /// it's a normal move
                 {
                     Game.Events.PlayerSelectMovecell(this, SelectedCell);
                     Game.Audio.PlaySound("Move");
                     return;
 
-                } else // it's a premove
+                } else /// it's a premove
                 {
-                    // Premove logic
+                    /// Premove logic
                     return;
                 }
             } else

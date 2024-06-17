@@ -1,62 +1,58 @@
+using System;
 using UnityEngine;
 
 namespace Damath
 {
     public class TimerManager : MonoBehaviour
     {
-        public Ruleset Rules { get; private set; }
+        public Ruleset Ruleset { get; private set; }
         public Timer GlobalTimer;
         public Timer BlueTimer;
         public Timer OrangeTimer;
+
         [SerializeField] GameObject BlueChip;
         [SerializeField] GameObject OrangeChip;
         [SerializeField] GameObject timerPrefab;
 
-        void Awake()
+        internal void SetRuleset(Ruleset ruleset)
         {
-            Game.Events.OnRulesetDistribute += ReceiveRuleset;
-            Game.Events.OnMatchBegin += Begin;
-            Game.Events.OnTurnChanged += SwapTurnTimer;
+            Ruleset = ruleset;
         }
 
-        void OnDisable()
+        internal void Initialize()
         {
-            Game.Events.OnRulesetDistribute -= ReceiveRuleset;
-            Game.Events.OnMatchBegin -= Begin;
-            Game.Events.OnTurnChanged -= SwapTurnTimer;
+
         }
 
-        void ReceiveRuleset(Ruleset rules)
+        internal void OnBoardTurnChangedCallback(object sender, Side e)
         {
-            if (Game.Settings.EnableDebugMode) Game.Console.Log($"[Debug: Timers]: Received ruleset");
-
-            Rules = rules;
+            SwapTurnTimer(e);
         }
         
-        public void Begin()
+        public void BeginMatch()
         {
-            if (!(bool) Rules["EnableTimer"]) return;
+            if (!(bool) Ruleset["EnableTimer"]) return;
 
-            if ((bool) Rules["EnableGlobalTimer"])
+            if ((bool) Ruleset["EnableGlobalTimer"])
             {
-                GlobalTimer.SetFormat(Format.MM_SS);
-                GlobalTimer.SetTime((float) Rules["GlobalTimerSeconds"]);
+                GlobalTimer.SetFormat(TimerFormat.MM_SS);
+                GlobalTimer.SetTime((float) Ruleset["GlobalTimerSeconds"]);
                 GlobalTimer.Begin();
             }
             
-            if ((bool) Rules["EnableTurnTimer"])
+            if ((bool) Ruleset["EnableTurnTimer"])
             {
-                BlueTimer.SetFormat(Format.SS);
-                BlueTimer.SetTime((float) Rules["TurnTimerSeconds"]);
+                BlueTimer.SetFormat(TimerFormat.SS);
+                BlueTimer.SetTime((float) Ruleset["TurnTimerSeconds"]);
                 
-                OrangeTimer.SetFormat(Format.SS);
-                OrangeTimer.SetTime((float) Rules["TurnTimerSeconds"]);
+                OrangeTimer.SetFormat(TimerFormat.SS);
+                OrangeTimer.SetTime((float) Ruleset["TurnTimerSeconds"]);
 
-                if ((Side) Rules["FirstTurn"] == Side.Blue)
+                if ((Side) Ruleset["FirstTurn"] == Side.Blue)
                 {
                     BlueTimer.Begin();
                     OrangeChip.SetActive(false);
-                } else if ((Side) Rules["FirstTurn"] == Side.Orange)
+                } else if ((Side) Ruleset["FirstTurn"] == Side.Orange)
                 {
                     OrangeTimer.Begin();
                     BlueChip.SetActive(false);

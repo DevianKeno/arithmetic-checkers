@@ -18,9 +18,13 @@ namespace Damath.Systems
         public bool IsPlaying { get; set; }
         public bool IsMultiplayer { get; set; }
         [field: SerializeField] public Ruleset Ruleset { get; private set; }
-        Board board;
 
+        [SerializeField] Board board;
+        [SerializeField] Scoreboard scoreboard;
+        [SerializeField] TimerManager timerManager;
         [SerializeField] TextMeshProUGUI rulesetText;
+
+        [Header("Prefabs")]
         [SerializeField] GameObject boardPrefab;
         [SerializeField] GameObject playerPrefab;
         
@@ -33,6 +37,9 @@ namespace Damath.Systems
         {
             InitializeRuleset();
             InitializeBoard();
+            InitializeScoreboard();
+            InitializeTimers();
+            InitializeEvents();
 
             Game.Main.SetMatch(this);
         }
@@ -59,6 +66,25 @@ namespace Damath.Systems
             board = Instantiate(boardPrefab).GetComponent<Board>();
             board.SetRuleset(Ruleset);
             board.Initialize();
+        }
+
+        void InitializeScoreboard()
+        {
+            scoreboard.SetRuleset(Ruleset);
+            scoreboard.Initialize();
+        }
+
+        void InitializeTimers()
+        {
+            timerManager.SetRuleset(Ruleset);
+            timerManager.Initialize();
+        }
+
+        void InitializeEvents()
+        {
+            board.OnPieceCapture += scoreboard.OnPieceCaptureCallback;
+            
+            board.OnTurnChange += timerManager.OnBoardTurnChangedCallback;
         }
 
         public Player CreatePlayer(Side side)
@@ -93,6 +119,7 @@ namespace Damath.Systems
 
             }
             board.BeginMatch();
+            timerManager.BeginMatch();
             IsPlaying = true;
         }
 

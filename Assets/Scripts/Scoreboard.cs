@@ -85,10 +85,10 @@ namespace Damath
 
         public void Refresh(Player player)
         {
-            if (player.Side == Side.Bot)
+            if (player.Side == Side.Blue)
             {
                 BlueScore.text = player.fScore.ToString();
-            } else if (player.Side == Side.Top)
+            } else if (player.Side == Side.Orange)
             {
                 OrangeScore.text = player.fScore.ToString();
             }

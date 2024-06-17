@@ -52,11 +52,11 @@ namespace Damath
                 OrangeTimer.SetFormat(Format.SS);
                 OrangeTimer.SetTime((float) Rules["TurnTimerSeconds"]);
 
-                if ((Side) Rules["FirstTurn"] == Side.Bot)
+                if ((Side) Rules["FirstTurn"] == Side.Blue)
                 {
                     BlueTimer.Begin();
                     OrangeChip.SetActive(false);
-                } else if ((Side) Rules["FirstTurn"] == Side.Top)
+                } else if ((Side) Rules["FirstTurn"] == Side.Orange)
                 {
                     OrangeTimer.Begin();
                     BlueChip.SetActive(false);
@@ -67,7 +67,7 @@ namespace Damath
 
         public void SwapTurnTimer(Side turnOf)
         {
-            if (turnOf == Side.Bot)
+            if (turnOf == Side.Blue)
             {
                 OrangeTimer.Stop();
                 OrangeChip.SetActive(false);

@@ -4,7 +4,7 @@ using FishNet.Connection;
 using FishNet.Object;
 using UnityEngine;
 
-namespace Damath
+namespace Damath.Systems
 {
     public class EventsManager : MonoBehaviour
     {

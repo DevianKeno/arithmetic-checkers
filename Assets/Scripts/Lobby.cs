@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Damath.UI;
 using FishNet.Connection;
 using FishNet.Object;
 using UnityEngine;
@@ -30,13 +31,13 @@ namespace Damath
         public bool HasHost = false;
         public bool HasOpponent = false;
         
-        [SerializeField] private Image readyBotImage;
-        [SerializeField] private Image readyTopImage;
-        [SerializeField] private ToggleButton button;
+        [SerializeField] Image readyBotImage;
+        [SerializeField] Image readyTopImage;
+        [SerializeField] ToggleButton button;
 
         [Space]
-        [SerializeField] private bool OpponentIsReady;
-        [SerializeField] private GameObject playerPrefab;
+        [SerializeField] bool OpponentIsReady;
+        [SerializeField] GameObject playerPrefab;
 
         public Ruleset Ruleset { get; private set; }
 

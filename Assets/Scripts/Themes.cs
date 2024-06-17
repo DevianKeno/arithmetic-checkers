@@ -2,25 +2,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Themes : MonoBehaviour
+namespace Damath.UI
 {
-    public Color botChipColor;
-    public Color botChipShadow;
-
-    public Color topChipColor;
-    public Color topChipShadow;
-
-    void Awake()
+    public class Themes : MonoBehaviour
     {
-        SetDefaults();
-    }
+        public Color botChipColor;
+        public Color botChipShadow;
 
-    public void SetDefaults()
-    {
-        botChipColor = Colors.darkCerulean;
-        botChipShadow = Colors.darkJungleBlue;
-        
-        topChipColor = Colors.PersimmonOrange;
-        topChipShadow = Colors.burntUmber;
+        public Color topChipColor;
+        public Color topChipShadow;
+
+        void Awake()
+        {
+            SetDefaults();
+        }
+
+        public void SetDefaults()
+        {
+            botChipColor = Colors.darkCerulean;
+            botChipShadow = Colors.darkJungleBlue;
+            
+            topChipColor = Colors.PersimmonOrange;
+            topChipShadow = Colors.burntUmber;
+        }
     }
 }

@@ -37,7 +37,7 @@ namespace Damath
         public PieceValue ValueConvertible;
         public string Value;
         public Side Side;
-        public bool IsKing = false;
+        public bool IsKing { get; private set; }
         /// <summary>
         /// The player owner of this piece.
         /// </summary>
@@ -186,17 +186,19 @@ namespace Damath
         public void Promote()
         {
             if (IsKing) return;
-            IsKing = true;
+
             overlayTop.sprite = Sprites[1];
             tmp.color = new Color(1, 1, 1, 1);
+            IsKing = true;
         }
 
         public void Demote()
         {
             if (!IsKing) return;
-            IsKing = false;
+
             overlayTop.sprite = Sprites[0];
             tmp.color = new Color(0, 0, 0, 1);
+            IsKing = false;
         }
 
         public void Capture()
@@ -206,7 +208,8 @@ namespace Damath
 
         public void Remove()
         {
-            Destroy(this.gameObject);
+            /// This is bad handling
+            Destroy(gameObject);
         }
     }
 }

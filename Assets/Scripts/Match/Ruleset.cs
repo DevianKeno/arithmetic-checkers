@@ -80,38 +80,38 @@ namespace Damath
 
             SymbolMapStandard = new()
             {
-                { new (1, 0), Operation.Add},
-                { new (3, 0), Operation.Subtract},
-                { new (5, 0), Operation.Divide},
-                { new (7, 0), Operation.Multiply},
-                { new (0, 1), Operation.Subtract},
-                { new (2, 1), Operation.Add},
-                { new (4, 1), Operation.Multiply},
-                { new (6, 1), Operation.Divide},
-                { new (1, 2), Operation.Divide},
-                { new (3, 2), Operation.Multiply},
-                { new (5, 2), Operation.Add},
-                { new (7, 2), Operation.Subtract},
-                { new (0, 3), Operation.Multiply},
-                { new (2, 3), Operation.Divide},
-                { new (4, 3), Operation.Subtract},
-                { new (6, 3), Operation.Add},
-                { new (1, 4), Operation.Add},
-                { new (3, 4), Operation.Subtract},
-                { new (5, 4), Operation.Divide},
-                { new (7, 4), Operation.Multiply},
-                { new (0, 5), Operation.Subtract},
-                { new (2, 5), Operation.Add},
-                { new (4, 5), Operation.Multiply},
-                { new (6, 5), Operation.Divide},
-                { new (1, 6), Operation.Divide},
-                { new (3, 6), Operation.Multiply},
-                { new (5, 6), Operation.Add},
-                { new (7, 6), Operation.Subtract},
-                { new (0, 7), Operation.Multiply},
-                { new (2, 7), Operation.Divide},
-                { new (4, 7), Operation.Subtract},
-                { new (6, 7), Operation.Add}
+                { new (1, 0), Operation.Addition},
+                { new (3, 0), Operation.Subtraction},
+                { new (5, 0), Operation.Division},
+                { new (7, 0), Operation.Multiplication},
+                { new (0, 1), Operation.Subtraction},
+                { new (2, 1), Operation.Addition},
+                { new (4, 1), Operation.Multiplication},
+                { new (6, 1), Operation.Division},
+                { new (1, 2), Operation.Division},
+                { new (3, 2), Operation.Multiplication},
+                { new (5, 2), Operation.Addition},
+                { new (7, 2), Operation.Subtraction},
+                { new (0, 3), Operation.Multiplication},
+                { new (2, 3), Operation.Division},
+                { new (4, 3), Operation.Subtraction},
+                { new (6, 3), Operation.Addition},
+                { new (1, 4), Operation.Addition},
+                { new (3, 4), Operation.Subtraction},
+                { new (5, 4), Operation.Division},
+                { new (7, 4), Operation.Multiplication},
+                { new (0, 5), Operation.Subtraction},
+                { new (2, 5), Operation.Addition},
+                { new (4, 5), Operation.Multiplication},
+                { new (6, 5), Operation.Division},
+                { new (1, 6), Operation.Division},
+                { new (3, 6), Operation.Multiplication},
+                { new (5, 6), Operation.Addition},
+                { new (7, 6), Operation.Subtraction},
+                { new (0, 7), Operation.Multiplication},
+                { new (2, 7), Operation.Division},
+                { new (4, 7), Operation.Subtraction},
+                { new (6, 7), Operation.Addition}
             };
 
             PieceMapStandard = new()
@@ -271,10 +271,13 @@ namespace Damath
             return rule.Value;
         }
 
-        public void SetRule<T>(string rule, T value)
+        public void SetRule<T>(string rulename, T value)
         {
-            var x = (Rule<T>) Rules[rule];
-            x.SetValue(value);
+            if (TryGetRule(rulename, out Rule<T> rule))
+            {
+                rule.SetValue(value);
+                Rules[rulename] = rule;
+            }
         }
 
         public int GetRulesetType()

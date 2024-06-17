@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace Damath
 {
     public enum MoveType {All, Normal, Capture}
@@ -34,20 +30,19 @@ namespace Damath
 
         public Move(Cell origin, Cell destination)
         {
-            // Set the piece that this move belongs to
+            /// Set the piece that this move belongs to
             Piece = origin.Piece;
-            // Set the capturing piece. This member is essentially same as "Piece"
+            /// Set the capturing piece. This member is essentially same as "Piece"
             CapturingPiece = origin.Piece;
-            // Set the player who performed this move
+            /// Set the player who performed this move
             Player = Piece.Owner;
 
-            // Assign contructor arguments to members
+            /// Assign contructor arguments to members
             Origin = origin; From = Origin;
             Destination = destination; To = Destination;
 
-            // Mark this cell as a valid move
+            /// Mark this cell as a valid move
             Destination.IsValidMove = true;
-
 
             type = MoveType.Normal;
         }

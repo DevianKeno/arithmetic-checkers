@@ -74,43 +74,21 @@ namespace Damath.Systems
             Operator = player;
         }
 
-        public Command CreateCommand(string command, string description = "")
+        public void RegisterCommand(Command command)
         {
-            var args = command.Split(" ");
-            string commandName = args[0];
-            Command newCommand = new()
+            if (command == null) return;
+            
+            Commands[command.Name] = command;
+            if (command.Aliases.Count > 0)
             {
-                Name = args[0],
-                Syntax = command,
-                Description = description
-            };
-
-            int i = 0;
-            foreach (string arg in args)
-            {
-                if (i == 0) continue;
-
-                if (arg.Contains("|"))
+                foreach (var alias in command.Aliases)
                 {
-                    string[] splitArgs = arg.Split("|");
+                    if (!Commands.ContainsKey(alias))
+                    {
+                        Commands[alias] = command;
+                    }
                 }
-
-                if (arg.Contains("<"))
-                {
-                    // Required
-                    string substring = arg[1..^1];
-                    newCommand.Arguments.Add((substring, Command.ArgType.Required));
-                } else if (arg.Contains("["))
-                {
-                    // Optional
-                    string substring = arg[1..^1];
-                    newCommand.Arguments.Add((substring, Command.ArgType.Optional));
-                }
-                i++;
             }
-
-            Commands.Add(commandName, newCommand); 
-            return newCommand;           
         }
 
         /// <summary>

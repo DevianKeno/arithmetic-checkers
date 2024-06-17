@@ -9,15 +9,14 @@ namespace Damath
         public string Name = "";
         public string Syntax = "";
         public string Description = "";
-        public List<(string, ArgType)> Arguments;
-        public List<string> Parameters;
-        public List<string> Aliases;
+        public List<(string, ArgType)> Arguments = new();
+        public List<string> Parameters = new();
+        public List<string> Aliases = new();
         public UnityAction<List<string>> Calls;
 
         public static Command Create(string command, string description = "")
         {
             var args = command.Split(" ");
-            string commandName = args[0];
             Command newCommand = new()
             {
                 Name = args[0],
@@ -51,36 +50,41 @@ namespace Damath
             return newCommand;           
         }
 
-        public void AddParameters(List<string> Parameters)
+        public Command AddParameters(List<string> Parameters)
         {
+            return this;
         }
 
-        public void AddAlias(string alias)
+        public Command AddAlias(string alias)
         {
             Aliases.Add(alias);
+            return this;
+        }
+
+        public Command AddAlias(string[] alias)
+        {
+            Aliases.AddRange(alias);
+            return this;
         }
         
-        public void AddCallback(UnityAction<List<string>> func = null)
+        public Command AddCallback(UnityAction<List<string>> func = null)
         {
             if (func != null)
             {
                 Calls = func;
             }
+            return this;
         }
 
-        public void SetDescription(string value)
+        public Command SetDescription(string value)
         {
             Description = value;
+            return this;
         }
 
         public void Invoke(List<string> args)
         {
             Calls(args);
-
-            // foreach (var call in Calls)
-            // {
-            //     call.Invoke();
-            // }
         }
     }
 }

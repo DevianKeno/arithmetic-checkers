@@ -22,7 +22,10 @@ namespace Damath.Systems
         [SerializeField] Board board;
         [SerializeField] Scoreboard scoreboard;
         [SerializeField] TimerManager timerManager;
+        [SerializeField] Cheats cheats;
+
         [SerializeField] TextMeshProUGUI rulesetText;
+        
 
         [Header("Prefabs")]
         [SerializeField] GameObject boardPrefab;
@@ -55,6 +58,12 @@ namespace Damath.Systems
                 Game.Events.RulesetDistribute(Ruleset);
                 Game.Events.MatchCreate(this);
                 Game.Console.Log($"Created {Ruleset.Type} match");
+                
+                if (Ruleset.GetValue<bool>("EnableCheats"))
+                {
+                    cheats.Initialize();
+                    Game.Console.Log("Cheats enabled.");
+                }
             } else
             {
                 Game.Console.Log($"No ruleset created. Set one first before starting.");
@@ -120,10 +129,6 @@ namespace Damath.Systems
             }
             board.BeginMatch();
             timerManager.BeginMatch();
-            if (Ruleset.GetValue<bool>("EnableCheats"))
-            {
-                Game.Console.Log("Cheats enabled.");
-            }
             IsPlaying = true;
         }
 

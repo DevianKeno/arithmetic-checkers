@@ -3715,7 +3715,7 @@ GameObject:
   - component: {fileID: 8322154929276836882}
   - component: {fileID: 8322154929276836881}
   m_Layer: 0
-  m_Name: Scoreboard
+  m_Name: SCOREBOARD
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3733,9 +3733,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30ca4537b293f60469a19aa8323d6f91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PieceMenu: {fileID: 0}
-  ToolsMenu: {fileID: 0}
-  SelectedCell: {fileID: 0}
   EnableDebug: 1
 --- !u!1 &7226299033122741278
 GameObject:
@@ -3748,7 +3745,7 @@ GameObject:
   - component: {fileID: 7226299033122741279}
   - component: {fileID: 7226299033122741276}
   m_Layer: 5
-  m_Name: Cheats
+  m_Name: CHEATS
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3762,12 +3759,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7226299033122741278}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 7226299033803664619}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!224 &7226299033501255536
 RectTransform:
@@ -3800,7 +3797,7 @@ GameObject:
   - component: {fileID: 7226299033501255550}
   - component: {fileID: 7226299033501255551}
   m_Layer: 0
-  m_Name: IndicatorHandler
+  m_Name: INDICATOR MANAGER
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3891,6 +3888,7 @@ MonoBehaviour:
   board: {fileID: 0}
   scoreboard: {fileID: 8322154929276836881}
   timerManager: {fileID: 7226299034451705004}
+  cheats: {fileID: 7226299033122741276}
   rulesetText: {fileID: 382691672}
   boardPrefab: {fileID: 5782564334322701295, guid: ba98585f488df524297d0f1e0bcbdea7, type: 3}
   playerPrefab: {fileID: 8192390590991075092, guid: 77738396a965bd541a08b2db11d00798, type: 3}
@@ -3923,7 +3921,10 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 8322154929276836882}
+  - {fileID: 7226299034451705007}
+  - {fileID: 7226299033122741279}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7226299034451705004
@@ -3955,7 +3956,7 @@ GameObject:
   - component: {fileID: 7226299034451705007}
   - component: {fileID: 7226299034451705004}
   m_Layer: 0
-  m_Name: Timers
+  m_Name: TIMER MANAGER
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3969,7 +3970,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7226299034451705006}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3977,7 +3978,7 @@ Transform:
   - {fileID: 1049602933}
   - {fileID: 1644294984}
   - {fileID: 2138248598}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 7226299033803664619}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8322154929276836881
 MonoBehaviour:
@@ -4006,7 +4007,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 7226299033803664619}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!224 &8897815678775434132
 RectTransform:
@@ -4039,7 +4040,7 @@ GameObject:
   - component: {fileID: 8897815678775434137}
   - component: {fileID: 8897815678775434138}
   m_Layer: 0
-  m_Name: Selector
+  m_Name: SELECTOR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4122,7 +4123,4 @@ SceneRoots:
   - {fileID: 7226299033803664619}
   - {fileID: 8897815678775434132}
   - {fileID: 7226299033501255536}
-  - {fileID: 7226299034451705007}
-  - {fileID: 8322154929276836882}
-  - {fileID: 7226299033122741279}
   - {fileID: 1299394194}

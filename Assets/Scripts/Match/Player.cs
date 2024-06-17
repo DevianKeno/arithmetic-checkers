@@ -5,6 +5,8 @@ using UnityEngine;
 using FishNet.Object;
 using FishNet.Connection;
 using Unity.VisualScripting;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 namespace Damath
 {
@@ -76,7 +78,7 @@ namespace Damath
         /// <summary>
         /// Whether if the player is currently holding down the mouse button.
         /// </summary>
-        public bool IsHolding = false;
+        public bool IsHoldingMouse = false;
         /// <summary>
         /// The player's turn count.
         /// </summary>
@@ -88,9 +90,11 @@ namespace Damath
 
         [SerializeField] private float MouseHoldTime = 0f;
 
+        public event EventHandler<PointerEventData> OnClick;
+
         void Start()
         {                
-            Init();
+            Initialize();
         }
 
         void Update()
@@ -118,7 +122,7 @@ namespace Damath
             // Game.Events.OnPieceMove += IMadeAMove;
         }
 
-        public void Init()
+        public void Initialize()
         {
             // Name = Game.Main.Nickname;
             name = $"{Game.Main.Nickname} (Player)";
@@ -175,10 +179,10 @@ namespace Damath
             {
                 /// Check if there's a piece currently selected and if the player is not holding the mouse button
                 /// This is to avoid selecting the moved piece again after selecting a cell via left click
-                if (SelectedPiece != null && !IsHolding) return;
+                if (SelectedPiece != null && !IsHoldingMouse) return;
 
                 CastRay();
-                Game.Events.PlayerLeftClick(this);    
+                Game.Events.PlayerLeftClick(this);
             }
             
             /// Right click
@@ -198,7 +202,7 @@ namespace Damath
                 if (MouseHoldTime >= Game.Main.Settings.PieceGrabDelay)
                 {
                     MouseHoldTime = Game.Main.Settings.PieceGrabDelay; /// Inhibit value to max hold time
-                    IsHolding = true;
+                    IsHoldingMouse = true;
 
                     /// If there's a piece already held, move it along the cursor
                     if (HeldPiece != null)
@@ -217,9 +221,9 @@ namespace Damath
                 MouseHoldTime = 0f;
                 CastRay();
 
-                if (IsHolding)
+                if (IsHoldingMouse)
                 {
-                    IsHolding = false;
+                    IsHoldingMouse = false;
                     Game.Events.PlayerRelease(this);
                 }
             }

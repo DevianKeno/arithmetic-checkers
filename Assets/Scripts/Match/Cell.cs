@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Damath.UI;
+using System;
 
 namespace Damath
 {
-    public enum Operation {None, Add, Subtract, Multiply, Divide}
+    public enum Operation { None, Addition, Subtraction, Multiplication, Division }
 
+    [Serializable]
     public struct CellData
     {
         public Vector2 Coordinates;
@@ -18,12 +20,12 @@ namespace Damath
         public Vector2 Coordinates;
         public int Col, Row;
         public Operation Operation;
-        public Piece Piece = null;
-        public bool HasPiece = false;
-        public bool IsValidMove = false;
-        public List<Sprite> Sprite;
+        public Piece Piece { get; private set; }
+        public bool HasPiece { get; private set; }
+        public bool IsValidMove { get; set; }
+        public List<Sprite> Sprites;
         
-        private static GameObject prefab;
+        static GameObject prefab;
 
         SpriteRenderer spriteRenderer;
 
@@ -68,10 +70,10 @@ namespace Damath
 
             spriteRenderer.sprite = value switch
             {
-                Operation.Add => Sprite[0],
-                Operation.Subtract => Sprite[1],
-                Operation.Multiply => Sprite[2],
-                Operation.Divide => Sprite[3],
+                Operation.Addition => Sprites[0],
+                Operation.Subtraction => Sprites[1],
+                Operation.Multiplication => Sprites[2],
+                Operation.Division => Sprites[3],
                 _ => null,
             };
             spriteRenderer.color = Colors.darkCerulean;

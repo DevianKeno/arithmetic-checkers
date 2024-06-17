@@ -33,7 +33,6 @@ namespace Damath.Systems
         public Image dim;
         public GameObject windowPrefab;
         public GameObject choiceWindowPrefab;
-        public GameObject choicePrefab;
         public GameObject tooltipPrefab;
 
         PlayerInput mainInput;

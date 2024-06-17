@@ -48,10 +48,10 @@ namespace Damath
 
             (score, operation) = move.Destination.Operation switch
             {
-                Operation.Add => (x + y, '+'),
-                Operation.Subtract => (x - y, '-'),
-                Operation.Multiply => (x * y, '×'),
-                Operation.Divide => (x / y, '÷'),
+                Operation.Addition => (x + y, '+'),
+                Operation.Subtraction => (x - y, '-'),
+                Operation.Multiplication => (x * y, '×'),
+                Operation.Division => (x / y, '÷'),
                 _ => throw new NotImplementedException(),
             };
 

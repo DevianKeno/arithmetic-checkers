@@ -4,34 +4,50 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using TMPro;
+using System;
 
 namespace Damath.UI
 {
     public class Choice : MonoBehaviour
     {
-        public List<UnityAction> callbacks = new();
-        public TextMeshProUGUI c_tmp;
-        public Image c_image;
-        public Button c_button;
-
-        void Awake()
+        public string Label
         {
-            c_tmp = transform.Find("Text").GetComponent<TextMeshProUGUI>();
-            c_image = transform.Find("Icon").GetComponent<Image>();
-            c_button = GetComponent<Button>();
+            get
+            {
+                return labelTMP.text;
+            }
+            set
+            {
+                labelTMP.text = value;
+            }
+        }
+        public Sprite Icon
+        {
+            get
+            {
+                return iconImage.sprite;
+            }
+            set
+            {
+                iconImage.sprite = value;
+            }
+        }
+        List<Action> callbacks = new();
+
+        [SerializeField] TextMeshProUGUI labelTMP;
+        [SerializeField] Image iconImage;
+        [SerializeField] UnityEngine.UI.Button button;
+
+        void Start()
+        {
+            button.onClick.AddListener(() =>
+            {
+                Invoke();
+            });
         }
 
-        public void Init(UnityAction function, string text, Sprite icon=null)
+        public void AddCallback(Action function)
         {
-
-            c_tmp.text = text;
-            if (icon != null) c_image.sprite = icon;
-            AddListener(function);
-        }
-        
-        public void AddListener(UnityAction function)
-        {
-            c_button.onClick.AddListener(function);
             callbacks.Add(function);
         }
 

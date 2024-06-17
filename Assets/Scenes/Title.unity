@@ -5225,6 +5225,7 @@ GameObject:
   - component: {fileID: 930963971}
   - component: {fileID: 930963972}
   - component: {fileID: 930963973}
+  - component: {fileID: 930963974}
   m_Layer: 0
   m_Name: '[-GAME-]'
   m_TagString: Untagged
@@ -5247,7 +5248,6 @@ Transform:
   m_Children:
   - {fileID: 1379761325}
   - {fileID: 1618532397}
-  - {fileID: 1049614066}
   - {fileID: 49200017}
   - {fileID: 1148937067}
   - {fileID: 347751225}
@@ -5297,6 +5297,18 @@ MonoBehaviour:
   m_DefaultActionMap: Console Window
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &930963974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 930963970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63a8cc3273c4a5e4e8af8fd91072dc28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &936304144
 GameObject:
   m_ObjectHideFlags: 0
@@ -5857,59 +5869,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4393252310969058990, guid: 0570b6f7f713dc44a90463654bbcd8d0, type: 3}
   m_PrefabInstance: {fileID: 807951227}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1049614065
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1049614066}
-  - component: {fileID: 1049614067}
-  m_Layer: 0
-  m_Name: SETTINGS
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1049614066
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1049614065}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 930963971}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1049614067
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1049614065}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: efb9018ce5ba5b1498d675519a0454c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  EnableDebugMode: 1
-  EnableConsole: 1
-  masterVolume: 1
-  soundVolume: 1
-  musicVolume: 1
-  EnableAnimations: 1
-  AnimationFactor: 0.5
-  AllowPieceDragging: 1
-  PieceGrabDelay: 0.1
 --- !u!1 &1084279847
 GameObject:
   m_ObjectHideFlags: 0
@@ -6277,7 +6236,7 @@ MonoBehaviour:
   - Id: window
     Prefab: {fileID: 6288102435147716885, guid: 24d99aa0bf3ba244da08921fef6aac3c, type: 3}
   - Id: choice_window
-    Prefab: {fileID: 1274695829595390999, guid: ac025dce9f8663041a543bd40f7befee, type: 3}
+    Prefab: {fileID: 3674168130151954415, guid: ac025dce9f8663041a543bd40f7befee, type: 3}
   - Id: tooltip
     Prefab: {fileID: 3990577252084355902, guid: 550ef379928aead41a050911e287963d, type: 3}
   - Id: button

@@ -19,5 +19,5 @@ MonoBehaviour:
   MusicVolume: 100
   EnableAnimations: 1
   AnimationFactor: 0.5
-  AllowPieceDragging: 0
-  PieceGrabDelay: 0.1
+  AllowPieceDragging: 1
+  PieceGrabDelay: 0.05

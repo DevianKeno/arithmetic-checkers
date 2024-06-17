@@ -10,87 +10,105 @@ namespace Damath.Systems
 
         void InitCommands()
         {
-            CreateCommand("chat <message>",
-                          "Send a message.")
-                          .AddCallback(Command_Chat);
+            RegisterCommand(Command.Create(
+                "chat <message>",
+                "Send a message.")
+                .AddCallback(Command_Chat));
 
-            CreateCommand("clear",
-                          "Clears console.")
-                          .AddCallback(Command_Clear);
+            RegisterCommand(Command.Create(
+                "clear",
+                "Clears console.")
+                .AddCallback(Command_Clear));
 
-            CreateCommand("connect <address>",
-                          "Connect to a match.")
-                          .AddCallback(Command_Connect);
+            RegisterCommand(Command.Create(
+                "connect <address>",
+                "Connect to a match.")
+                .AddCallback(Command_Connect));
 
-            CreateCommand("debug <scene>")
-                          .AddCallback(Command_Debug);
+            RegisterCommand(Command.Create(
+                "debug <scene>")
+                .AddCallback(Command_Debug));
 
-            CreateCommand("draw",
-                          "Offer a draw.")
-                          .AddCallback();
+            RegisterCommand(Command.Create(
+                "draw",
+                "Offer a draw.")
+                .AddCallback());
 
-            CreateCommand("flip",
-                          "Flips the board.")
-                          .AddCallback(Command_Flip);
-                        
-            CreateCommand("forfeit",
-                          "Forfeit match.")
-                          .AddCallback();
+            RegisterCommand(Command.Create(
+                "flip",
+                "Flips the board.")
+                .AddCallback(Command_Flip));
 
-            CreateCommand("help <command>")
-                          .AddCallback(Command_Help);
+            RegisterCommand(Command.Create(
+                "forfeit",
+                "Forfeit match.")
+                .AddCallback());
 
-            CreateCommand("host",
-                          "Host current match.")
-                          .AddCallback(Command_Host);
-                          
-            CreateCommand("leave",
-                          "Leave to title screen.")
-                          .AddCallback(Command_Leave);
+            RegisterCommand(Command.Create(
+                "help <command>")
+                .AddCallback(Command_Help));
 
-            CreateCommand("lobby <create|info>")
-                          .AddCallback(Command_Lobby);
+            RegisterCommand(Command.Create(
+                "host",
+                "Host current match.")
+                .AddCallback(Command_Host));
 
-            CreateCommand("match <create|start> <standard|speed|custom>")
-                          .AddCallback(Command_Match);
-            
-            CreateCommand("move <col> <row> <toCol> <toRow>",
-                          "")
-                          .AddCallback(Command_Move);
+            RegisterCommand(Command.Create(
+                "leave",
+                "Leave to title screen.")
+                .AddCallback(Command_Leave));
 
-            CreateCommand("name <name> [side]",
-                          "Change player name.")
-                          .AddCallback(Command_Name);
+            RegisterCommand(Command.Create(
+                "lobby <create|info>")
+                .AddCallback(Command_Lobby));
 
-            CreateCommand("piece <s|s> <col> <row> [value]",
-                          "Piece actions.")
-                          .AddCallback(Command_Piece);
+            RegisterCommand(Command.Create(
+                "match <create|start> <standard|speed|custom>")
+                .AddCallback(Command_Match));
 
-            CreateCommand("sandbox",
-                          "Enter sandbox.")
-                          .AddCallback(Command_Sandbox);
+            RegisterCommand(Command.Create(
+                "move <col> <row> <toCol> <toRow>",
+                "")
+                .AddCallback(Command_Move));
 
-            CreateCommand("select <col> <row>",
-                          "Select a cell.")
-                          .AddCallback(Command_Select);
+            RegisterCommand(Command.Create(
+                "name <name> [side]",
+                "Change player name.")
+                .AddCallback(Command_Name));
+
+            RegisterCommand(Command.Create(
+                "piece <s|s> <col> <row> [value]",
+                "Piece actions.")
+                .AddCallback(Command_Piece));
+
+            RegisterCommand(Command.Create(
+                "sandbox",
+                "Enter sandbox.")
+                .AddCallback(Command_Sandbox)
+                .AddAlias("sb"));
+
+            RegisterCommand(Command.Create(
+                "select <col> <row>",
+                "Select a cell.")
+                .AddCallback(Command_Select));
         }
 
-        #region Console commands list
+        #region Command actions
 
         void Command_Chat(List<string> args)
         {
-            // Remove "chat" argument
+            /// Removes "chat" argument
             args.RemoveAt(0);
             string message = string.Join(" ", args.ToArray());
             string data = $"{Game.Main.Nickname};{message}";
 
-            // Invoke console command as player
+            /// Invoke console command as player
             if (true)
             {
                 Game.Events.NetworkSend(Parser.Pack(data, Pack.Chat));
             } else
             {
-                // Send chat locally
+                /// Send chat locally
             }
         }
 
@@ -289,11 +307,7 @@ namespace Damath.Systems
         void Command_Sandbox(List<string> args)
         {
             var ruleset = Ruleset.Create(RulesetType.Standard);
-            if (ruleset.TryGetRule("EnableCheats", out Rule<bool> rule))
-            {
-                rule.SetValue(true);
-            }
-
+            ruleset.SetRule("EnableCheats", true);
             Game.Main.CreateMatch(ruleset);
             Game.Main.LoadScene("Match", playTransition: true);
         }

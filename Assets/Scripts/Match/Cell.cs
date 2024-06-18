@@ -17,14 +17,21 @@ namespace Damath
 
     public class Cell : MonoBehaviour
     {
-        public Vector2 Coordinates;
-        public int Col, Row;
-        public Operation Operation;
+        public int Col { get; private set; }
+        public int Row { get; private set; }
+        public Vector2Int Coordinates
+        {
+            get
+            {
+                return new(Col, Row);
+            }
+        }
+        public Operation Operation { get; private set; }
         public Piece Piece { get; private set; }
         public bool HasPiece { get; private set; }
         public bool IsValidMove { get; set; }
+
         public List<Sprite> Sprites;
-        
         static GameObject prefab;
 
         SpriteRenderer spriteRenderer;
@@ -104,12 +111,11 @@ namespace Damath
             IsValidMove = false;
         }
         
-        public Piece RemovePiece()
+        public void ClearPiece()
         {
-            var ret = Piece;
+            // Destroy(Piece.gameObject);
             Piece = null;
             HasPiece = false;
-            return ret;
         }
     }
 }

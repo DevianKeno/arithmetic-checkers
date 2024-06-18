@@ -74,6 +74,11 @@ namespace Damath.Systems
         {
             Icons.Add(name, sprite);
         }
+
+        public void GetIcon(string iconName)
+        {
+            
+        }
         
         public T Create<T>(string id, bool inSafeArea = true) where T : IUIElement
         {

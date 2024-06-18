@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7610968385705858938}
   - component: {fileID: 7610968385705858937}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33,10 +33,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 7610968387121975239}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 135.93, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 135.93, y: -44.005}
+  m_SizeDelta: {x: 171.86, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7610968385705858939
 CanvasRenderer:
@@ -180,8 +180,8 @@ RectTransform:
   m_GameObject: {fileID: 7610968386318097158}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7610968385705858936}
   m_Father: {fileID: 0}
@@ -219,7 +219,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4c441bf2b05b80e4ca8bd1f8454c1842, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 97ecc367901da004286b0c46cf061d97, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -228,7 +228,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 2
 --- !u!114 &7610968386318097163
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -258,10 +258,10 @@ MonoBehaviour:
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
+    m_HighlightedSprite: {fileID: 21300000, guid: 30228661cd02ef8429f51b1bf4461e08, type: 3}
+    m_PressedSprite: {fileID: 21300000, guid: 9c9d521bcf0c1b74dbac61f40867bc7f, type: 3}
+    m_SelectedSprite: {fileID: 21300000, guid: ee14e6216b58ac047ae936f431060fb7, type: 3}
+    m_DisabledSprite: {fileID: 21300000, guid: dcd8fd07b7a03124d8950ac3c2e4a775, type: 3}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
     m_HighlightedTrigger: Highlighted
@@ -302,8 +302,8 @@ MonoBehaviour:
   m_Padding:
     m_Left: 50
     m_Right: 50
-    m_Top: 15
-    m_Bottom: 15
+    m_Top: 10
+    m_Bottom: 20
   m_ChildAlignment: 4
   m_Spacing: 0
   m_ChildForceExpandWidth: 0

@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using Damath.UI;
 using System;
+using Damath.Players;
 
 namespace Damath
 {
@@ -113,7 +114,7 @@ namespace Damath
             {
                 for (int col = 0; col < MaxColumns; col++)
                 {
-                    Vector2 coords = new (col, row);
+                    Vector2Int coords = new (col, row);
 
                     Cell newCell = Instantiate(cellPrefab, cellGroup.transform).GetComponent<Cell>();
                     RectTransform rect = newCell.GetComponent<RectTransform>();
@@ -149,7 +150,7 @@ namespace Damath
         {
             foreach (var entry in Ruleset.PieceMap)
             {
-                Vector2 coords = entry.Key;
+                Vector2Int coords = entry.Key;
                 PieceData pieceData = entry.Value;
                 Cell cell = GetCell(coords);    
 
@@ -429,7 +430,7 @@ namespace Damath
         void AnimateMove(Move move)
         {
             move.Destination.SetPiece(move.Origin.Piece);
-            move.Origin.RemovePiece();
+            move.Origin.ClearPiece();
 
             // (move.originCell.Piece, move.destinationCell.Piece) = (move.destinationCell.Piece, move.originCell.Piece);
 
@@ -487,7 +488,7 @@ namespace Damath
             }
 
             // move.Player.CapturedPieces.Add(capturedPiece);
-            GetCell(capturedPiece).RemovePiece();
+            GetCellFromPiece(capturedPiece).ClearPiece();
             move.Player.CapturedPieces.Add(move.CapturedPiece);
             move.CapturingPiece.HasCaptured = true;
             move.CapturingPiece.CanCapture = false;
@@ -533,7 +534,7 @@ namespace Damath
                 {
                     if (row < 0 || row > 7) continue;
 
-                    Cell cellToCheck = GetCell(col, row);
+                    Cell cellToCheck = GetCellFromRow(col, row);
 
                     if (cellToCheck.Piece != null)
                     {
@@ -634,14 +635,14 @@ namespace Damath
                 if (row < 0 || row > 7) break;      /// Out of bounds
                 if (nextEnemyPiece > 1) break;      /// Two successive enemy pieces
 
-                Cell cellToCheck = GetCell(left, row);
+                Cell cellToCheck = GetCellFromRow(left, row);
 
                 if (cellToCheck.Piece == null) /// Next cell is empty cell
                 {
                     if (cellToCapture != null)  /// There's a captureable cell
                     {
                         piece.CanCapture = true;
-                        captureMoves.Add(new Move(GetCell(piece.Col, piece.Row), cellToCheck, cellToCapture.Piece));
+                        captureMoves.Add(new Move(GetCellFromRow(piece.Col, piece.Row), cellToCheck, cellToCapture.Piece));
                         if (piece.IsKing) moves.Clear();
                     } else
                     {
@@ -649,7 +650,7 @@ namespace Damath
                         {
                             if (!piece.IsKing) break;
                         }
-                        moves.Add(new Move(GetCell(piece.Col, piece.Row), cellToCheck));
+                        moves.Add(new Move(GetCellFromRow(piece.Col, piece.Row), cellToCheck));
                     }
 
                     if (!piece.IsKing) break;
@@ -691,14 +692,14 @@ namespace Damath
                 if (row < 0 || row > 7) break;          /// Out of bounds
                 if (nextEnemyPiece > 1) break;          /// Two successive enemy pieces
 
-                Cell cellToCheck = GetCell(right, row);
+                Cell cellToCheck = GetCellFromRow(right, row);
 
                 if (cellToCheck.Piece == null)  /// Next cell is empty cell
                 {
                     if (cellToCapture != null)  /// There's a captureable cell
                     {
                         piece.CanCapture = true;
-                        captureMoves.Add(new Move(GetCell(piece.Col, piece.Row), cellToCheck, cellToCapture.Piece));
+                        captureMoves.Add(new Move(GetCellFromRow(piece.Col, piece.Row), cellToCheck, cellToCapture.Piece));
                         if (piece.IsKing) moves.Clear();
                     } else
                     {
@@ -706,7 +707,7 @@ namespace Damath
                         {
                             if (!piece.IsKing) break;
                         }
-                        moves.Add(new Move(GetCell(piece.Col, piece.Row), cellToCheck));
+                        moves.Add(new Move(GetCellFromRow(piece.Col, piece.Row), cellToCheck));
                     }
 
                     if (!piece.IsKing) break;
@@ -731,51 +732,95 @@ namespace Damath
             };
         }
 
-        public Piece RemovePiece(Cell cell)
+        public Piece AddPiece(int col, int row, Side side, string value, bool isKing)
         {
-            return cell.RemovePiece();
+            var data = new PieceData
+            {
+                Side = side,
+                Value = value,
+                IsKing = isKing
+            };
+            return AddPiece(GetCellFromRow(col, row), data);
         }
 
-        public Piece RemovePiece(int col, int row)
+        public Piece AddPiece(int col, int row, PieceData pieceData)
         {
-            try
+            return AddPiece(GetCellFromRow(col, row), pieceData);
+        }
+
+        public Piece AddPiece(Cell cell, PieceData pieceData)
+        {
+            if (cell.HasPiece)
             {
-                return RemovePiece(GetCell(col, row));
-            } catch
-            {
-                throw new KeyNotFoundException();
+                Game.Console.Log("Can't add a piece to an existing piece.");
+                return null;
             }
+
+            Piece newPiece = Instantiate(piecePrefab, pieceGroup.transform);
+            newPiece.name = $"Piece ({pieceData.Value}) {pieceData.Side}";
+
+            /// Transform piece position
+            newPiece.transform.localScale = new (Constants.PieceScale, Constants.PieceScale);
+            newPiece.transform.position = cell.transform.position;
+
+            /// Initialize piece values
+            newPiece.SetCell(cell);
+            newPiece.SetValue(pieceData.Value);
+            newPiece.SetSide(pieceData.Side);
+            newPiece.SetKing(pieceData.IsKing);
+            cell.SetPiece(newPiece);
+
+            return newPiece;
         }
 
-        public Piece CapturePiece(Cell cell)
+        public void RemovePiece(int col, int row)
         {
-            return cell.RemovePiece();
+            RemovePiece(GetCellFromRow(col, row));
         }
 
-        public Piece CapturePiece(int col, int row)
+        public void RemovePiece(Cell cell)
         {
-            try
+            Destroy(cell.Piece.gameObject);
+            cell.ClearPiece();
+        }
+
+        public void CapturePiece(int col, int row)
+        {
+            //
+        }
+
+        public void CapturePiece(Cell cell)
+        {
+            // return cell.RemovePiece();
+        }
+
+        public Cell GetCell(Vector2Int coords)
+        {
+            if (Cells.ContainsKey(coords))
             {
-                return CapturePiece(GetCell(col, row));
-            } catch
-            {
-                throw new KeyNotFoundException();
+                return Cells[coords];
             }
+            return null;
         }
 
-        public Cell GetCell(Vector2 coords)
+        public Cell GetCellFromRow(int col, int row)
         {
-            return Cells[coords];
+            var coords = new Vector2Int(col, row);
+            if (Cells.ContainsKey(coords))
+            {
+                return Cells[coords];
+            }
+            return null;
         }
 
-        public Cell GetCell(int col, int row)
+        public Cell GetCellFromPiece(Piece piece)
         {
-            return Cells[new (col, row)];
-        }
-
-        public Cell GetCell(Piece piece)
-        {
-            return Cells[new (piece.Col, piece.Row)];
+            var coords = new Vector2Int(piece.Col, piece.Row);
+            if (Cells.ContainsKey(coords))
+            {
+                return Cells[coords];
+            }
+            return null;
         }
     }
 }

@@ -7,34 +7,10 @@ using FishNet.Connection;
 using Unity.VisualScripting;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
-namespace Damath
+namespace Damath.Players
 {
-    /// <summary>
-    /// This is used for network transport.
-    /// </summary>
-    [Serializable]
-    public struct PlayerData
-    {
-        // public Image ProfileImage;
-        public string Name;
-    }
-
-    /// <summary>
-    /// An actor can represent either a player or just a spectator.
-    /// </summary>
-    public class Actor : NetworkBehaviour
-    {
-        public string @string = "ds";
-        public string Name = "Actor";
-        public RaycastHit2D Hit;
-    }
-
-    public class Spectator : Actor
-    {
-        public bool IsModerator = false;
-    }
-
     public class Player : Actor
     {
         [field: Header("Information")]
@@ -58,27 +34,28 @@ namespace Damath
         /// <summary>
         /// Whether if the player is participating in the match.
         /// </summary>
-        public bool IsPlaying = false;
-        public bool IsModerator = false;
-        public bool IsControllable = false;
+        public bool IsPlaying { get; private set; }
+        [field: SerializeField] public bool IsModerator { get; private set; }
+        public bool AllowControls { get; private set; }
         /// <summary>
         /// Whether if the player is an AI.
         /// </summary>
-        public bool IsAI = false;
-        public Cell SelectedCell = null;
+        public bool IsAI { get; private set; }
+        
+        public Cell SelectedCell { get; private set; }
         /// <summary>
         /// The player's currently selected piece.
         /// </summary>
-        public Piece SelectedPiece = null;
-        public Piece HeldPiece = null;
+        public Piece SelectedPiece { get; private set; }
+        public Piece HeldPiece { get; private set; }
         /// <summary>
         /// The piece this player had moved previously.
         /// </summary>
-        public Piece MovedPiece = null;
+        public Piece MovedPiece { get; private set; }
         /// <summary>
         /// Whether if the player is currently holding down the mouse button.
         /// </summary>
-        public bool IsHoldingMouse = false;
+        public bool IsHoldingMouse { get; private set; }
         /// <summary>
         /// The player's turn count.
         /// </summary>
@@ -86,11 +63,13 @@ namespace Damath
         /// <summary>
         /// Whether if it's this player's turn or not.
         /// </summary>
-        public bool IsTurn;
+        public bool IsMyTurn { get; private set; }
 
         [SerializeField] private float MouseHoldTime = 0f;
 
-        public event EventHandler<PointerEventData> OnClick;
+        public event EventHandler<PointerEventData.InputButton> OnClick;
+        
+        Dictionary<string, InputAction> inputs = new();
 
         void Start()
         {                
@@ -122,12 +101,71 @@ namespace Damath
             // Game.Events.OnPieceMove += IMadeAMove;
         }
 
-        public void Initialize()
+        internal void Initialize()
         {
             // Name = Game.Main.Nickname;
             name = $"{Game.Main.Nickname} (Player)";
             Score = new();
+            InitializeInputs();
             Game.Events.PlayerCreate(this);
+        }
+
+        void InitializeInputs()
+        {
+            var map = Game.Main.GetActionMap("Player");
+            foreach (var action in map.actions)
+            {
+                inputs[action.name] = action;
+                action.Enable();            
+            }
+
+            // inputs["Left Click"].started += HandleLeftClickStarted;
+            inputs["Left Click"].performed += HandleLeftClick;
+            inputs["Left Click"].canceled += HandleLeftClickRelease;
+            // inputs["Middle Click"].started += HandleMiddleClick;
+            // inputs["Middle Click"].performed += HandleMiddleClick;
+            // inputs["Middle Click"].canceled += HandleMiddleClick;
+            // inputs["Right Click"].started += HandleRightClickStarted;
+            inputs["Right Click"].performed += HandleRightClick;
+            inputs["Right Click"].canceled += HandleRightClickRelease;
+        }
+
+        void HandleLeftClick(InputAction.CallbackContext c)
+        {
+            /// Check if there's a piece currently selected and if the player is not holding the mouse button
+            /// This is to avoid selecting the moved piece again after selecting a cell via left click
+            if (SelectedPiece != null && !IsHoldingMouse) return;
+
+            CastRay();
+            Game.Events.PlayerLeftClick(this);
+            OnClick?.Invoke(this, PointerEventData.InputButton.Left);
+        }
+
+        // void HandleMiddleClick()
+        // {
+        //     OnClick?.Invoke(this, PointerEventData.InputButton.Middle);
+        // }
+
+        void HandleRightClick(InputAction.CallbackContext c)
+        {
+            CastRay();
+            Game.Events.PlayerRightClick(this);   
+            OnClick?.Invoke(this, PointerEventData.InputButton.Right);
+        }
+
+        void HandleLeftClickRelease(InputAction.CallbackContext c)
+        {
+            
+        }
+
+        // void HandleMiddleClickRelease(InputAction.CallbackContext c)
+        // {
+            
+        // }
+
+        void HandleRightClickRelease(InputAction.CallbackContext c)
+        {
+            
         }
 
         #region Public
@@ -161,12 +199,12 @@ namespace Damath
         {
             if (Side == side)
             {
-                IsControllable = true;
-                IsTurn = true;
+                AllowControls = true;
+                IsMyTurn = true;
             } else
             {
-                IsControllable = false;
-                IsTurn = false;
+                AllowControls = false;
+                IsMyTurn = false;
             }
         }
 
@@ -174,31 +212,12 @@ namespace Damath
 
         void DetectRaycast()
         {
-            /// Left click
-            if (Input.GetMouseButtonDown(0))
-            {
-                /// Check if there's a piece currently selected and if the player is not holding the mouse button
-                /// This is to avoid selecting the moved piece again after selecting a cell via left click
-                if (SelectedPiece != null && !IsHoldingMouse) return;
-
-                CastRay();
-                Game.Events.PlayerLeftClick(this);
-            }
-            
-            /// Right click
-            if (Input.GetMouseButtonDown(1))
-            {
-                CastRay();
-                Game.Events.PlayerRightClick(this);    
-            }
-
             /// Left click and hold
-            if (Input.GetMouseButton(0))
+            if (Mouse.current.leftButton.isPressed)
             {
                 if (!Game.Main.Settings.AllowPieceDragging) return;
 
                 MouseHoldTime += 1 * Time.deltaTime;
-
                 if (MouseHoldTime >= Game.Main.Settings.PieceGrabDelay)
                 {
                     MouseHoldTime = Game.Main.Settings.PieceGrabDelay; /// Inhibit value to max hold time
@@ -216,7 +235,7 @@ namespace Damath
             }
 
             /// Left click release
-            if (Input.GetMouseButtonUp(0))
+            if (Mouse.current.leftButton.wasReleasedThisFrame)
             {
                 MouseHoldTime = 0f;
                 CastRay();
@@ -226,12 +245,6 @@ namespace Damath
                     IsHoldingMouse = false;
                     Game.Events.PlayerRelease(this);
                 }
-            }
-
-            /// Right click release
-            if (Input.GetMouseButtonUp(1))
-            {
-                // CastRay();
             }
         }
         
@@ -243,7 +256,7 @@ namespace Damath
             /// If network is online (an instance of a client is active)
             /// only allow control of owned player object
             if (IsClient && !IsOwner) return;
-            if (!IsControllable) return;
+            if (!AllowControls) return;
 
             Hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);  
             if (Hit.collider == null) return;
@@ -272,7 +285,13 @@ namespace Damath
                 SelectPiece(SelectedCell.Piece);
             } else
             {
-                SelectMovecell(SelectedCell);
+                if (SelectedCell.IsValidMove)
+                {
+                    SelectMovecell(SelectedCell);
+                } else
+                {
+                    Deselect();
+                }
             }
         }
 
@@ -327,22 +346,16 @@ namespace Damath
 
             if (cell != null) SelectedCell = cell;
 
-            if (SelectedCell.IsValidMove)
+            if (IsMyTurn) /// it's a normal move
             {
-                if (IsTurn) /// it's a normal move
-                {
-                    Game.Events.PlayerSelectMovecell(this, SelectedCell);
-                    Game.Audio.PlaySound("Move");
-                    return;
+                Game.Events.PlayerSelectMovecell(this, SelectedCell);
+                Game.Audio.PlaySound("Move");
+                return;
 
-                } else /// it's a premove
-                {
-                    /// Premove logic
-                    return;
-                }
-            } else
+            } else /// it's a premove
             {
-                Deselect();
+                /// Premove logic
+                return;
             }
         }
 
@@ -386,6 +399,11 @@ namespace Damath
         public void Deselect(Piece piece)
         {
             Deselect();
+        }
+
+        public void ToggleControls(bool value)
+        {
+            AllowControls = value;
         }
     }
 }

@@ -26,7 +26,8 @@ namespace Damath.Systems
                 .AddCallback(Command_Connect));
 
             RegisterCommand(Command.Create(
-                "debug <scene>")
+                "debug <scene>",
+                "Insert command description.")
                 .AddCallback(Command_Debug));
 
             RegisterCommand(Command.Create(
@@ -45,7 +46,8 @@ namespace Damath.Systems
                 .AddCallback());
 
             RegisterCommand(Command.Create(
-                "help <command>")
+                "help <command>",
+                "Insert command description.")
                 .AddCallback(Command_Help));
 
             RegisterCommand(Command.Create(
@@ -59,16 +61,18 @@ namespace Damath.Systems
                 .AddCallback(Command_Leave));
 
             RegisterCommand(Command.Create(
-                "lobby <create|info>")
+                "lobby <create|info>",
+                "Insert command description.")
                 .AddCallback(Command_Lobby));
 
             RegisterCommand(Command.Create(
-                "match <create|start> <standard|speed|custom>")
+                "match <create|start> <standard|speed|custom>",
+                "Insert command description.")
                 .AddCallback(Command_Match));
 
             RegisterCommand(Command.Create(
                 "move <col> <row> <toCol> <toRow>",
-                "")
+                "Insert command description.")
                 .AddCallback(Command_Move));
 
             RegisterCommand(Command.Create(
@@ -77,8 +81,8 @@ namespace Damath.Systems
                 .AddCallback(Command_Name));
 
             RegisterCommand(Command.Create(
-                "piece <s|s> <col> <row> [value]",
-                "Piece actions.")
+                "piece <add|remove> <col> <row> [value]",
+                "Piece actions. (Cheats only)")
                 .AddCallback(Command_Piece));
 
             RegisterCommand(Command.Create(
@@ -91,6 +95,11 @@ namespace Damath.Systems
                 "select <col> <row>",
                 "Select a cell.")
                 .AddCallback(Command_Select));
+
+            RegisterCommand(Command.Create(
+                "start",
+                "Start current match.")
+                .AddCallback(Command_Start));
         }
 
         #region Command actions
@@ -295,9 +304,18 @@ namespace Damath.Systems
 
         void Command_Piece(List<string> args)
         {
-            if (args[1] == "create")
+            int col = int.Parse(args[2]);
+            int row = int.Parse(args[3]);
+
+            if (args[1] == "add")
             {
-                //
+                var data = new PieceData();
+                Match.Board.AddPiece(col, row, data);
+
+            } else if (args[1] == "remove")
+            {
+                Match.Board.RemovePiece(col, row);
+
             } else if (args[1] == "get")
             {
                 Log(Match);
@@ -317,6 +335,21 @@ namespace Damath.Systems
             (int col, int row) = (int.Parse(args[1]), int.Parse(args[2]));
             
             Game.Events.CellSelect(Cellmap[new (col, row)]);
+        }
+
+        void Command_Start(List<string> arg0)
+        {
+            if (Game.Main.Ruleset == null)
+            {
+                Log("No match created. Create one with /match create <ruleset>");
+                return;
+            }
+            
+            if (!Game.Main.Match.IsPlaying)
+            {
+                Game.Main.StartMatch();
+                return;
+            }
         }
 
         #endregion

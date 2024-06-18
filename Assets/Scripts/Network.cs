@@ -6,6 +6,7 @@ using FishNet.Managing.Scened;
 using FishNet.Object;
 using FishNet.Connection;
 using FishNet.Transporting;
+using Damath.Players;
 
 namespace Damath
 {

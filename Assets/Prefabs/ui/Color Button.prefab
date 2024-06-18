@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 5855753887272586309}
   - component: {fileID: 5855753887272586305}
   - component: {fileID: 5855753887272586310}
-  - component: {fileID: 5855753887272586311}
   - component: {fileID: 5855753887272586308}
+  - component: {fileID: 5855753887272586311}
   m_Layer: 5
   m_Name: Color Button
   m_TagString: Untagged
@@ -33,7 +33,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -78,22 +77,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &5855753887272586311
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5855753887272586314}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dabcc0099cb78294695c950d4d66b263, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  currentColorIndex: 0
-  Colors:
-  - {r: 0.9529412, g: 0.4392157, b: 0.28235295, a: 1}
-  - {r: 0.09411765, g: 0.3137255, b: 0.4509804, a: 1}
 --- !u!114 &5855753887272586308
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -138,3 +121,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &5855753887272586311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5855753887272586314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dabcc0099cb78294695c950d4d66b263, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Colors:
+  - {r: 0.09411765, g: 0.3137255, b: 0.4509804, a: 1}
+  - {r: 0.9529412, g: 0.4392157, b: 0.28235295, a: 1}

@@ -32,7 +32,8 @@ namespace Damath.UI
                 iconImage.sprite = value;
             }
         }
-        List<Action> callbacks = new();
+        ChoiceWindow parent;
+        List<Action> _callbacks = new();
 
         [SerializeField] TextMeshProUGUI labelTMP;
         [SerializeField] Image iconImage;
@@ -40,21 +41,24 @@ namespace Damath.UI
 
         void Start()
         {
+            parent = GetComponentInParent<ChoiceWindow>();
             button.onClick.AddListener(() =>
             {
+                button.interactable = false;
                 Invoke();
+                parent.Hide();
             });
         }
 
-        public void AddCallback(Action function)
+        public void AddCallback(Action callback)
         {
-            callbacks.Add(function);
+            _callbacks.Add(callback);
         }
 
         public void Invoke()
         {
-            if (callbacks.Count == 0) return;
-            foreach (var c in callbacks)
+            if (_callbacks.Count == 0) return;
+            foreach (var c in _callbacks)
             {
                 c.Invoke();
             }

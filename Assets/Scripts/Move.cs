@@ -1,3 +1,5 @@
+using Damath.Players;
+
 namespace Damath
 {
     public enum MoveType {All, Normal, Capture}

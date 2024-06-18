@@ -580,7 +580,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7610968385705858936, guid: 89de7d00211eefa4f8bd99f207a5b56e, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 171.86
+      value: 171.85999
       objectReference: {fileID: 0}
     - target: {fileID: 7610968385705858936, guid: 89de7d00211eefa4f8bd99f207a5b56e, type: 3}
       propertyPath: m_SizeDelta.y
@@ -592,32 +592,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7610968385705858936, guid: 89de7d00211eefa4f8bd99f207a5b56e, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -49.005
+      value: -44.005
       objectReference: {fileID: 0}
     - target: {fileID: 7610968386318097158, guid: 89de7d00211eefa4f8bd99f207a5b56e, type: 3}
       propertyPath: m_Name
       value: Button 3D
       objectReference: {fileID: 0}
-    - target: {fileID: 7610968386318097163, guid: 89de7d00211eefa4f8bd99f207a5b56e, type: 3}
-      propertyPath: m_SpriteState.m_PressedSprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 9c9d521bcf0c1b74dbac61f40867bc7f, type: 3}
-    - target: {fileID: 7610968386318097163, guid: 89de7d00211eefa4f8bd99f207a5b56e, type: 3}
-      propertyPath: m_SpriteState.m_DisabledSprite
-      value: 
-      objectReference: {fileID: 21300000, guid: dcd8fd07b7a03124d8950ac3c2e4a775, type: 3}
-    - target: {fileID: 7610968386318097163, guid: 89de7d00211eefa4f8bd99f207a5b56e, type: 3}
-      propertyPath: m_SpriteState.m_SelectedSprite
-      value: 
-      objectReference: {fileID: 21300000, guid: ee14e6216b58ac047ae936f431060fb7, type: 3}
-    - target: {fileID: 7610968386318097163, guid: 89de7d00211eefa4f8bd99f207a5b56e, type: 3}
-      propertyPath: m_SpriteState.m_HighlightedSprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 30228661cd02ef8429f51b1bf4461e08, type: 3}
-    - target: {fileID: 7610968386318097164, guid: 89de7d00211eefa4f8bd99f207a5b56e, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 97ecc367901da004286b0c46cf061d97, type: 3}
     - target: {fileID: 7610968387121975239, guid: 89de7d00211eefa4f8bd99f207a5b56e, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -958,19 +938,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3198763997258476162, guid: df13281c9834eeb4a9a639c59302f6a2, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3198763997258476162, guid: df13281c9834eeb4a9a639c59302f6a2, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3198763997258476162, guid: df13281c9834eeb4a9a639c59302f6a2, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 3198763997258476162, guid: df13281c9834eeb4a9a639c59302f6a2, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

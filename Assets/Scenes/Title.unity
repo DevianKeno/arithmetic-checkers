@@ -5225,7 +5225,6 @@ GameObject:
   - component: {fileID: 930963971}
   - component: {fileID: 930963972}
   - component: {fileID: 930963973}
-  - component: {fileID: 930963974}
   m_Layer: 0
   m_Name: '[-GAME-]'
   m_TagString: Untagged
@@ -5297,18 +5296,6 @@ MonoBehaviour:
   m_DefaultActionMap: Console Window
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &930963974
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 930963970}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63a8cc3273c4a5e4e8af8fd91072dc28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &936304144
 GameObject:
   m_ObjectHideFlags: 0
@@ -6243,10 +6230,11 @@ MonoBehaviour:
     Prefab: {fileID: 7610968386318097158, guid: 8b374f5abc5646d41ab741f3592f92e2, type: 3}
   - Id: console_window
     Prefab: {fileID: 8784023953336758505, guid: 5dd9a71a2c787d041a6ddc0ef9757143, type: 3}
+  - Id: add_piece_menu
+    Prefab: {fileID: 2550451510722224039, guid: 2533b7539d52bb14383a8dd4d3073cf0, type: 3}
   dim: {fileID: 1178896331}
   windowPrefab: {fileID: 6288102435147716885, guid: 24d99aa0bf3ba244da08921fef6aac3c, type: 3}
   choiceWindowPrefab: {fileID: 1274695829595390999, guid: ac025dce9f8663041a543bd40f7befee, type: 3}
-  choicePrefab: {fileID: 2934956067630487295, guid: 96ac20b652ebaba44847be84e7ca0213, type: 3}
   tooltipPrefab: {fileID: 3990577252084355902, guid: 550ef379928aead41a050911e287963d, type: 3}
 --- !u!1 &1172538853
 GameObject:
@@ -11725,6 +11713,50 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!1 &2073810517
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2073810519}
+  - component: {fileID: 2073810518}
+  m_Layer: 0
+  m_Name: ~LeanTween
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 2147483647
+  m_IsActive: 1
+--- !u!114 &2073810518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2073810517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c2f4b27196f84954b44753aaac214bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &2073810519
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2073810517}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2091344827
 GameObject:
   m_ObjectHideFlags: 0
@@ -11872,3 +11904,4 @@ SceneRoots:
   - {fileID: 930963971}
   - {fileID: 1736480364}
   - {fileID: 114322781}
+  - {fileID: 2073810519}

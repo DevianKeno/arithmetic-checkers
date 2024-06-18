@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Damath.UI;
+using Damath.Players;
 
 namespace Damath
 {
@@ -31,9 +32,17 @@ namespace Damath
 
     public class Piece : MonoBehaviour
     {
-        public Cell Cell;
-        public int Col, Row;
-        public Vector2 Coordinates;
+        Cell cell;
+        public Cell Cell => cell;
+        public int Col => Cell.Col;
+        public int Row => Cell.Row;
+        public Vector2Int Coordinates
+        {
+            get
+            {
+                return new(Col, Row);
+            }
+        }
         public PieceValue ValueConvertible;
         public string Value;
         public Side Side;
@@ -116,7 +125,12 @@ namespace Damath
         /// </summary>
         public void ToCursor()
         {
-            transform.position = Camera.main.ScreenToWorldPoint( new Vector3( Input.mousePosition.x, Input.mousePosition.y, 1));
+            var target = new Vector3(
+                Input.mousePosition.x,
+                Input.mousePosition.y,
+                1
+            );
+            transform.position = Camera.main.ScreenToWorldPoint(target);
         }
 
         /// <summary>
@@ -130,14 +144,11 @@ namespace Damath
         /// <summary>
         /// Set this piece's "home cell".
         /// </summary>
-        /// <param name="move"> Move the piece to its cell. </param>
-        public void SetCell(Cell cell, bool move = true)
+        /// <param name="setPosition"> Move the piece to its cell. </param>
+        public void SetCell(Cell cell, bool setPosition = true)
         {
-            Cell = cell;
-            Col = cell.Col;
-            Row = cell.Row;
-            
-            if (move) transform.position = cell.transform.position;
+            this.cell = cell;            
+            if (setPosition) transform.position = cell.transform.position;
         }
 
         public void SetValue(string value)

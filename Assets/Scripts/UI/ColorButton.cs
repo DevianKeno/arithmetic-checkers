@@ -9,7 +9,15 @@ namespace Damath.UI
 {
     public class ColorButton : MonoBehaviour
     {
-        public int currentColorIndex = 0;
+        public Color Color
+        {
+            get
+            {
+                return Colors[_current];
+            }
+        }
+        int _current = 0;
+        public int SelectedIndex => _current;
         public List<Color> Colors = new();
 
         Image image;
@@ -26,7 +34,7 @@ namespace Damath.UI
         {
             if (Colors.Count == 0) return;
 
-            SetColor(Colors[currentColorIndex]);
+            SetColor(Colors[_current]);
             AddListener(NextColor);
         }
 
@@ -52,14 +60,14 @@ namespace Damath.UI
         {
             if (Colors.Count == 0) return;
 
-            if (currentColorIndex < Colors.Count - 1)
+            if (_current < Colors.Count - 1)
             {
-                currentColorIndex += 1;
-                SetColor(Colors[currentColorIndex]);
+                _current += 1;
+                SetColor(Colors[_current]);
             } else
             {
-                currentColorIndex = 0;
-                SetColor(Colors[currentColorIndex]);
+                _current = 0;
+                SetColor(Colors[_current]);
             }
         }
 

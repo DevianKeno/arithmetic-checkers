@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Damath.UI
 {
@@ -16,8 +17,8 @@ namespace Damath.UI
             Choice c = go.GetComponent<Choice>();
             c.Label = label;
             c.Icon = icon; 
-            c.AddCallback(Hide);
             choices.Add(c);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(transform as RectTransform);
             return c;
         }
         
@@ -27,9 +28,9 @@ namespace Damath.UI
             {
                 foreach (Choice c in choices)
                 {
-                    choices.Remove(c);
                     Destroy(c.gameObject);
                 }
+                choices.Clear();
             }
         }
     }

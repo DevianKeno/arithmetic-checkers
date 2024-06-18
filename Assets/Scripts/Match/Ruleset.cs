@@ -50,15 +50,15 @@ namespace Damath
         /// The individual rules this ruleset holds. Accessible by indexing.
         /// </summary>
         public Dictionary<string, object> Rules = new();
-        public Dictionary<Vector2, Operation> SymbolMap = new();
-        public Dictionary<Vector2, PieceData> PieceMap = new();
+        public Dictionary<Vector2Int, Operation> SymbolMap = new();
+        public Dictionary<Vector2Int, PieceData> PieceMap = new();
 
         /// <summary>
         /// These data is initialized from files at every start of the program (game).
         /// </summary>
         #region Predefined data
-        static Dictionary<Vector2, Operation> SymbolMapStandard { get; set; }
-        static Dictionary<Vector2, PieceData> PieceMapStandard { get; set; }
+        static Dictionary<Vector2Int, Operation> SymbolMapStandard { get; set; }
+        static Dictionary<Vector2Int, PieceData> PieceMapStandard { get; set; }
         
         public static Ruleset Standard { get; private set; }
         public static Ruleset Speed { get; private set; }

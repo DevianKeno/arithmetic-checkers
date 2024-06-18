@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using TMPro;
+using Damath.Players;
 
 namespace Damath.Systems
 {
@@ -19,6 +20,7 @@ namespace Damath.Systems
         public bool IsMultiplayer { get; set; }
         [field: SerializeField] public Ruleset Ruleset { get; private set; }
 
+        public Board Board => board;
         [SerializeField] Board board;
         [SerializeField] Scoreboard scoreboard;
         [SerializeField] TimerManager timerManager;
@@ -61,7 +63,7 @@ namespace Damath.Systems
                 
                 if (Ruleset.GetValue<bool>("EnableCheats"))
                 {
-                    cheats.Initialize();
+                    cheats.Initialize(this);
                     Game.Console.Log("Cheats enabled.");
                 }
             } else
@@ -137,8 +139,8 @@ namespace Damath.Systems
             Player bluePlayer = CreatePlayer(Side.Blue);
             Player orangePlayer = CreatePlayer(Side.Orange);
             
-            bluePlayer.IsControllable = true;
-            orangePlayer.IsControllable = true;
+            bluePlayer.ToggleControls(true);
+            orangePlayer.ToggleControls(true);
         }
     }
 }

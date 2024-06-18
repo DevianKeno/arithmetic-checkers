@@ -27,7 +27,7 @@ namespace Damath
         public static UIManager UI { get; private set; }
         public static AudioManager Audio { get; private set; }
 
-        protected bool IsAlive { get; private set; }
+        public bool IsAlive { get; private set; }
         public bool IsPaused { get; private set; }
         public bool IsOnline { get; private set; }
         public bool IsHosting { get; private set; }

@@ -36,16 +36,17 @@ namespace Damath
                 return;
             }
 
-            if (!Ruleset.GetValue<bool>("EnableGlobalTimer"))
+            if (Ruleset.GetValue<bool>("EnableGlobalTimer"))
             {
                 GlobalTimer.SetTime(Ruleset.GetValue<float>("GlobalTimerSeconds"));
                 GlobalTimer.SetFormat(TimerFormat.MM_SS);
                 GlobalTimer.Begin();
             }
             
-            if (!Ruleset.GetValue<bool>("EnableTurnTimer"))
+            if (Ruleset.GetValue<bool>("EnableTurnTimer"))
             {
-                BlueTimer.SetTime(Ruleset.GetValue<float>("TurnTimerSeconds"));
+                var a = Ruleset.GetValue<float>("TurnTimerSeconds");
+                BlueTimer.SetTime(a);
                 BlueTimer.SetFormat(TimerFormat.SS);
                 
                 OrangeTimer.SetTime(Ruleset.GetValue<float>("TurnTimerSeconds"));

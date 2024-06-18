@@ -42,7 +42,8 @@ namespace Damath.UI
 
     public class Toggle : UnityEngine.UI.Toggle, IHoverable
     {
-        public bool Value = true;
+        [SerializeField] bool _value = true;
+        public bool Value => _value;
         public float SpeedInSeconds = 0.5f;
         public Color BackgroundColorOff = new(0.37f, 0.37f, 0.37f, 1f);
         public Color BackgroundColorOn = new(0.2f, 0.33f, 0.46f, 1f);
@@ -65,7 +66,7 @@ namespace Damath.UI
         {
             base.Start();
             
-            SetValue(Value);
+            SetValue(_value);
             onValueChanged.AddListener(SetValue);
         }
 
@@ -87,17 +88,17 @@ namespace Damath.UI
 
         public bool GetValue()
         {
-            return Value;
+            return _value;
         }
 
         public void SetValue(bool value)
         {
-            Value = value;
+            _value = value;
             interactable = false;
 
             SetInteractableAfter(true, SpeedInSeconds);
 
-            if (Value)
+            if (_value)
             {
                 LeanTween.move(knobRect, new Vector3(35f, 0f, 0f), SpeedInSeconds)
                 .setEaseOutExpo();

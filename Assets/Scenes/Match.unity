@@ -2056,6 +2056,7 @@ GameObject:
   - component: {fileID: 1201775683}
   - component: {fileID: 1201775685}
   - component: {fileID: 1201775684}
+  - component: {fileID: 1201775686}
   m_Layer: 5
   m_Name: Global Timer (UI)
   m_TagString: Untagged
@@ -2180,6 +2181,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1201775682}
   m_CullTransparentMesh: 1
+--- !u!114 &1201775686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1201775682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8667481904306c34fb333dcc2368769c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1202858694
 GameObject:
   m_ObjectHideFlags: 0
@@ -2592,11 +2605,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Tooltip: {fileID: 0}
-  icons:
-  - {fileID: 21300000, guid: ca1ca1a49c3be7244a0c4e60917893fb, type: 3}
-  - {fileID: 21300000, guid: f96175962d45bfb4cb830e42536c21a4, type: 3}
-  - {fileID: 21300000, guid: e75dd70781909824ba7aa760e7880503, type: 3}
-  - {fileID: 21300000, guid: e2795a671b3509a468d36cd52f8f72f7, type: 3}
   Prefabs: []
   dim: {fileID: 0}
   windowPrefab: {fileID: 6288102435147716885, guid: 24d99aa0bf3ba244da08921fef6aac3c, type: 3}
@@ -3938,6 +3946,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae0f314c0f8b14143abeefec424b476c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FadeDuration: 0.25
+  IgnoreTimeScale: 0
   GlobalTimer: {fileID: 1049602932}
   BlueTimer: {fileID: 1644294983}
   OrangeTimer: {fileID: 2138248597}

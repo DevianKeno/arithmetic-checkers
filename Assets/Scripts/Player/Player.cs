@@ -67,8 +67,14 @@ namespace Damath.Players
 
         [SerializeField] private float MouseHoldTime = 0f;
 
+        #region Events
         public event EventHandler<PointerEventData.InputButton> OnClick;
-        
+        public event EventHandler<Cell> OnCellSelect;
+        public event EventHandler<Cell> OnCellDeselect;
+        public event EventHandler<Piece> OnPieceSelect;
+
+        #endregion
+
         Dictionary<string, InputAction> inputs = new();
 
         void Start()
@@ -255,20 +261,22 @@ namespace Damath.Players
         {
             /// If network is online (an instance of a client is active)
             /// only allow control of owned player object
-            if (IsClient && !IsOwner) return;
+            // if (IsClient && !IsOwner) return;
             if (!AllowControls) return;
 
-            Hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);  
+            hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);  
             if (Hit.collider == null) return;
 
             if (Hit.collider.CompareTag("Cell"))
             {
-                SelectedCell = Hit.collider.gameObject.GetComponent<Cell>();
-                SelectCell(SelectedCell);
+                if (Hit.collider.gameObject.TryGetComponent(out Cell cell))
+                {
+                    SelectCell(cell);
+                }
 
             } else if (Hit.collider.CompareTag("Background"))
             {
-                Debug.Log("Left clicked background");
+                Debug.Log("Clicked background");
                 Game.Events.CellDeselect(SelectedCell);
             }
         }
@@ -279,11 +287,13 @@ namespace Damath.Players
         public void SelectCell(Cell cell)
         {
             SelectedCell = cell;
+            OnCellSelect?.Invoke(this, cell);
 
             if (SelectedCell.HasPiece)
             {
                 SelectPiece(SelectedCell.Piece);
-            } else
+            
+            } else /// empty cell
             {
                 if (SelectedCell.IsValidMove)
                 {
@@ -300,7 +310,9 @@ namespace Damath.Players
         /// </summary>
         public void SelectPiece(Piece piece)
         {
-            if (!OwnsPiece(piece))
+            if (piece == null) return;
+
+            if (!IsMyPiece(piece))
             {
                 Deselect();
                 return;
@@ -330,6 +342,8 @@ namespace Damath.Players
             {
                 SelectedPiece = piece;
                 Game.Events.PlayerSelectPiece(this, SelectedPiece);
+                OnPieceSelect?.Invoke(this, SelectedPiece);
+
                 Game.Audio.PlaySound("Select");
                 return;
             }
@@ -372,10 +386,15 @@ namespace Damath.Players
         /// <summary>
         /// Check if this player owns this piece.
         /// </summary>
-        public bool OwnsPiece(Piece piece)
+        public bool IsMyPiece(Piece piece)
         {
-            if (piece.Side == Side) return true;
-            return false;
+            if (piece.Side == Side)
+            {
+                return true;
+            } else
+            {
+                return false;
+            }
         }
 
         /// <summary>

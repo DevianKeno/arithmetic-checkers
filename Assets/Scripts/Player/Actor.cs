@@ -10,6 +10,7 @@ namespace Damath.Players
     {
         public string @string = "ds";
         public string Name = "Actor";
-        public RaycastHit2D Hit;
+        protected RaycastHit2D hit;
+        public RaycastHit2D Hit => hit;
     }
 }

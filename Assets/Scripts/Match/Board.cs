@@ -16,8 +16,11 @@ namespace Damath
         Ruleset Ruleset { get; set; }
         public Themes Theme;
 
-        public Dictionary<Vector2, Cell> Cells = new();
-        [SerializeField] private Cell SelectedCell = null;
+        List<Cell> _cells = new();
+        Dictionary<Vector2, Cell> _cellCoordinates = new();
+        List<Piece> _pieces = new();
+
+        [SerializeField] Cell selectedCell = null;
         public Piece SelectedPiece = null;
         public Piece MovedPiece = null;
         public List<Move> ValidMoves = new();
@@ -136,11 +139,12 @@ namespace Damath
                         newCell.SetOperation(Ruleset.SymbolMap[coords]);
                     }
 
-                    Cells[coords] = newCell;
+                    _cells.Add(newCell);
+                    _cellCoordinates[coords] = newCell;
                 }
             }
 
-            Game.Events.BoardUpdateCellmap(Cellmap<Cell>.ToCellmap(Cells));
+            Game.Events.BoardUpdateCellmap(Cellmap<Cell>.ToCellmap(_cellCoordinates));
         }
 
         /// <summary>
@@ -167,6 +171,7 @@ namespace Damath
                 newPiece.SetSide(pieceData.Side);
                 newPiece.SetKing(pieceData.IsKing);
                 cell.SetPiece(newPiece);
+                _pieces.Add(newPiece);
             }
         }
 
@@ -796,9 +801,9 @@ namespace Damath
 
         public Cell GetCell(Vector2Int coords)
         {
-            if (Cells.ContainsKey(coords))
+            if (_cellCoordinates.ContainsKey(coords))
             {
-                return Cells[coords];
+                return _cellCoordinates[coords];
             }
             return null;
         }
@@ -806,9 +811,9 @@ namespace Damath
         public Cell GetCellFromRow(int col, int row)
         {
             var coords = new Vector2Int(col, row);
-            if (Cells.ContainsKey(coords))
+            if (_cellCoordinates.ContainsKey(coords))
             {
-                return Cells[coords];
+                return _cellCoordinates[coords];
             }
             return null;
         }
@@ -816,11 +821,19 @@ namespace Damath
         public Cell GetCellFromPiece(Piece piece)
         {
             var coords = new Vector2Int(piece.Col, piece.Row);
-            if (Cells.ContainsKey(coords))
+            if (_cellCoordinates.ContainsKey(coords))
             {
-                return Cells[coords];
+                return _cellCoordinates[coords];
             }
             return null;
+        }
+
+        internal void RemoveAllPieces()
+        {
+            foreach (var cell in _cells)
+            {
+                cell.RemovePiece();
+            }
         }
     }
 }

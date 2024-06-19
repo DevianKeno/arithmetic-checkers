@@ -30,7 +30,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 96072316555059120}
-  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -125,7 +124,6 @@ RectTransform:
   - {fileID: 4599963875166718720}
   - {fileID: 5491978415740081531}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -196,25 +194,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44b7cb6a9b13a3a44b23ac51f72ac621, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Cell: {fileID: 0}
-  Col: 0
-  Row: 0
-  Value: 
-  Side: 0
   Owner: {fileID: 0}
-  IsKing: 0
   CanCapture: 0
   HasCaptured: 0
   Forward: 0
+  Color: {r: 0, g: 0, b: 0, a: 0}
+  Shadow: {r: 0, g: 0, b: 0, a: 0}
   Sprites:
   - {fileID: 21300000, guid: abedf3bb648bfc34a94f6535be18171d, type: 3}
   - {fileID: 21300000, guid: b1643ad483c5594479ca0d9555bf2865, type: 3}
-  Color: {r: 0, g: 0, b: 0, a: 0}
-  Shadow: {r: 0, g: 0, b: 0, a: 0}
-  IsSelected: 0
-  SelectedBy: {fileID: 0}
-  rect: {fileID: 96072316555059120}
-  tmp: {fileID: 243476818795445260}
+  text: {fileID: 243476818795445260}
   overlayTop: {fileID: 8577096469484517002}
   overlayShadow: {fileID: 3123025128967981738}
 --- !u!210 &37085246357661777
@@ -228,6 +217,7 @@ SortingGroup:
   m_SortingLayerID: -467570757
   m_SortingLayer: 5
   m_SortingOrder: 0
+  m_SortAtRoot: 0
 --- !u!1 &7103881841409839295
 GameObject:
   m_ObjectHideFlags: 0
@@ -258,7 +248,6 @@ RectTransform:
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 96072316555059120}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -347,7 +336,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 96072316555059120}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -438,7 +426,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 96072316555059120}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -590,3 +577,4 @@ SortingGroup:
   m_SortingLayerID: -467570757
   m_SortingLayer: 5
   m_SortingOrder: 2
+  m_SortAtRoot: 0

@@ -9,6 +9,7 @@ namespace Damath.UI
         List<Choice> choices = new();
 
         [SerializeField] GameObject choicePrefab;
+        [SerializeField] GameObject dividerPrefab;
         
         public Choice AddChoice(string label, Sprite icon = null)
         {
@@ -21,17 +22,22 @@ namespace Damath.UI
             LayoutRebuilder.ForceRebuildLayoutImmediate(transform as RectTransform);
             return c;
         }
+
+        public void AddDivider()
+        {
+            Instantiate(dividerPrefab, transform);
+        }
         
-        public void ClearChoices()
+        public void Clear()
         {
             if (choices.Count > 0)
             {
-                foreach (Choice c in choices)
+                foreach (Transform c in transform)
                 {
                     Destroy(c.gameObject);
                 }
-                choices.Clear();
             }
+            choices.Clear();
         }
     }
 }

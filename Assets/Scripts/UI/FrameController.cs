@@ -50,7 +50,7 @@ namespace Damath.UI
                     .setOnComplete( () =>
                     {
                         CurrentFrame.transform.SetParent(inactive.transform);
-                        CurrentFrame.rect.anchoredPosition = new Vector3(0f, 0f, 0f);
+                        CurrentFrame.rect.anchoredPosition = Vector2.zero;
                         CurrentFrame.gameObject.SetActive(false);
                     });
 

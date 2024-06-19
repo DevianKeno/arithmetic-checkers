@@ -50,18 +50,27 @@ namespace Damath.UI
             });
         }
 
-        public void AddCallback(Action callback)
+        public Choice AddCallback(Action callback)
         {
             _callbacks.Add(callback);
+            return this;
         }
 
-        public void Invoke()
+        public Choice Invoke()
         {
-            if (_callbacks.Count == 0) return;
+            if (_callbacks.Count == 0) return this;
             foreach (var c in _callbacks)
             {
                 c.Invoke();
             }
+            return this;
         }
+
+        public Choice SetEnabled(bool value)
+        {
+            button.interactable = value;
+            return this;
+        }
+        
     }
 }

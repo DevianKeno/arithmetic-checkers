@@ -76,7 +76,7 @@ namespace Damath
         /// </summary>
         public List<Sprite> Sprites;
 
-        [SerializeField] TextMeshPro tmp;
+        [SerializeField] TextMeshPro text;
         [SerializeField] SpriteRenderer overlayTop;
         [SerializeField] SpriteRenderer overlayShadow;
         private static GameObject prefab;
@@ -95,7 +95,7 @@ namespace Damath
         
         void Start()
         {
-            tmp.text = Value;
+            text.text = Value;
 
             if (IsKing)
             {
@@ -154,7 +154,7 @@ namespace Damath
         public void SetValue(string value)
         {
             Value = value;
-            tmp.SetText(value);
+            text.SetText(value);
         }
 
         public void SetSide(Side value)
@@ -173,6 +173,7 @@ namespace Damath
         
         public void SetColor(Color top, Color shadow)
         {
+            text.color = shadow;
             overlayTop.color = top;
             overlayShadow.color = shadow;
         }
@@ -199,7 +200,7 @@ namespace Damath
             if (IsKing) return;
 
             overlayTop.sprite = Sprites[1];
-            tmp.color = new Color(1, 1, 1, 1);
+            text.color = Color.white;
             IsKing = true;
         }
 
@@ -208,7 +209,7 @@ namespace Damath
             if (!IsKing) return;
 
             overlayTop.sprite = Sprites[0];
-            tmp.color = new Color(0, 0, 0, 1);
+            text.color = overlayShadow.color;
             IsKing = false;
         }
 

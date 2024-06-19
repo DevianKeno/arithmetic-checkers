@@ -25,6 +25,7 @@ namespace Damath.Systems
         [SerializeField] Scoreboard scoreboard;
         [SerializeField] TimerManager timerManager;
         [SerializeField] Cheats cheats;
+        public Cheats Cheats => cheats;
 
         [SerializeField] TextMeshProUGUI rulesetText;
         

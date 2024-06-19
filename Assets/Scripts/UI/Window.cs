@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace Damath.UI
 {
@@ -42,6 +43,7 @@ namespace Damath.UI
         public void Show()
         {
             gameObject.SetActive(true);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(transform as RectTransform);
             OnShow();
             IsVisible = true;
             OnOpen?.Invoke();

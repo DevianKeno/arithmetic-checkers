@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using FishNet.Connection;
 using FishNet.Object;
 using Damath.Players;
@@ -59,6 +60,7 @@ namespace Damath.Systems
         
         #region Match events
         public event Action OnDeselect;
+        public event Action<Cell, PointerEventData> OnCellClick;
         public event Action<Cell> OnCellSelect;
         public event Action<Cell> OnCellDeselect;
         public event Action<Cell> OnCellReturn;
@@ -271,6 +273,11 @@ namespace Damath.Systems
             OnDeselect?.Invoke();
         }
 
+        public void CellClick(Cell cell, PointerEventData e)
+        {
+            OnCellClick?.Invoke(cell, e);
+        }
+
         /// <summary>
         /// Fired when a cell is selected.
         /// </summary>
@@ -397,7 +404,7 @@ namespace Damath.Systems
         }
 
         #endregion
-        #pragma warning restore 0169
+#pragma warning restore 0169
     }
 
 }

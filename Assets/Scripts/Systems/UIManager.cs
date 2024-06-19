@@ -15,19 +15,26 @@ namespace Damath.Systems
             public string Id;
             public GameObject Prefab;
         }
-        
-        public static UIManager Main;
 
+        [Serializable]
+        public struct IconId
+        {
+            public string Id;
+            public Sprite Sprite;
+        }
+        
         public Canvas Canvas { get; private set; }
+        Dictionary<string, Sprite> _iconsDict = new();
+
         public Tooltip Tooltip;
-        public List<Sprite> icons;
-        public Dictionary<string, Sprite> Icons = new();
-        private bool IsDimmed;
+
+        bool IsDimmed;
 
         Dictionary<string, IUIElement> windows = new();
         
         [Header("UI Prefabs")]
         public List<PrefabId> Prefabs;
+
 
         [Header("Prefabs")]
         public Image dim;
@@ -39,16 +46,20 @@ namespace Damath.Systems
 
         void Awake()
         {
-            Main = this;
-
             mainInput = Game.Main.MainInput;
             Canvas = GetComponentInChildren<Canvas>();
-        }        
+        }
 
         internal void Initialize()
         {
             InitializeWindows();
             InitializeInputs();
+
+            var icons = Resources.LoadAll<Sprite>("UI/Icons");
+            foreach (var icon in icons)
+            {
+                _iconsDict[icon.name] = icon;
+            }
         }
 
         void InitializeWindows()
@@ -70,14 +81,21 @@ namespace Damath.Systems
             //
         }
 
-        public void AddIcon(string name, Sprite sprite)
+        public void AddIcon(string id, Sprite sprite)
         {
-            Icons.Add(name, sprite);
+            _iconsDict[id] = sprite;
         }
 
-        public void GetIcon(string iconName)
+        public Sprite GetIcon(string iconId)
         {
-            
+            if (_iconsDict.ContainsKey(iconId))
+            {
+                return _iconsDict[iconId];
+            }
+            else
+            {
+                return null;
+            }
         }
         
         public T Create<T>(string id, bool inSafeArea = true) where T : IUIElement

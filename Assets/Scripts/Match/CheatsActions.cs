@@ -6,22 +6,69 @@ namespace Damath.Systems
 {
     public partial class Cheats : MonoBehaviour
     {
-        #region Actions
+        AddPieceMenu addPieceMenu;
 
-        public void AddPiece()
+        #region Actions
+    
+        void AddPiece()
         {
             // Debug.Log("add piece clicked");
             if (_selectedCell == null) return;
 
             if (!_selectedCell.HasPiece)
             {
-                var addPieceMenu = Game.UI.Create<AddPieceMenu>("add_piece_menu");
+                if (addPieceMenu == null)
+                {
+                    addPieceMenu = Game.UI.Create<AddPieceMenu>("add_piece_menu");
+                }
                 addPieceMenu.SelectedCell = _selectedCell;
                 addPieceMenu.Show();
             }
         }
 
-        public void RemovePiece()
+        void SetOperation()
+        {
+            if (_selectedCell == null) return;
+
+            Operation op;
+            choiceWindow.Clear();
+            choiceWindow.AddChoice("Addition", Game.UI.GetIcon("operator_add"))
+                .AddCallback(() =>
+                {
+                    op = Operation.Addition;
+                    InjectOperation();
+                });
+            choiceWindow.AddChoice("Subtraction", Game.UI.GetIcon("operator_subtract"))
+                .AddCallback(() =>
+                {
+                    op = Operation.Subtraction;
+                    InjectOperation();
+                });
+            choiceWindow.AddChoice("Multiplication", Game.UI.GetIcon("operator_multiply"))
+                .AddCallback(() =>
+                {
+                    op = Operation.Multiplication;
+                    InjectOperation();
+                });
+            choiceWindow.AddChoice("Division", Game.UI.GetIcon("operator_division"))
+                .AddCallback(() =>
+                {
+                    op = Operation.Division;
+                    InjectOperation();
+                });
+            
+            void InjectOperation()
+            {
+                _selectedCell.SetOperation(op);
+            }
+        }
+
+        void GrabPiece()
+        {
+
+        }
+
+        void RemovePiece()
         {
             // Debug.Log("Remove piece clicked");
             if (_selectedCell == null) return;
@@ -37,7 +84,7 @@ namespace Damath.Systems
             }
         }
 
-        public void Promote()
+        void Promote()
         {
             // Debug.Log("Promote clicked");
             if (_selectedCell == null) return;
@@ -50,7 +97,7 @@ namespace Damath.Systems
             }
         }
 
-        public void Demote()
+        void Demote()
         {
             // Debug.Log("Demote clicked");
             if (_selectedCell == null) return;
@@ -63,28 +110,11 @@ namespace Damath.Systems
             }
         }
 
-        public void RemoveAll()
+        void RemoveAll()
         {
-            // foreach (var c in Game.Main.Match.Board.cellMap)
-            // {
-            //     if (c.Value.piece != null) c.Value.piece.Remove();
-            // }
-        }
-
-        public void PromoteAll()
-        {
-            // foreach (var c in Game.Main.Match.Board.cellMap)
-            // {
-            //     if (c.Value.piece != null) c.Value.piece.Promote();
-            // }
-        }
-
-        public void DemoteAll()
-        {
-            // foreach (var c in Game.Main.Match.Board.cellMap)
-            // {
-            //     if (c.Value.piece != null) c.Value.piece.Demote();
-            // }
+            match.Board.RemoveAllPieces();
+            Game.Console.Log($"[CHEATS]: Removed all pieces!");
+            Debug.Log($"[CHEATS]: Removed all pieces!");
         }
         
         #endregion

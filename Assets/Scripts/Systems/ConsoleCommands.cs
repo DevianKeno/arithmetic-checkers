@@ -81,7 +81,7 @@ namespace Damath.Systems
                 .AddCallback(Command_Name));
 
             RegisterCommand(Command.Create(
-                "piece <add|remove> <col> <row> [value]",
+                "piece <add|remove> <col> <row> [value] [side] [king]",
                 "Piece actions. (Cheats only)")
                 .AddCallback(Command_Piece));
 
@@ -309,7 +309,12 @@ namespace Damath.Systems
 
             if (args[1] == "add")
             {
-                var data = new PieceData();
+                var data = new PieceData
+                {
+                    Value = args[4].ToString(),
+                    Side = args[5] == "blue" ? Side.Blue : Side.Orange,
+                    IsKing = bool.Parse(args[6])
+                };
                 Match.Board.AddPiece(col, row, data);
 
             } else if (args[1] == "remove")

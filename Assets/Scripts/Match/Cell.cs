@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Damath.UI;
 using System;
+using UnityEngine.EventSystems;
 
 namespace Damath
 {
@@ -15,7 +16,7 @@ namespace Damath
         public Operation Operation;
     }
 
-    public class Cell : MonoBehaviour
+    public class Cell : MonoBehaviour, IPointerDownHandler
     {
         public int Col { get; private set; }
         public int Row { get; private set; }
@@ -27,6 +28,9 @@ namespace Damath
             }
         }
         public Operation Operation { get; private set; }
+        /// <summary>
+        /// The piece in this cell.
+        /// </summary>
         public Piece Piece { get; private set; }
         public bool HasPiece { get; private set; }
         public bool IsValidMove { get; set; }
@@ -46,11 +50,6 @@ namespace Damath
         void Start()
         {
             Game.Events.OnDeselect += Reset;
-        }
-
-        public void OnMouseEnter()
-        {
-            
         }
 
         public void Reset()
@@ -110,12 +109,25 @@ namespace Damath
             HasPiece = true;
             IsValidMove = false;
         }
+
+        public void RemovePiece()
+        {
+            if (Piece != null)
+            {
+                Piece.Remove();
+            }
+            ClearPiece();
+        }
         
         public void ClearPiece()
         {
-            // Destroy(Piece.gameObject);
             Piece = null;
             HasPiece = false;
+        }
+
+        public void OnPointerDown(PointerEventData e)
+        {
+            Game.Events.CellClick(this, e);
         }
     }
 }

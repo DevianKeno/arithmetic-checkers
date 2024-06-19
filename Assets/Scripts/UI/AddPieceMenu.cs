@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using System;
 using UnityEngine.UIElements;
+using UnityEngine.EventSystems;
 
 namespace Damath.UI
 {
@@ -33,7 +34,7 @@ namespace Damath.UI
             string value = valueField.text;
             bool isKing = toggle.Value;
 
-            string command = $"piece add {col} {row} {pieceColor} {value} {isKing}";
+            string command = $"piece add {col} {row} {value} {pieceColor} {isKing}";
             Game.Console.ExecuteCommand(command);
             SelectedCell = null;
         }

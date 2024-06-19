@@ -97,7 +97,7 @@ MonoBehaviour:
     m_Bottom: 20
   m_ChildAlignment: 0
   m_Spacing: 10
-  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 0
@@ -131,3 +131,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   choicePrefab: {fileID: 2934956067630487295, guid: 96ac20b652ebaba44847be84e7ca0213, type: 3}
+  dividerPrefab: {fileID: 2503287279146284043, guid: 63a9236a0e56978449af4ec803e35d92, type: 3}

@@ -1,6 +1,6 @@
-using Damath.UI;
-using Unity.VisualScripting;
+using System;
 using UnityEngine;
+using Damath.UI;
 
 namespace Damath.Systems
 {
@@ -67,12 +67,11 @@ namespace Damath.Systems
 
         void GrabPiece()
         {
-
+            throw new NotImplementedException();
         }
 
         void RemovePiece()
         {
-            // Debug.Log("Remove piece clicked");
             if (_selectedCell == null) return;
 
             if (_selectedCell.HasPiece)
@@ -86,9 +85,13 @@ namespace Damath.Systems
             }
         }
 
+        void CapturePiece()
+        {
+            throw new NotImplementedException();
+        }
+
         void Promote()
         {
-            // Debug.Log("Promote clicked");
             if (_selectedCell == null) return;
 
             if (_selectedCell.HasPiece)
@@ -101,7 +104,6 @@ namespace Damath.Systems
 
         void Demote()
         {
-            // Debug.Log("Demote clicked");
             if (_selectedCell == null) return;
 
             if (_selectedCell.HasPiece)
@@ -118,7 +120,7 @@ namespace Damath.Systems
             Game.Console.Log($"[CHEATS]: Removed all pieces!");
             Debug.Log($"[CHEATS]: Removed all pieces!");
         }
-        
+
         #endregion
     }
 }

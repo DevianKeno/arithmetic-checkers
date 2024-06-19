@@ -11,9 +11,12 @@ namespace Damath
         public float FadeDuration = 0.25f;
         public bool IgnoreTimeScale = false;
 
-        [SerializeField] Timer GlobalTimer;
-        [SerializeField] Timer BlueTimer;
-        [SerializeField] Timer OrangeTimer;
+        [SerializeField] Timer globalTimer;
+        public Timer GlobalTimer => globalTimer;
+        [SerializeField] Timer blueTimer;
+        public Timer BlueTimer => blueTimer;
+        [SerializeField] Timer orangeTimer;
+        public Timer OrangeTimer => orangeTimer;
 
         [SerializeField] Image blueChipImage;
         TextMeshProUGUI blueChipText;
@@ -51,24 +54,24 @@ namespace Damath
 
             if (Ruleset.GetValue<bool>("EnableGlobalTimer"))
             {
-                GlobalTimer.SetTime(Ruleset.GetValue<float>("GlobalTimerSeconds"));
-                GlobalTimer.SetFormat(TimerFormat.MM_SS);
-                GlobalTimer.Begin();
+                globalTimer.SetTime(Ruleset.GetValue<float>("GlobalTimerSeconds"));
+                globalTimer.SetFormat(TimerFormat.MM_SS);
+                globalTimer.Begin();
             }
             
             if (Ruleset.GetValue<bool>("EnableTurnTimer"))
             {
                 var turnTime = Ruleset.GetValue<float>("TurnTimerSeconds");
                 
-                BlueTimer.SetTime(turnTime);
-                BlueTimer.SetFormat(TimerFormat.SS);
+                blueTimer.SetTime(turnTime);
+                blueTimer.SetFormat(TimerFormat.SS);
                 
-                OrangeTimer.SetTime(turnTime);
-                OrangeTimer.SetFormat(TimerFormat.SS);
+                orangeTimer.SetTime(turnTime);
+                orangeTimer.SetFormat(TimerFormat.SS);
 
                 if (Ruleset.GetValue<Side>("FirstTurn") == Side.Blue)
                 {
-                    BlueTimer.Begin();
+                    blueTimer.Begin();
                     blueChipImage.CrossFadeAlpha(1f, FadeDuration, IgnoreTimeScale);
 
                     orangeChipImage.CrossFadeAlpha(0.5f, FadeDuration, IgnoreTimeScale);
@@ -76,7 +79,7 @@ namespace Damath
 
                 } else if (Ruleset.GetValue<Side>("FirstTurn") == Side.Orange)
                 {
-                    OrangeTimer.Begin();
+                    orangeTimer.Begin();
                     orangeChipImage.CrossFadeAlpha(1f, FadeDuration, IgnoreTimeScale);
 
                     blueChipImage.CrossFadeAlpha(0.5f, FadeDuration, IgnoreTimeScale);
@@ -89,22 +92,22 @@ namespace Damath
         {
             if (turnOf == Side.Blue)
             {
-                OrangeTimer.Stop();
+                orangeTimer.Stop();
                 orangeChipImage.CrossFadeAlpha(0.5f, FadeDuration, IgnoreTimeScale);
                 orangeChipText.CrossFadeAlpha(0.5f, FadeDuration, IgnoreTimeScale);
                 orangeChipText.text = "";
 
-                BlueTimer.Reset(true);
+                blueTimer.Reset(true);
                 blueChipImage.CrossFadeAlpha(1f, FadeDuration, IgnoreTimeScale);
                 blueChipText.CrossFadeAlpha(1f, FadeDuration, IgnoreTimeScale);
             } else
             {
-                BlueTimer.Stop();
+                blueTimer.Stop();
                 blueChipImage.CrossFadeAlpha(0.5f, FadeDuration, IgnoreTimeScale);
                 blueChipText.CrossFadeAlpha(0.5f, FadeDuration, IgnoreTimeScale);
                 blueChipText.text = "";
 
-                OrangeTimer.Reset(true);
+                orangeTimer.Reset(true);
                 orangeChipImage.CrossFadeAlpha(1f, FadeDuration, IgnoreTimeScale);
                 orangeChipText.CrossFadeAlpha(1f, FadeDuration, IgnoreTimeScale);
             }

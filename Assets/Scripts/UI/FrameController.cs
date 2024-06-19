@@ -79,6 +79,11 @@ namespace Damath.UI
 
         #region Editor
 
+        public void SwitchFrameEditor(string frameId)
+        {
+            switchTo = frameId;
+        }
+
         public void SwitchFrameEditor()
         {            
             Frame frame = GetFrame(switchTo);

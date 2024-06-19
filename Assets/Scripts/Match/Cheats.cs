@@ -35,16 +35,15 @@ namespace Damath.Systems
 
         void CellClickCallback(Cell cell, PointerEventData e)
         {
-            if (e.button == PointerEventData.InputButton.Right)
+            if (e.button == PointerEventData.InputButton.Left)
+            {
+                choiceWindow.Hide();
+            }
+            else if (e.button == PointerEventData.InputButton.Right)
             {
                 _selectedCell = cell;
                 DisplayPieceActions();
             }
-        }
-
-        void DeselectCallback()
-        {
-            choiceWindow.Hide();
         }
 
         public void PlayerClickCallback(object sender, PointerEventData.InputButton button)
@@ -95,7 +94,7 @@ namespace Damath.Systems
                 choiceWindow.AddChoice("Remove Piece", Game.UI.GetIcon("remove"))
                     .AddCallback(RemovePiece);
                 choiceWindow.AddChoice("Capture Piece", Game.UI.GetIcon("restart"))
-                    .AddCallback(RemovePiece) /// Should be a capture action
+                    .AddCallback(CapturePiece)
                     .SetEnabled(false);
 
                 if (!_selectedCell.Piece.IsKing)
@@ -111,7 +110,7 @@ namespace Damath.Systems
             choiceWindow.Show();
         }
 
-        void DisplayBoardActions()
+        public void DisplayBoardActions()
         {
             if (!_isEnabled) return;
 
@@ -135,10 +134,27 @@ namespace Damath.Systems
             choiceWindow.Position = Input.mousePosition;
             choiceWindow.Clear();
             
-            choiceWindow.AddChoice("Pause Time", Game.UI.GetIcon("timer_pause"))
-                .AddCallback(() => {});
+            if (match.TimerManager.GlobalTimer.IsRunning)
+            {
+                choiceWindow.AddChoice("Pause Time", Game.UI.GetIcon("timer_pause"))
+                    .AddCallback(() =>
+                    {
+                        match.TimerManager.GlobalTimer.Pause();
+                    });
+            } else
+            {
+                choiceWindow.AddChoice("Resume Time", Game.UI.GetIcon("timer_play"))
+                    .AddCallback(() =>
+                    {
+                        match.TimerManager.GlobalTimer.Resume();
+                    });
+            }
+
             choiceWindow.AddChoice("Set Time", Game.UI.GetIcon("timer"))
-                .AddCallback(() => {});
+                .AddCallback(() =>
+                {
+                    throw new NotImplementedException();
+                });
 
             choiceWindow.Show();
         }

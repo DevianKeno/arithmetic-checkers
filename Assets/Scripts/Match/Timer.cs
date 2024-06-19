@@ -15,7 +15,7 @@ namespace Damath
         public float StartTimeInSeconds = 0f;
         public float CurrentTime = 0f;
         public bool IsEnabled = false;
-        public bool IsRunning = false;
+        public bool IsRunning { get; private set; }
 
         public List<UnityAction> Callbacks = new();
         public TextMeshProUGUI TMPComponent = null;
@@ -75,6 +75,16 @@ namespace Damath
         public void Stop()
         {
             if (!IsRunning) return;
+            IsRunning = false;
+        }
+
+        public void Resume()
+        {
+            IsRunning = true;
+        }
+
+        public void Pause()
+        {
             IsRunning = false;
         }
 

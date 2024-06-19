@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -11,7 +9,6 @@ namespace Damath
         {
             if (e.button == PointerEventData.InputButton.Right)
             {
-                Debug.Log("I right clicked the global timer.");
                 Game.Main.Match.Cheats.DisplayGlobalTimerActions();
             } 
         }

@@ -1763,7 +1763,6 @@ MonoBehaviour:
   StartTimeInSeconds: 0
   CurrentTime: 0
   IsEnabled: 1
-  IsRunning: 0
   TMPComponent: {fileID: 1201775684}
 --- !u!224 &1049602933
 RectTransform:
@@ -3092,7 +3091,6 @@ MonoBehaviour:
   StartTimeInSeconds: 0
   CurrentTime: 0
   IsEnabled: 1
-  IsRunning: 0
   TMPComponent: {fileID: 1166865774}
 --- !u!224 &1644294984
 RectTransform:
@@ -3690,7 +3688,6 @@ MonoBehaviour:
   StartTimeInSeconds: 0
   CurrentTime: 0
   IsEnabled: 1
-  IsRunning: 0
   TMPComponent: {fileID: 225390175}
 --- !u!224 &2138248598
 RectTransform:
@@ -3948,9 +3945,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FadeDuration: 0.25
   IgnoreTimeScale: 0
-  GlobalTimer: {fileID: 1049602932}
-  BlueTimer: {fileID: 1644294983}
-  OrangeTimer: {fileID: 2138248597}
+  globalTimer: {fileID: 1049602932}
+  blueTimer: {fileID: 1644294983}
+  orangeTimer: {fileID: 2138248597}
   blueChipImage: {fileID: 516680251}
   orangeChipImage: {fileID: 1619485569}
   timerPrefab: {fileID: 7748704433066538445, guid: 99487801a8de3d84e95586353dbdbbf9, type: 3}

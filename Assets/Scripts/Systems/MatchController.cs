@@ -20,10 +20,12 @@ namespace Damath.Systems
         public bool IsMultiplayer { get; set; }
         [field: SerializeField] public Ruleset Ruleset { get; private set; }
 
-        public Board Board => board;
         [SerializeField] Board board;
+        public Board Board => board;
         [SerializeField] Scoreboard scoreboard;
+        public Scoreboard Scoreboard => scoreboard;
         [SerializeField] TimerManager timerManager;
+        public TimerManager TimerManager => timerManager;
         [SerializeField] Cheats cheats;
         public Cheats Cheats => cheats;
 

@@ -6052,8 +6052,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1938174022}
-  - {fileID: 1859966238}
   - {fileID: 780215983}
+  - {fileID: 1859966238}
   m_Father: {fileID: 1366567576}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -10542,7 +10542,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5652cd1a3ea89da4bbd1b40b563e3748, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpinSpeed: 5
+  SpinSpeed: 1
+  FixSpeed: 0.15
   ResetTime: 2
   timer: 0
   _startTimer: 0

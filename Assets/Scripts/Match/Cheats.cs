@@ -85,27 +85,33 @@ namespace Damath.Systems
             if (!_selectedCell.HasPiece)
             {
                 choiceWindow.AddChoice("Add Piece", Game.UI.GetIcon("add_piece"))
-                    .AddCallback(AddPiece);
+                    .AddCallback(AddPiece)
+                    .CloseOnSubmit();
                 choiceWindow.AddChoice("Set Operation", Game.UI.GetIcon("symbols"))
                     .AddCallback(SetOperation);
             } else
             {
                 choiceWindow.AddChoice("Grab Piece", Game.UI.GetIcon("hand"))
-                    .AddCallback(GrabPiece);
+                    .AddCallback(GrabPiece)
+                    .CloseOnSubmit();
                 choiceWindow.AddChoice("Remove Piece", Game.UI.GetIcon("remove"))
-                    .AddCallback(RemovePiece);
+                    .AddCallback(RemovePiece)
+                    .CloseOnSubmit();
                 choiceWindow.AddChoice("Capture Piece", Game.UI.GetIcon("restart"))
                     .AddCallback(RemovePiece) /// Should be a capture action
-                    .SetEnabled(false); 
+                    .SetEnabled(false)
+                    .CloseOnSubmit();
 
                 if (!_selectedCell.Piece.IsKing)
                 {
                     choiceWindow.AddChoice("Promote", Game.UI.GetIcon("promote"))
-                        .AddCallback(Promote);
+                        .AddCallback(Promote)
+                        .CloseOnSubmit();
                 } else
                 {
                     choiceWindow.AddChoice("Demote", Game.UI.GetIcon("demote"))
-                        .AddCallback(Demote);
+                        .AddCallback(Demote)
+                        .CloseOnSubmit();
                 }
             }
             choiceWindow.Show();

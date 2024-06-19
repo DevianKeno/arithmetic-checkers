@@ -37,30 +37,36 @@ namespace Damath.Systems
                 {
                     op = Operation.Addition;
                     InjectOperation();
-                });
+                })
+                .CloseOnSubmit();
             choiceWindow.AddChoice("Subtraction", Game.UI.GetIcon("operator_subtract"))
                 .AddCallback(() =>
                 {
                     op = Operation.Subtraction;
                     InjectOperation();
-                });
+                })
+                .CloseOnSubmit();
             choiceWindow.AddChoice("Multiplication", Game.UI.GetIcon("operator_multiply"))
                 .AddCallback(() =>
                 {
                     op = Operation.Multiplication;
                     InjectOperation();
-                });
+                })
+                .CloseOnSubmit();
             choiceWindow.AddChoice("Division", Game.UI.GetIcon("operator_division"))
                 .AddCallback(() =>
                 {
                     op = Operation.Division;
                     InjectOperation();
-                });
+                })
+                .CloseOnSubmit();
             
             void InjectOperation()
             {
                 _selectedCell.SetOperation(op);
             }
+
+            choiceWindow.Show();
         }
 
         void GrabPiece()

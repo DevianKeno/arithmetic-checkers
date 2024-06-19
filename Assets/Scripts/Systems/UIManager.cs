@@ -119,41 +119,41 @@ namespace Damath.Systems
             return default;
         }
 
-        public Window CreateChoiceWindow()
-        {
-            var newChoiceWindow = Instantiate(choiceWindowPrefab);
-            newChoiceWindow.transform.SetParent(Canvas.transform);
-            newChoiceWindow.SetActive(false);
-            return newChoiceWindow.GetComponent<Window>();
-        }
+        // public Window CreateChoiceWindow()
+        // {
+        //     var newChoiceWindow = Instantiate(choiceWindowPrefab);
+        //     newChoiceWindow.transform.SetParent(Canvas.transform);
+        //     newChoiceWindow.SetActive(false);
+        //     return newChoiceWindow.GetComponent<Window>();
+        // }
 
         /// <summary>
         /// Creates an empty window.
         /// </summary>
-        public Window CreateWindow()
-        {
-            var newWindow = Instantiate(windowPrefab, new Vector3(0f, 0f, Constants.ZLocationWindow), Quaternion.identity, Canvas.transform);
-            newWindow.SetActive(false);
-            return newWindow.GetComponent<Window>();
-        }
+        // public Window CreateWindow()
+        // {
+        //     var newWindow = Instantiate(windowPrefab, new Vector3(0f, 0f, Constants.ZLocationWindow), Quaternion.identity, Canvas.transform);
+        //     newWindow.SetActive(false);
+        //     return newWindow.GetComponent<Window>();
+        // }
         
         /// <summary>
         /// Creates a window given a window prefab.
         /// </summary>
-        public Window CreateWindow(GameObject prefab)
-        {
-            var newWindow = Instantiate(prefab, new Vector3(0f, 0f, Constants.ZLocationWindow), Quaternion.identity, Canvas.transform);
-            return newWindow.GetComponent<Window>();
-        }
+        // public Window CreateWindow(GameObject prefab)
+        // {
+        //     var newWindow = Instantiate(prefab, new Vector3(0f, 0f, Constants.ZLocationWindow), Quaternion.identity, Canvas.transform);
+        //     return newWindow.GetComponent<Window>();
+        // }
 
-        public Tooltip CreateTooltip(string text)
-        {
-            Tooltip = Instantiate(tooltipPrefab, Canvas.transform).GetComponent<Tooltip>();
-            Tooltip.SetText(text);
-            Tooltip.Show();
+        // public Tooltip CreateTooltip(string text)
+        // {
+        //     Tooltip = Instantiate(tooltipPrefab, Canvas.transform).GetComponent<Tooltip>();
+        //     Tooltip.SetText(text);
+        //     Tooltip.Show();
 
-            return Tooltip;
-        }
+        //     return Tooltip;
+        // }
 
         public Tooltip CreateTooltip(string text, Color color)
         {

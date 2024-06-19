@@ -344,7 +344,7 @@ namespace Damath.Players
                 Game.Events.PlayerSelectPiece(this, SelectedPiece);
                 OnPieceSelect?.Invoke(this, SelectedPiece);
 
-                Game.Audio.PlaySound("Select");
+                Game.Audio.PlaySound("select");
                 return;
             }
         }
@@ -363,7 +363,7 @@ namespace Damath.Players
             if (IsMyTurn) /// it's a normal move
             {
                 Game.Events.PlayerSelectMovecell(this, SelectedCell);
-                Game.Audio.PlaySound("Move");
+                Game.Audio.PlaySound("move");
                 return;
 
             } else /// it's a premove

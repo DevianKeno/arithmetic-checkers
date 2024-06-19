@@ -387,7 +387,7 @@ namespace Damath
         {
             OnPieceCapture?.Invoke(this, move);
             Game.Events.PieceCapture(move);
-            Game.Audio.PlaySound("Capture");
+            Game.Audio.PlaySound("capture");
             Debug.Log($"[ACTION]: {move.CapturingPiece} captured {move.CapturedPiece}");
             AnimateCapture(move);
 

@@ -1,14 +1,27 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Damath
 {
     public class AudioManager : MonoBehaviour
     {
+        [Serializable]
+        public struct AudioId
+        {
+            public string Id;
+            public AudioClip AudioClip;
+        }
+
         public static AudioManager Main { get; private set; }
-        public Dictionary<string, AudioSource> Sources = new();
-        public float defaultVolume = 1f;
+
+        [SerializeField] List<AudioClip> audioClips = new();
+        Dictionary<string, AudioClip> _audioClipsDict = new();
+
+        [SerializeField] AudioSource musicSource;
+        [SerializeField] AudioSource soundSource;
 
         void Awake()
         {
@@ -21,22 +34,23 @@ namespace Damath
             }
         }
 
-        void Start()
+        internal void Initialize()
         {
-            foreach (Transform audioSource in transform)
+            var resources = Resources.LoadAll<AudioClip>("Audio");
+            foreach (var audioClip in resources)
             {
-                AddSource(audioSource.name, audioSource.GetComponent<AudioSource>());
+                audioClips.Add(audioClip);
+                _audioClipsDict[audioClip.name] = audioClip;
             }
-        }
-
-        public void AddSource(string name, AudioSource audioSource)
-        {
-            Sources.Add(name, audioSource);
         }
 
         public void PlaySound(string name)
         {
-            Sources[name].Play();
+            if (_audioClipsDict.ContainsKey(name))
+            {
+                soundSource.clip = _audioClipsDict[name];
+                soundSource.Play();
+            }
         }
     }
 }

@@ -90,6 +90,7 @@ namespace Damath
         {
             Console.Initialize();
             UI.Initialize();
+            Audio.Initialize();
 
             OnLateInit?.Invoke();
         }

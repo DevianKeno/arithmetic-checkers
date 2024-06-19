@@ -45,6 +45,7 @@ namespace Damath.UI
             button.onClick.AddListener(() =>
             {
                 button.interactable = false;
+                parent.Hide();
                 Invoke();
             });
         }
@@ -68,18 +69,6 @@ namespace Damath.UI
         public Choice SetEnabled(bool value)
         {
             button.interactable = value;
-            return this;
-        }
-
-        public Choice CloseOnSubmit(bool value = true)
-        {
-            if (value)
-            {
-                button.onClick.AddListener(() =>
-                {
-                    parent.Hide();
-                });
-            }
             return this;
         }
     }

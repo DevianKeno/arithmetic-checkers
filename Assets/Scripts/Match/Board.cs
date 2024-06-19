@@ -536,7 +536,7 @@ namespace Damath
 
                     Cell cellToCheck = GetCellFromRow(col, row);
 
-                    if (cellToCheck.Piece != null)
+                    if (cellToCheck.HasPiece)
                     {
                         moves.AddRange(GetPieceMoves(cellToCheck.Piece, MoveType.Capture));
                     }

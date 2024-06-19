@@ -44,8 +44,8 @@ namespace Damath
             }
         }
         public PieceValue ValueConvertible;
-        public string Value;
-        public Side Side;
+        public string Value { get; private set; }
+        public Side Side { get; private set; }
         public bool IsKing { get; private set; }
         /// <summary>
         /// The player owner of this piece.

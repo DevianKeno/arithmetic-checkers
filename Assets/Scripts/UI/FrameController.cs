@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 namespace Damath.UI
@@ -9,7 +10,9 @@ namespace Damath.UI
     {
         [field: SerializeField] public Frame CurrentFrame { get; set; }
         public List<Frame> Frames = new();
-        private bool IsTransitioning = false;
+
+        bool _isTransitioning = false;
+        [SerializeField] string switchTo;
 
         [SerializeField] GameObject inactive;
 
@@ -17,18 +20,28 @@ namespace Damath.UI
         {
             if (CurrentFrame == null)
             CurrentFrame = GetComponentInChildren<Frame>();
+
+            if (Frames.Count > 0)
+            {
+                foreach (Frame frame in Frames)
+                {
+                    if (frame == null) continue;
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(frame.transform as RectTransform);
+                }
+            }
         }
 
         public void SwitchFrame(string name)
         {
             Frame frame = GetFrame(name);
             if (frame == null) return;
+            inactive.SetActive(false);
 
             if (CurrentFrame != null)
             {
                 if (CurrentFrame.Name == name) return;
-                if (IsTransitioning) return;
-                IsTransitioning = true;
+                if (_isTransitioning) return;
+                _isTransitioning = true;
 
                 if (Game.Main.Settings.EnableAnimations)
                 {
@@ -48,7 +61,7 @@ namespace Damath.UI
                     .setOnComplete( () =>
                     {
                         CurrentFrame = frame;
-                        IsTransitioning = false;
+                        _isTransitioning = false;
                     });
                 }
             }
@@ -63,6 +76,29 @@ namespace Damath.UI
             }
             return null;
         }
+
+        #region Editor
+
+        public void SwitchFrameEditor()
+        {            
+            Frame frame = GetFrame(switchTo);
+            if (frame == null) return;
+            if (CurrentFrame.Name == name) return;
+
+            inactive.SetActive(false);
+            /// Hide current frame
+            CurrentFrame.transform.SetParent(inactive.transform);
+
+            /// Show new frame
+            frame.gameObject.SetActive(true);
+            frame.transform.SetParent(transform);
+
+            var rect = frame.transform as RectTransform;
+            rect.anchoredPosition = Vector2.zero;
+            CurrentFrame = frame;
+        }
+
+        #endregion
     }
 }
 

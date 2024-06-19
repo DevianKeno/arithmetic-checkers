@@ -2601,7 +2601,6 @@ MonoBehaviour:
   dim: {fileID: 0}
   windowPrefab: {fileID: 6288102435147716885, guid: 24d99aa0bf3ba244da08921fef6aac3c, type: 3}
   choiceWindowPrefab: {fileID: 0}
-  choicePrefab: {fileID: 2934956067630487295, guid: 96ac20b652ebaba44847be84e7ca0213, type: 3}
   tooltipPrefab: {fileID: 0}
 --- !u!1 &1422791580
 GameObject:
@@ -3942,8 +3941,8 @@ MonoBehaviour:
   GlobalTimer: {fileID: 1049602932}
   BlueTimer: {fileID: 1644294983}
   OrangeTimer: {fileID: 2138248597}
-  BlueChip: {fileID: 516680249}
-  OrangeChip: {fileID: 1619485567}
+  blueChipImage: {fileID: 516680251}
+  orangeChipImage: {fileID: 1619485569}
   timerPrefab: {fileID: 7748704433066538445, guid: 99487801a8de3d84e95586353dbdbbf9, type: 3}
 --- !u!1 &7226299034451705006
 GameObject:

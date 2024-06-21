@@ -116,6 +116,7 @@ namespace Damath.Systems
                 }
             }
             Game.Console.Log("Unable to create UI element, it does not exist");
+            Debug.Log("Unable to create UI element, it does not exist");
             return default;
         }
 
@@ -154,16 +155,6 @@ namespace Damath.Systems
 
         //     return Tooltip;
         // }
-
-        public Tooltip CreateTooltip(string text, Color color)
-        {
-            Tooltip = Instantiate(tooltipPrefab, Canvas.transform).GetComponent<Tooltip>();
-            Tooltip.SetText(text);
-            Tooltip.SetColor(color);
-            Tooltip.Show();
-
-            return Tooltip;
-        }
 
         public void HideTooltip()
         {

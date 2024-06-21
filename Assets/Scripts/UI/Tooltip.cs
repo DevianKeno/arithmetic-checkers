@@ -5,50 +5,59 @@ using TMPro;
 
 namespace Damath.UI
 {
-    public class Tooltip : MonoBehaviour
+    public class Tooltip : MonoBehaviour, IUIElement
     {
-        public IHoverable Element;
-        public bool IsVisible;
+        public bool IsVisible { get; set; }
+
+        public string Text
+        {
+            get
+            {
+                return text.text;
+            }
+            set
+            {
+                text.text = value;
+            }
+        }
+
+        public Color Color
+        {
+            get
+            {
+                return image.color;
+            }
+            set
+            {
+                image.color = value;
+            }
+        }
+
         public float ShowDelay = 1f;
         public float HideDelay = 0f;
         public bool FadeTransition = true;
         public float FadeInDuration = 0.25f;
         public float FadeOutDuration = 0.25f;
 
-        [SerializeField] private RectTransform rect;
-        [SerializeField] private TextMeshProUGUI tmpUGUI;
-        [SerializeField] private Image image;
+        [SerializeField] RectTransform rect;
+        [SerializeField] TextMeshProUGUI text;
+        [SerializeField] Image image;
 
         void Start()
         {
-            // gameObject.SetActive(false);
-
-            image.color = new (image.color.r, image.color.g, image.color.b, 0f);
-            tmpUGUI.color = new (tmpUGUI.color.r, tmpUGUI.color.g, tmpUGUI.color.b, 0f);
+            image.CrossFadeAlpha(0f, 0f, false);
+            text.CrossFadeAlpha(0f, 0f, false);
         }
 
         void Update()
         {
             if (IsVisible)
             {
-                rect.anchoredPosition = new (Input.mousePosition.x + (rect.sizeDelta.x * 0.55f),
-                                             Input.mousePosition.y - (rect.sizeDelta.y * 0.55f));  
+                rect.anchoredPosition = new(
+                    Input.mousePosition.x + (rect.sizeDelta.x * 0.55f),
+                    Input.mousePosition.y - (rect.sizeDelta.y * 0.55f)
+                );  
             }
-        }
-        
-        public void SetElement(IHoverable obj)
-        {
-            Element = obj;
-        }
-        
-        public void SetText(string text)
-        {            
-            tmpUGUI.text = text;
-        }
-
-        public void SetColor(Color color)
-        {
-            image.color = color;
         }
         
         public void Show()
@@ -63,53 +72,26 @@ namespace Damath.UI
 
         public async void SetVisible(bool value)
         {
-            // if (!Enable) return;
-            // if (element == null) return;
-
             if (value)
             {  
-                LeanTween.cancel(gameObject);
-
                 if (IsVisible) return;
                 IsVisible = true;
                 
-                await Task.Delay((int)ShowDelay * 1000);
-                try{ if (gameObject == null) return; } catch { return; }; // Stupid but fuckkk, it's 5 am ;;
-                
-                LeanTween.value(gameObject, image.color.a, 1f, FadeInDuration)
-                .setOnUpdate( (i) =>
-                {
-                    image.color = new (image.color.r, image.color.g, image.color.b, i);
-                });
-                    
-                LeanTween.value(gameObject, tmpUGUI.color.a, 1f, FadeInDuration)
-                .setOnUpdate( (i) =>
-                {
-                    tmpUGUI.color = new (tmpUGUI.color.r, tmpUGUI.color.g, tmpUGUI.color.b, i);
-                });
+                await Task.Delay((int) ShowDelay * 1000);
+
+                image.CrossFadeAlpha(1f, FadeInDuration, false);
+                text.CrossFadeAlpha(1f, FadeInDuration, false);
 
             } else
             {
-                LeanTween.cancel(gameObject);
+                await Task.Delay((int) HideDelay * 1000);
 
-                await Task.Delay((int)HideDelay * 1000);
-
-                LeanTween.value(gameObject, image.color.a, 0f, FadeOutDuration)
-                .setOnUpdate( (i) =>
-                {
-                    image.color = new (image.color.r, image.color.g, image.color.b, i);
-                });
-                    
-                LeanTween.value(gameObject, tmpUGUI.color.a, 0f, FadeOutDuration)
-                .setOnUpdate( (i) =>
-                {
-                    tmpUGUI.color = new (tmpUGUI.color.r, tmpUGUI.color.g, tmpUGUI.color.b, i);
-                })
-                .setOnComplete( () =>
-                {
-                    IsVisible = false;
-                    Delete();
-                });
+                image.CrossFadeAlpha(0f, FadeInDuration, false);
+                text.CrossFadeAlpha(0f, FadeInDuration, false);
+                
+                await Task.Delay((int) FadeInDuration * 1000);
+                IsVisible = false;
+                Delete();
             }
         }
 
@@ -118,6 +100,11 @@ namespace Damath.UI
             gameObject.SetActive(false);
             await Task.Delay((int)FadeOutDuration * 1000);
             Destroy(gameObject);
+        }
+
+        public void ToggleVisibility()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

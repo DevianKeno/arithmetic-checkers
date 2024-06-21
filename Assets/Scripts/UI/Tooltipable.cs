@@ -3,41 +3,27 @@ using UnityEngine.EventSystems;
 
 namespace Damath.UI
 {
-    [RequireComponent(typeof(IHoverable))]
-    public class Tooltipable : MonoBehaviour
+    public class Tooltipable : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-        public bool Enable = true;
+        public bool IsEnabled = true;
         [TextArea] public string Text; 
         public Color Color = Colors.PersimmonOrange;
 
-        private IHoverable Element;
-
-        void Awake()
-        {
-            Element = GetComponent<IHoverable>();
-            
-            Element.OnStartHover += Show;
-            Element.OnEndHover += Hide;
-        }
-
-        void OnDisable()
-        {
-            Element.OnStartHover -= Show;
-            Element.OnEndHover -= Hide;
-        }
+        Tooltip tooltip;
         
-        void Show(PointerEventData eventData)
+        public void OnPointerEnter(PointerEventData eventData)
         {
-            if (!Enable) return;
+            if (!IsEnabled) return;
 
-            Debug.Log("hover");
-            Game.UI.CreateTooltip(Text, Color);
+            tooltip = Game.UI.Create<Tooltip>("tooltip");
+            tooltip.Text = Text;
+            tooltip.Color = Color;
+            tooltip.Show();
         }
-        
-        void Hide(PointerEventData eventData)
+
+        public void OnPointerExit(PointerEventData eventData)
         {
-            Debug.Log("unhover");
-            Game.UI.HideTooltip();
+            tooltip.Hide();
         }
     }
 }

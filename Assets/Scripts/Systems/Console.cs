@@ -52,7 +52,7 @@ namespace Damath.Systems
         /// </summary>
         void InitializeEvents()
         {
-            Game.Events.OnClientStart += SetOperator;
+            // Game.Events.OnClientStart += SetOperator;
             Game.Events.OnMatchCreate += ReceiveMatchInstance;
             Game.Events.OnBoardUpdateCellmap += ReceiveCellmap;
         }

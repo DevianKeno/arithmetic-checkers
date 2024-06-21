@@ -35,12 +35,8 @@ namespace Damath.Systems
         [Header("UI Prefabs")]
         public List<PrefabId> Prefabs;
 
+        [SerializeField] Image dim;
 
-        [Header("Prefabs")]
-        public Image dim;
-        public GameObject windowPrefab;
-        public GameObject choiceWindowPrefab;
-        public GameObject tooltipPrefab;
 
         PlayerInput mainInput;
 
@@ -118,47 +114,6 @@ namespace Damath.Systems
             Game.Console.Log("Unable to create UI element, it does not exist");
             Debug.Log("Unable to create UI element, it does not exist");
             return default;
-        }
-
-        // public Window CreateChoiceWindow()
-        // {
-        //     var newChoiceWindow = Instantiate(choiceWindowPrefab);
-        //     newChoiceWindow.transform.SetParent(Canvas.transform);
-        //     newChoiceWindow.SetActive(false);
-        //     return newChoiceWindow.GetComponent<Window>();
-        // }
-
-        /// <summary>
-        /// Creates an empty window.
-        /// </summary>
-        // public Window CreateWindow()
-        // {
-        //     var newWindow = Instantiate(windowPrefab, new Vector3(0f, 0f, Constants.ZLocationWindow), Quaternion.identity, Canvas.transform);
-        //     newWindow.SetActive(false);
-        //     return newWindow.GetComponent<Window>();
-        // }
-        
-        /// <summary>
-        /// Creates a window given a window prefab.
-        /// </summary>
-        // public Window CreateWindow(GameObject prefab)
-        // {
-        //     var newWindow = Instantiate(prefab, new Vector3(0f, 0f, Constants.ZLocationWindow), Quaternion.identity, Canvas.transform);
-        //     return newWindow.GetComponent<Window>();
-        // }
-
-        // public Tooltip CreateTooltip(string text)
-        // {
-        //     Tooltip = Instantiate(tooltipPrefab, Canvas.transform).GetComponent<Tooltip>();
-        //     Tooltip.SetText(text);
-        //     Tooltip.Show();
-
-        //     return Tooltip;
-        // }
-
-        public void HideTooltip()
-        {
-            Tooltip.Hide();
         }
 
         public void Dim(float time)

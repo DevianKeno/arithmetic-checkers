@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using FishNet.Connection;
-using FishNet.Object;
 using Damath.Players;
 
 namespace Damath.Systems
@@ -44,17 +42,17 @@ namespace Damath.Systems
 
         #region Network events
         
-        public event Action<string> OnServerStart;
-        public event Action<Player> OnClientStart;
-        public event Action<string> OnNetworkSend;
-        public event Action<NetworkConnection, string> OnChatSend;
-        public event Action<string> OnObserverSend;
-        public event Action<NetworkObject, NetworkConnection> OnOwnershipRequest;
-        public event Action<Lobby> OnLobbyCreate;
-        public event Action<Lobby> OnLobbyHost;
-        public event Action<int, Lobby> OnLobbyJoin;
-        public event Action<Lobby> OnLobbyStart;
-        public event Action<MatchController> OnMatchHost;
+        // public event Action<string> OnServerStart;
+        // public event Action<Player> OnClientStart;
+        // public event Action<string> OnNetworkSend;
+        // public event Action<NetworkConnection, string> OnChatSend;
+        // public event Action<string> OnObserverSend;
+        // public event Action<NetworkObject, NetworkConnection> OnOwnershipRequest;
+        // public event Action<Lobby> OnLobbyCreate;
+        // public event Action<Lobby> OnLobbyHost;
+        // public event Action<int, Lobby> OnLobbyJoin;
+        // public event Action<Lobby> OnLobbyStart;
+        // public event Action<MatchController> OnMatchHost;
 
         #endregion
         
@@ -210,56 +208,56 @@ namespace Damath.Systems
 
         #region Network event methods
 
-        public void ClientStart(Player player)
-        {
-            OnClientStart?.Invoke(player);
-        }
+        // public void ClientStart(Player player)
+        // {
+        //     OnClientStart?.Invoke(player);
+        // }
 
-        public void NetworkSend(string data)
-        {
-            Debug.Log($"Test server RPC {data}");
-            OnNetworkSend?.Invoke(data);
-        }
+        // public void NetworkSend(string data)
+        // {
+        //     Debug.Log($"Test server RPC {data}");
+        //     OnNetworkSend?.Invoke(data);
+        // }
 
-        public void ChatSend(NetworkConnection conn, string data)
-        {
-            OnChatSend?.Invoke(conn, data);
-        }
-        public void ObserverSend(string data)
-        {
-            Debug.Log($"Test observer RPC {data}");
-            OnObserverSend?.Invoke(data);
-        }
+        // public void ChatSend(NetworkConnection conn, string data)
+        // {
+        //     OnChatSend?.Invoke(conn, data);
+        // }
+        // public void ObserverSend(string data)
+        // {
+        //     Debug.Log($"Test observer RPC {data}");
+        //     OnObserverSend?.Invoke(data);
+        // }
 
-        public void OwnershipRequest(NetworkObject networkObject, NetworkConnection connection)
-        {
-            OnOwnershipRequest?.Invoke(networkObject, connection);
-        }
+        // public void OwnershipRequest(NetworkObject networkObject, NetworkConnection connection)
+        // {
+        //     OnOwnershipRequest?.Invoke(networkObject, connection);
+        // }
 
-        public void LobbyCreate(Lobby lobby)
-        {
-            OnLobbyCreate?.Invoke(lobby);
-        }
+        // public void LobbyCreate(Lobby lobby)
+        // {
+        //     OnLobbyCreate?.Invoke(lobby);
+        // }
 
-        public void LobbyHost(Lobby lobby)
-        {
-            OnLobbyHost?.Invoke(lobby);
-        }
+        // public void LobbyHost(Lobby lobby)
+        // {
+        //     OnLobbyHost?.Invoke(lobby);
+        // }
 
-        public void LobbyJoin(int clientId, Lobby lobby)
-        {
-            OnLobbyJoin?.Invoke(clientId, lobby);
-        }
+        // public void LobbyJoin(int clientId, Lobby lobby)
+        // {
+        //     OnLobbyJoin?.Invoke(clientId, lobby);
+        // }
         
-        public void LobbyStart(Lobby lobby)
-        {
-            OnLobbyStart?.Invoke(lobby);
-        }
+        // public void LobbyStart(Lobby lobby)
+        // {
+        //     OnLobbyStart?.Invoke(lobby);
+        // }
         
-        public void MatchHost(MatchController match)
-        {
-            OnMatchHost?.Invoke(match);
-        }
+        // public void MatchHost(MatchController match)
+        // {
+        //     OnMatchHost?.Invoke(match);
+        // }
 
         #endregion
 

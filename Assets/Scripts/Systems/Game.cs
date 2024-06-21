@@ -4,12 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Damath.Systems;
-using FishNet;
-using FishNet.Managing;
-using FishNet.Managing.Scened;
-using FishNet.Transporting;
 using UnityEngine.SocialPlatforms;
 using UnityEngine.InputSystem;
+using Damath.Systems.EOS;
 
 namespace Damath
 {
@@ -91,7 +88,7 @@ namespace Damath
             Console.Initialize();
             UI.Initialize();
             Audio.Initialize();
-
+            
             OnLateInit?.Invoke();
         }
 
@@ -106,10 +103,10 @@ namespace Damath
             return MainInput.actions.FindActionMap(name);
         }
 
-        void RegisterScene(SceneLoadEndEventArgs args)
-        {            
-            CurrentScene = args.LoadedScenes[0];
-        }
+        // void RegisterScene(SceneLoadEndEventArgs args)
+        // {            
+        //     CurrentScene = args.LoadedScenes[0];
+        // }
         
         public void Pause(bool value)
         {
@@ -127,7 +124,7 @@ namespace Damath
                     StartCoroutine(Load(sceneName, delayInSeconds));
                 } else
                 {
-                    UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+                    SceneManager.LoadScene(sceneName);
                 }
             } catch (NullReferenceException e)
             {
@@ -138,7 +135,7 @@ namespace Damath
         IEnumerator Load(string scene, float delayInSeconds)
         {
             yield return new WaitForSeconds(delayInSeconds);
-            UnityEngine.SceneManagement.SceneManager.LoadScene(scene);
+            SceneManager.LoadScene(scene);
             // CurrentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
         }
 
@@ -160,17 +157,17 @@ namespace Damath
         {
             CacheRuleset(Ruleset.Create(mode));
 
-            Network.Main.StartHost();
+            // Network.Main.StartHost();
         }
 
-        public void JoinMatch(Lobby lobby, string address)
-        {
-            IsOnline = true;
+        // public void JoinMatch(Lobby lobby, string address)
+        // {
+        //     IsOnline = true;
 
-            CacheRuleset(lobby.Ruleset);
+        //     CacheRuleset(lobby.Ruleset);
 
-            Network.Main.Connect(address);
-        }
+        //     Network.Main.Connect(address);
+        // }
         
         public void LoadGlobalScene(string sceneName)
         {
@@ -179,7 +176,7 @@ namespace Damath
                 Console.Log($"Loading scene {sceneName}");
             }
 
-            InstanceFinder.SceneManager.LoadGlobalScenes( new(sceneName) );
+            SceneManager.LoadScene(sceneName);
         }
 
         public void UnloadGlobalScene(string sceneName)
@@ -189,7 +186,7 @@ namespace Damath
                 Console.Log($"Unloading scene {sceneName}");
             }
 
-            InstanceFinder.SceneManager.UnloadGlobalScenes( new(sceneName) );
+            SceneManager.UnloadSceneAsync(sceneName);
         }
 
         /// <summary>

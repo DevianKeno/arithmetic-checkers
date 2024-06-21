@@ -114,7 +114,7 @@ namespace Damath.Systems
             /// Invoke console command as player
             if (true)
             {
-                Game.Events.NetworkSend(Parser.Pack(data, Pack.Chat));
+                // Game.Events.NetworkSend(Parser.Pack(data, Pack.Chat));
             } else
             {
                 /// Send chat locally
@@ -132,11 +132,11 @@ namespace Damath.Systems
             {
                 if (args[1] == "localhost") args[1] = "127.0.0.1";
                 
-                Network.Main.Connect(args[1]);
+                // Network.Main.Connect(args[1]);
 
             } else
             {
-                Network.Main.Connect("localhost");
+                // Network.Main.Connect("localhost");
             }
         }
 

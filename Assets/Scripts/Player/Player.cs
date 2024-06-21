@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using FishNet.Object;
-using FishNet.Connection;
 using Unity.VisualScripting;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -90,7 +88,7 @@ namespace Damath.Players
         void OnEnable()
         {
             Game.Events.OnTurnChanged += OnTurnChanged;
-            Game.Events.OnLobbyStart += InitOnline;
+            // Game.Events.OnLobbyStart += InitOnline;
             Game.Events.OnPieceDone += Deselect;
         }
 
@@ -98,14 +96,14 @@ namespace Damath.Players
         {
             // Game.Events.OnPieceMove -= IMadeAMove;
             Game.Events.OnTurnChanged -= OnTurnChanged;
-            Game.Events.OnLobbyStart -= InitOnline;
+            // Game.Events.OnLobbyStart -= InitOnline;
             Game.Events.OnPieceDone -= Deselect;
         }
 
-        public void InitOnline(Lobby lobby)
-        {
-            // Game.Events.OnPieceMove += IMadeAMove;
-        }
+        // public void InitOnline(Lobby lobby)
+        // {
+        //     // Game.Events.OnPieceMove += IMadeAMove;
+        // }
 
         internal void Initialize()
         {

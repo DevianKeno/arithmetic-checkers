@@ -22,7 +22,6 @@ namespace Damath.UI
 
         [SerializeField] GameObject login;
         [SerializeField] GameObject loading;
-        [SerializeField] AccountDisplay accountDisplay;
 
         [SerializeField] TMP_InputField usernameField;
         [SerializeField] TMP_InputField passwordField;

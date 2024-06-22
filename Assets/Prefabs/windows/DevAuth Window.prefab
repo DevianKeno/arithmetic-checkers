@@ -624,10 +624,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a185c57b81f851a478223b3a5f674904, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LoginType: 4
+  LoginType: 6
   login: {fileID: 7392760669466041309}
   loading: {fileID: 6778845091963243782}
-  accountDisplay: {fileID: 0}
   usernameField: {fileID: 883662379222310307}
   passwordField: {fileID: 8689789952409586416}
   loginBtn: {fileID: 133897731121329757}

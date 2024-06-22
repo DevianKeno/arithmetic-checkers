@@ -8,18 +8,19 @@ using Epic.OnlineServices.UserInfo;
 
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
+using PlayEveryWare.EpicOnlineServices.Samples.Discord;
 
 namespace Damath.UI
 {
     public class DevAuthWindow : Window
     {
-        const LoginCredentialType connect = (LoginCredentialType) (-1);
-
-        EpicAccountId loggedInAccountId;
+        [SerializeField] EpicAccountId loggedInAccountId;
         EOSUserInfoManager userInfoManager;
         
-        [SerializeField] LoginCredentialType LoginType = LoginCredentialType.Developer;
-
+        // const ExternalCredentialType invalidConnectType = (ExternalCredentialType) (-1);
+        // [SerializeField] ExternalCredentialType connectType = invalidConnectType;
+        
+        [SerializeField] Dropdown loginTypeDropdown;
         [SerializeField] GameObject login;
         [SerializeField] GameObject loading;
 
@@ -51,7 +52,20 @@ namespace Damath.UI
             string usernameAsString = usernameField.text.Trim();
             string passwordAsString = passwordField.text.Trim();
 
-            if (LoginType == LoginCredentialType.Developer)
+            // if (loginType == connect)
+            // {
+            //     AcquireTokenForConnectLogin(connectType);
+            // }
+            // else
+
+            LoginCredentialType loginType = loginTypeDropdown.value switch
+            {
+                0 => LoginCredentialType.AccountPortal,
+                1 => LoginCredentialType.PersistentAuth,
+                2 => LoginCredentialType.Developer
+            };
+
+            if (loginType == LoginCredentialType.Developer)
             {
                 if (usernameAsString.Length <= 0)
                 {
@@ -64,18 +78,25 @@ namespace Damath.UI
                     return;
                 }
 
-                EOSManager.Instance.StartLoginWithLoginTypeAndToken(LoginType,
+                EOSManager.Instance.StartLoginWithLoginTypeAndToken(loginType,
                                                                     usernameAsString,
                                                                     passwordAsString,
                                                                     StartLoginWithLoginTypeAndTokenCallback);
-            } 
-            else if (LoginType == LoginCredentialType.AccountPortal)
-            {
-                EOSManager.Instance.StartLoginWithLoginTypeAndToken(LoginType, usernameAsString, passwordAsString, StartLoginWithLoginTypeAndTokenCallback);
             }
-            else if (LoginType == LoginCredentialType.PersistentAuth)
+            else if (loginType == LoginCredentialType.AccountPortal)
+            {
+                EOSManager.Instance.StartLoginWithLoginTypeAndToken(loginType,
+                                                                    usernameAsString,
+                                                                    passwordAsString,
+                                                                    StartLoginWithLoginTypeAndTokenCallback);
+            }
+            else if (loginType == LoginCredentialType.PersistentAuth)
             {
                 EOSManager.Instance.StartPersistentLogin(StartLoginWithLoginTypeAndTokenCallback);
+            }
+            else if (loginType == LoginCredentialType.ExternalAuth)
+            {
+                throw new NotImplementedException();
             }
         }
         
@@ -144,7 +165,7 @@ namespace Damath.UI
                 }
                 else if (connectLoginCallbackInfo.ResultCode == Result.InvalidUser)
                 {
-                    // ask user if they want to connect; sample assumes they do
+                    /// Ask user if they want to connect; sample assumes they do
                     EOSManager.Instance.CreateConnectUserWithContinuanceToken(connectLoginCallbackInfo.ContinuanceToken, (Epic.OnlineServices.Connect.CreateUserCallbackInfo createUserCallbackInfo) =>
                     {
                         print("Creating new connect user");
@@ -163,6 +184,107 @@ namespace Damath.UI
                     });
                 }
             });
+        }
+
+        void AcquireTokenForConnectLogin(ExternalCredentialType externalType)
+        {
+            switch (externalType)
+            {
+                // case ExternalCredentialType.SteamSessionTicket:
+                //     ConnectSteamSessionTicket();
+                //     break;
+
+                // case ExternalCredentialType.SteamAppTicket:
+                //     ConnectSteamAppTicket();
+                //     break;
+
+                // case ExternalCredentialType.DeviceidAccessToken:
+                //     ConnectDeviceId();
+                //     break;
+
+                // case ExternalCredentialType.AppleIdToken:
+                //     ConnectAppleId();
+                //     break;
+
+                case ExternalCredentialType.DiscordAccessToken:
+                    ConnectDiscord();
+                    break;
+
+                // case ExternalCredentialType.OpenidAccessToken:
+                //     ConnectOpenId();
+                //     break;
+
+                // case ExternalCredentialType.OculusUseridNonce:
+                //     ConnectOculus();
+                //     break;
+
+                // default:
+                //     if (externalType == invalidConnectType)
+                //     {
+                //         Debug.LogError($"Connect type not valid");
+                //     }
+                //     else
+                //     {
+                //         Debug.LogError($"Connect Login for {externalType} not implemented");
+                //     }
+                //     // loginButton.interactable = true;
+                //     break;
+            }
+        }
+        
+        void ConnectDiscord()
+        {
+            if (DiscordManager.Instance == null)
+            {
+                Debug.LogError("Connect Login failed: DiscordManager unavailable");
+                // ConfigureUIForLogin();
+                return;
+            }
+            DiscordManager.Instance.RequestOAuth2Token(OnDiscordAuthReceived);
+        }
+
+        void OnDiscordAuthReceived(string token)
+        {
+            if (token == null)
+            {
+                Debug.LogError("Connect Login failed: Unable to get Discord OAuth2 token");
+                // ConfigureUIForLogin();
+            }
+            else
+            {
+                EOSManager.Instance.StartConnectLoginWithOptions(ExternalCredentialType.DiscordAccessToken,
+                    token,
+                    onloginCallback: ConnectLoginTokenCallback);
+            }
+        }
+
+        void ConnectLoginTokenCallback(Epic.OnlineServices.Connect.LoginCallbackInfo connectLoginCallbackInfo)
+        {
+            if (connectLoginCallbackInfo.ResultCode == Result.Success)
+            {
+                print("Connect Login Successful. [" + connectLoginCallbackInfo.ResultCode + "]");
+                // ConfigureUIForLogout();
+            }
+            else if (connectLoginCallbackInfo.ResultCode == Result.InvalidUser)
+            {
+                // ask user if they want to connect; sample assumes they do
+                EOSManager.Instance.CreateConnectUserWithContinuanceToken(connectLoginCallbackInfo.ContinuanceToken, (Epic.OnlineServices.Connect.CreateUserCallbackInfo createUserCallbackInfo) =>
+                {
+                    print("Creating new connect user");
+                    if (createUserCallbackInfo.ResultCode == Result.Success)
+                    {
+                        // ConfigureUIForLogout();
+                    }
+                    else
+                    {
+                        // ConfigureUIForLogin();
+                    }
+                });
+            }
+            else
+            {
+                // ConfigureUIForLogin();
+            }
         }
     }
 }

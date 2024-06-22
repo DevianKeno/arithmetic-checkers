@@ -12274,6 +12274,10 @@ PrefabInstance:
       value: -55
       objectReference: {fileID: 0}
     - target: {fileID: 1583647715784232668, guid: 1b814ccdb39a1fe4d9c90e706781425d, type: 3}
+      propertyPath: loginType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1583647715784232668, guid: 1b814ccdb39a1fe4d9c90e706781425d, type: 3}
       propertyPath: accountDisplay
       value: 
       objectReference: {fileID: 64417955}
@@ -13143,7 +13147,8 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 2005267803}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2945816443271364516, guid: 88feeb5f54abfa541b5587720f03f47f, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

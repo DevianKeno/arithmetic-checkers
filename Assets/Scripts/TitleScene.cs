@@ -7,7 +7,7 @@ namespace Damath
 {
     public class TitleScene : MonoBehaviour
     {
-        DevAuthWindow devAuthWindow;
+        [SerializeField] DevAuthWindow devAuthWindow;
         [SerializeField] FrameController mainFrame;
 
         void Start()
@@ -17,11 +17,7 @@ namespace Damath
 
         public void OnSignInClick()
         {
-            if (devAuthWindow == null)
-            {
-                devAuthWindow = Game.UI.Create<DevAuthWindow>("dev_auth_window");
-                devAuthWindow.Show();
-            }
+            devAuthWindow.Show();
         }
     }
 }

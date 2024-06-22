@@ -1,9 +1,13 @@
 using System;
 using UnityEngine;
-using PlayEveryWare.EpicOnlineServices;
 using TMPro;
+
 using Epic.OnlineServices;
 using Epic.OnlineServices.Auth;
+using Epic.OnlineServices.UserInfo;
+
+using PlayEveryWare.EpicOnlineServices;
+using PlayEveryWare.EpicOnlineServices.Samples;
 
 namespace Damath.UI
 {
@@ -11,7 +15,14 @@ namespace Damath.UI
     {
         const LoginCredentialType connect = (LoginCredentialType) (-1);
 
+        EpicAccountId loggedInAccountId;
+        EOSUserInfoManager userInfoManager;
+        
         [SerializeField] LoginCredentialType LoginType = LoginCredentialType.Developer;
+
+        [SerializeField] GameObject login;
+        [SerializeField] GameObject loading;
+        [SerializeField] AccountDisplay accountDisplay;
 
         [SerializeField] TMP_InputField usernameField;
         [SerializeField] TMP_InputField passwordField;
@@ -34,6 +45,9 @@ namespace Damath.UI
                 Debug.LogError("Internet not reachable.");
                 return;
             }
+
+            login.SetActive(false);
+            loading.SetActive(true);
 
             string usernameAsString = usernameField.text.Trim();
             string passwordAsString = passwordField.text.Trim();
@@ -127,7 +141,7 @@ namespace Damath.UI
                 if (connectLoginCallbackInfo.ResultCode == Result.Success)
                 {
                     print("Connect Login Successful. [" + connectLoginCallbackInfo.ResultCode + "]");
-                    // ConfigureUIForLogout();
+                    Destroy();
                 }
                 else if (connectLoginCallbackInfo.ResultCode == Result.InvalidUser)
                 {
@@ -150,11 +164,6 @@ namespace Damath.UI
                     });
                 }
             });
-        }
-        
-        void OnSuccessfulLogin()
-        {
-
         }
     }
 }

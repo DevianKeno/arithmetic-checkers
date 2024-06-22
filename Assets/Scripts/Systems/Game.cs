@@ -3,10 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Damath.Systems;
-using UnityEngine.SocialPlatforms;
 using UnityEngine.InputSystem;
-using Damath.Systems.EOS;
+using Damath.Systems;
+using PlayEveryWare.EpicOnlineServices;
 
 namespace Damath
 {
@@ -23,6 +22,7 @@ namespace Damath
         public static Systems.Console Console { get; private set; }
         public static UIManager UI { get; private set; }
         public static AudioManager Audio { get; private set; }
+        public static EOSManager EOS { get; private set; }
 
         public bool IsAlive { get; private set; }
         public bool IsPaused { get; private set; }
@@ -60,6 +60,7 @@ namespace Damath
                 Console = GetComponentInChildren<Systems.Console>();
                 UI = GetComponentInChildren<UIManager>();
                 Audio = GetComponentInChildren<AudioManager>();
+                EOS = GetComponentInChildren<EOSManager>();
             }
             mainInput = GetComponent<PlayerInput>();
         }
@@ -70,11 +71,6 @@ namespace Damath
             HasRuleset = false;
             HasMatch = false;
             InitializeManagers();
-
-            if (Settings.EnableConsole)
-            {
-                Console.Enable();
-            }
             
             // Initialize components that needs to be initialized at run-time 
             Ruleset.Init();
@@ -88,6 +84,10 @@ namespace Damath
             Console.Initialize();
             UI.Initialize();
             Audio.Initialize();
+            
+            
+
+            
             
             OnLateInit?.Invoke();
         }

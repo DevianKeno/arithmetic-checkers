@@ -21,10 +21,7 @@ namespace Damath.Systems
         internal void Initialize()
         {
             Game.Main.OnLateInit += LateInit;
-        }
-
-        void Init()
-        {
+            
             InitializeEvents();
 
             InitCommands();
@@ -55,15 +52,6 @@ namespace Damath.Systems
             // Game.Events.OnClientStart += SetOperator;
             Game.Events.OnMatchCreate += ReceiveMatchInstance;
             Game.Events.OnBoardUpdateCellmap += ReceiveCellmap;
-        }
-
-        /// <summary>
-        /// Enables the console. Is disabled by default.
-        /// </summary>
-        public void Enable()
-        {
-            IsEnabled = true;
-            Init();
         }
 
         /// <summary>

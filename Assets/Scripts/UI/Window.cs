@@ -57,6 +57,12 @@ namespace Damath.UI
             OnClose?.Invoke();
         }
 
+        public void Destroy()
+        {
+            Hide();
+            Destroy(gameObject);
+        }
+
         public void ToggleVisibility()
         {
             SetVisible(!IsVisible);

@@ -1,0 +1,18 @@
+{
+    "productName": "Arithmetic Checkers",
+    "productVersion": "1.0",
+    "productID": "f06f5a8df7af4675af164dab7d735c67",
+    "sandboxID": "0f6a184cbd334cc88777da955cae8617",
+    "deploymentID": "589a573996f7490d9c3032aa2a706534",
+    "clientID": "xyza78912Q29QImFCWDra9wtzes9GWfc",
+    "clientSecret": "Kg7rIvkmyyZdcCvF4GoASlgEZX1i6FlyAiXFviZEa/0",
+    "encryptionKey": "T2Zn/8uCQPn+dks/QLjROrTtqaW/sVLUoW7u67x9o8KErosjNNeIBD5MSNaLEuxS",
+    "platformOptionsFlags": [
+        ""
+    ],
+    "tickBudgetInMilliseconds": 0,
+    "alwaysSendInputToOverlay": true,
+    "initialButtonDelayForOverlay": "",
+    "repeatButtonDelayForOverlay": "",
+    "hackForceSendInputDirectlyToSDK": false
+}

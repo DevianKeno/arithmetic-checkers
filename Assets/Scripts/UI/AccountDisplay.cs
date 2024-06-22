@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
-using PlayEveryWare.EpicOnlineServices.Samples;
 using UnityEngine;
 using TMPro;
+using Damath.UI;
+
+using Epic.OnlineServices.Connect;
 using Epic.OnlineServices.UserInfo;
 using PlayEveryWare.EpicOnlineServices;
-using Epic.OnlineServices.Connect;
-using Damath.UI;
+using PlayEveryWare.EpicOnlineServices.Samples;
 
 namespace Damath
 {

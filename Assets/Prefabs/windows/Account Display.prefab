@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4513938475614937227}
+  - component: {fileID: 4391861052681602084}
   - component: {fileID: 8730223700269432695}
   m_Layer: 5
   m_Name: Account Display
@@ -40,6 +41,19 @@ RectTransform:
   m_AnchoredPosition: {x: 689, y: -419}
   m_SizeDelta: {x: 472.6588, y: 158.4017}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &4391861052681602084
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1786305606003682195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c9eb5b27b3f69241a9ba10a7262ccf5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  signInBtn: {fileID: 8492913331199995795}
 --- !u!114 &8730223700269432695
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -416,7 +430,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7610968385705858936, guid: 8b374f5abc5646d41ab741f3592f92e2, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 164.09
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7610968385705858936, guid: 8b374f5abc5646d41ab741f3592f92e2, type: 3}
       propertyPath: m_SizeDelta.y
@@ -428,7 +442,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7610968385705858936, guid: 8b374f5abc5646d41ab741f3592f92e2, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -49.005
+      value: -15
       objectReference: {fileID: 0}
     - target: {fileID: 7610968385705858938, guid: 8b374f5abc5646d41ab741f3592f92e2, type: 3}
       propertyPath: m_text

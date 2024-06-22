@@ -43,6 +43,7 @@ namespace Damath.UI
                 if (_isTransitioning) return;
                 _isTransitioning = true;
 
+                LayoutRebuilder.ForceRebuildLayoutImmediate(CurrentFrame.transform as RectTransform);
                 if (Game.Main.Settings.EnableAnimations)
                 {
                     LeanTween.move(CurrentFrame.rect, new Vector3(-1920f, 0f, 0f), Game.Main.Settings.AnimationFactor)
@@ -101,6 +102,7 @@ namespace Damath.UI
             var rect = frame.transform as RectTransform;
             rect.anchoredPosition = Vector2.zero;
             CurrentFrame = frame;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(transform as RectTransform);
         }
 
         #endregion

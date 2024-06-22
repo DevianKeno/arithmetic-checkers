@@ -26,17 +26,12 @@ namespace Damath.Systems
         public Canvas Canvas { get; private set; }
         Dictionary<string, Sprite> _iconsDict = new();
 
-        public Tooltip Tooltip;
-
-        bool IsDimmed;
-
         Dictionary<string, IUIElement> windows = new();
         
         [Header("UI Prefabs")]
         public List<PrefabId> Prefabs;
 
         [SerializeField] Image dim;
-
 
         PlayerInput mainInput;
 
@@ -116,26 +111,14 @@ namespace Damath.Systems
             return default;
         }
 
-        public void Dim(float time)
+        public void Dim(float duration)
         {
-            if (IsDimmed)
-            {
-                LeanTween.value(dim.gameObject, dim.color.a, 0f, time)
-                .setEaseOutExpo()
-                .setOnUpdate( (i) =>
-                {
-                    dim.color = new (dim.color.r, dim.color.g, dim.color.b, i);
-                });
-            } else
-            {
-                LeanTween.value(dim.gameObject, 0f, 0.25f, time)
-                .setEaseOutExpo()
-                .setOnUpdate( (i) =>
-                {
-                    dim.color = new (dim.color.r, dim.color.g, dim.color.b, i);
-                });
-            }
-            IsDimmed = !IsDimmed;
+            dim.CrossFadeAlpha(0.25f, duration, false);
+        }
+
+        public void Undim(float duration)
+        {
+            dim.CrossFadeAlpha(0f, duration, false);
         }
 
         internal T GetWindowFromId<T>(string v) where T : class

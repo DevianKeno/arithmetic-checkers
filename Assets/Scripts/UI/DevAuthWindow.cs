@@ -30,12 +30,17 @@ namespace Damath.UI
 
         void Start()
         {
-            Game.UI.Dim(0.25f);
             loginBtn.onClick.AddListener(StartLogin);
-            OnClose += () =>
-            {
-                Game.UI.Dim(0.25f);
-            };
+        }
+
+        public override void OnShow()
+        {
+            Game.UI.Dim(0.25f);
+        }
+
+        public override void OnHide()
+        {
+            Game.UI.Undim(0.25f);
         }
 
         public void StartLogin()
@@ -64,6 +69,8 @@ namespace Damath.UI
                 1 => LoginCredentialType.PersistentAuth,
                 2 => LoginCredentialType.Developer
             };
+
+            
 
             if (loginType == LoginCredentialType.Developer)
             {

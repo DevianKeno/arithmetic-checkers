@@ -74,20 +74,23 @@ namespace Damath.EOS
                 /// Presence Enabled
                 PresenceEnabled = true,
                 /// Voice chat
-                RTCRoomEnabled = false
+                RTCRoomEnabled = false,
+                /// Permission
+                LobbyPermissionLevel = lobbyPermissionLevel
             };
 
-            // /// Level attributes
-            // var levelAttribute = new LobbyAttribute
-            // {
-            //     Key = "LEVEL",
-            //     AsString = LevelVal.options[LevelVal.value].text,
-            //     ValueType = AttributeType.String,
-            //     Visibility = LobbyAttributeVisibility.Public  // Needs to be public for Search
-            // };
-            // lobbyProperties.Attributes.Add(levelAttribute);
+            /// -- Lobby attributes --
+            /// Ruleset attribute
+            var rulesetAttribute = new LobbyAttribute
+            {
+                Key = "RULESET",
+                AsString = rulesetType,
+                ValueType = AttributeType.String,
+                Visibility = LobbyAttributeVisibility.Public  /// Needs to be public for Search
+            };
+            lobbyProperties.Attributes.Add(rulesetAttribute);
 
-            /// Anti-Cheat attributes
+            /// Anti-Cheat attribute
             var antiCheatAttribute = new LobbyAttribute
             {
                 Key = "ANTICHEAT",
@@ -96,10 +99,7 @@ namespace Damath.EOS
                 Visibility = LobbyAttributeVisibility.Public
             };
             lobbyProperties.Attributes.Add(antiCheatAttribute);
-
-            /// Permission
-            lobbyProperties.LobbyPermissionLevel = lobbyPermissionLevel;
-
+            
             return lobbyProperties;
         }
 
@@ -123,9 +123,26 @@ namespace Damath.EOS
 
             if (result == Result.Success)
             {
+                var localUserId = Game.EOS.GetProductUserId();
+                Game.EOSManagers.LobbyManager.PromoteMember(localUserId, OnPromoteMemberCompleted);
+            } else
+            {
+                Game.Console.Log($"Error creating lobby. [" + result + "]");
+                Debug.LogError("Error creating lobby. [" + result + "]");
+            }
+        }
+
+        void OnPromoteMemberCompleted(Result result)
+        {
+            if (result == Result.Success)
+            {
                 Game.UI.Undim(0.25f);
                 Game.Main.CreateMatch(cachedRuleset);
                 Game.Main.LoadScene("Match", playTransition: true);
+            } else
+            {
+                Game.Console.Log($"Error promoting owner. [" + result + "]");
+                Debug.LogError("Error promoting owner. [" + result + "]");
             }
         }
     }

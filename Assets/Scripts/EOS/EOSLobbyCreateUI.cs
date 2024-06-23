@@ -60,7 +60,7 @@ namespace Damath.EOS
             /// This criteria should be set with mostly static, coarse settings,
             /// often formatted like "GameMode:Region:MapName".
             string rulesetType = cachedRuleset.Type.ToString();
-            string region = "PH";
+            string region = "ASIA";
             string bucketId = $"{rulesetType}:{region}";
 
             var lobbyProperties = new Lobby

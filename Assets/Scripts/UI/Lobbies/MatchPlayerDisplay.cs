@@ -27,6 +27,7 @@ namespace Damath.UI
 
         [SerializeField] TextMeshProUGUI displayNameTMP;
         [SerializeField] Image avatarImage;
+        [SerializeField] LoadingIconAnimation loadingIcon;
 
         void Start()
         {
@@ -71,7 +72,7 @@ namespace Damath.UI
                 var result = Game.EOS.GetEOSUserInfoInterface().CopyUserInfo(ref userInfoOptions, out UserInfoData? userInfo);
                 if (result == Result.Success && userInfo.HasValue)
                 {
-                    SetPlayerDisplayed(userInfo.Value);
+                    SetPlayerDisplayed(userInfo.Value, true);
                 }
             }
         }
@@ -80,12 +81,21 @@ namespace Damath.UI
         {
             DisplayName = NoPlayer;
             avatarImage.sprite = null;
+            loadingIcon.gameObject.SetActive(true);
         }
 
-        public void SetPlayerDisplayed(UserInfoData userInfo)
+        public void SetPlayerDisplayed(UserInfoData userInfo, bool isLobbyOwner = false)
         {
-            DisplayName = userInfo.DisplayName;
+            if (isLobbyOwner)
+            {
+                DisplayName = $"{userInfo.DisplayName} (You)";
+            }
+            else
+            {
+                DisplayName = userInfo.DisplayName;
+            }
             avatarImage.sprite = null; /// TODO:
+            loadingIcon.gameObject.SetActive(false);
         }
     }
 }

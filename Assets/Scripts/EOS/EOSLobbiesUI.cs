@@ -31,7 +31,7 @@ namespace Damath.EOS
         public void SearchLobbies()
         {
             loadingIcon.gameObject.SetActive(true);
-            lobbyManager.SearchByLobbyId("ASIA", OnSearchCompleted);
+            lobbyManager.SearchByAttribute("RULESET", "Standard", OnSearchCompleted);
         }
 
         void OnSearchCompleted(Result result)

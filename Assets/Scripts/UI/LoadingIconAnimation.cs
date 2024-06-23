@@ -23,7 +23,7 @@ namespace Damath.UI
 
         public void StartSpin()
         {
-            LeanTween.rotate(transform as RectTransform, -360f, 3f)
+            LeanTween.rotate(transform as RectTransform, -360f, 1f)
                 .setLoopClamp();
         }
 

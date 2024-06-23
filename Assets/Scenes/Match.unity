@@ -3972,6 +3972,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6633666214877614007, guid: ba98585f488df524297d0f1e0bcbdea7, type: 3}
   m_PrefabInstance: {fileID: 1869341811}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1869341813 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6264679340396332597, guid: ba98585f488df524297d0f1e0bcbdea7, type: 3}
+  m_PrefabInstance: {fileID: 1869341811}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83121457b8e175742a8314147b9959b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1897052805
 GameObject:
   m_ObjectHideFlags: 0
@@ -4931,7 +4942,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Ruleset>k__BackingField:
     Type: 0
-  board: {fileID: 0}
+  board: {fileID: 1869341813}
   scoreboard: {fileID: 8322154929276836881}
   timerManager: {fileID: 7226299034451705004}
   cheats: {fileID: 7226299033122741276}

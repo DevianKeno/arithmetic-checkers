@@ -18,6 +18,7 @@ namespace Damath.EOS
 
         [SerializeField] GameObject lobbyContainer;
         [SerializeField] Button refreshBtn;
+        [SerializeField] LoadingIconAnimation loadingIcon;
 
         [Header("Prefabs")]
         [SerializeField] GameObject lobbyEntryPrefab;
@@ -27,13 +28,16 @@ namespace Damath.EOS
             refreshBtn.onClick.AddListener(SearchLobbies);
         }
 
-        void SearchLobbies()
+        public void SearchLobbies()
         {
+            loadingIcon.gameObject.SetActive(true);
             lobbyManager.SearchByLobbyId("ASIA", OnSearchCompleted);
         }
 
         void OnSearchCompleted(Result result)
         {
+            loadingIcon.gameObject.SetActive(false);
+
             if (result == Result.Success)
             {
                 Dictionary<Lobby, LobbyDetails> searchResults = lobbyManager.GetSearchResults();
@@ -61,6 +65,11 @@ namespace Damath.EOS
                 Game.Console.Log($"Error searching lobbies. [" + result + "]");
                 Debug.LogError("Error searching lobbies. [" + result + "]");
             }
+        }
+
+        public void JoinLobbyByID(string id)
+        {
+            // Game.EOSManagers.LobbyManager.JoinLobby(id);
         }
 
         void OnClickLobbyEntry(LobbyEntryUI lobbyEntry)

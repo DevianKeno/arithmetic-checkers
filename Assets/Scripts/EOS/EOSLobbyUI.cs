@@ -10,8 +10,6 @@ namespace Damath.EOS
 {
     public class EOSLobbyUI : MonoBehaviour
     {
-        EOSLobbyManager lobbyManager;
-
         [SerializeField] GameObject lobbyContainer;
 
         [Header("Prefabs")]
@@ -20,8 +18,7 @@ namespace Damath.EOS
 
         void Start()
         {
-            lobbyManager = EOSManager.Instance.GetOrCreateManager<EOSLobbyManager>();
-            lobbyManager.AddNotifyMemberUpdateReceived(OnMemberUpdate);
+            Game.EOSManagers.LobbyManager.AddNotifyMemberUpdateReceived(OnMemberUpdate);
 
         }
 

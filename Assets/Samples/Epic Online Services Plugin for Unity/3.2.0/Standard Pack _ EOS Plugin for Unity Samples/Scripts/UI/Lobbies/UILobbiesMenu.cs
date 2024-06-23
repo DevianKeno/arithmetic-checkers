@@ -353,27 +353,38 @@ namespace PlayEveryWare.EpicOnlineServices.Samples
                 return;
             }
 
-            Lobby lobbyProperties = new Lobby();
-            // Bucket Id
-            lobbyProperties.BucketId = BucketIdVal.InputField.text;
-
-            // Max Players
-            lobbyProperties.MaxNumLobbyMembers = (uint)Int32.Parse(MaxPlayersVal.options[MaxPlayersVal.value].text);
+            var lobbyProperties = new Lobby
+            {
+                // Bucket Id
+                BucketId = BucketIdVal.InputField.text,
+                // Max Players
+                MaxNumLobbyMembers = (uint)Int32.Parse(MaxPlayersVal.options[MaxPlayersVal.value].text),
+                // Allow Invites
+                AllowInvites = AllowInvitesVal.isOn,
+                // Presence Enabled
+                PresenceEnabled = PresenceEnabledVal.isOn,
+                // Voice Chat
+                RTCRoomEnabled = RTCVoiceRoomEnabledVal.isOn
+            };
 
             // Level Attributes
-            LobbyAttribute levelAttribute = new LobbyAttribute();
-            levelAttribute.Key = "LEVEL";
-            levelAttribute.AsString = LevelVal.options[LevelVal.value].text;
-            levelAttribute.ValueType = AttributeType.String;
-            levelAttribute.Visibility = LobbyAttributeVisibility.Public;  // Needs to be public for Search
+            var levelAttribute = new LobbyAttribute
+            {
+                Key = "LEVEL",
+                AsString = LevelVal.options[LevelVal.value].text,
+                ValueType = AttributeType.String,
+                Visibility = LobbyAttributeVisibility.Public  // Needs to be public for Search
+            };
             lobbyProperties.Attributes.Add(levelAttribute);
 
             // Anti-Cheat Attributes
-            LobbyAttribute antiCheatAttribute = new LobbyAttribute();
-            antiCheatAttribute.Key = "ANTICHEAT";
-            antiCheatAttribute.AsBool = AntiCheatEnabledVal.isOn;
-            antiCheatAttribute.ValueType = AttributeType.Boolean;
-            antiCheatAttribute.Visibility = LobbyAttributeVisibility.Public;
+            var antiCheatAttribute = new LobbyAttribute
+            {
+                Key = "ANTICHEAT",
+                AsBool = AntiCheatEnabledVal.isOn,
+                ValueType = AttributeType.Boolean,
+                Visibility = LobbyAttributeVisibility.Public
+            };
             lobbyProperties.Attributes.Add(antiCheatAttribute);
 
             // Permission
@@ -387,15 +398,6 @@ namespace PlayEveryWare.EpicOnlineServices.Samples
             {
                 lobbyProperties.LobbyPermissionLevel = LobbyPermissionLevel.Inviteonly;
             }
-
-            // Allow Invites
-            lobbyProperties.AllowInvites = AllowInvitesVal.isOn;
-
-            // Presence Enabled
-            lobbyProperties.PresenceEnabled = PresenceEnabledVal.isOn;
-
-            // Voice Chat
-            lobbyProperties.RTCRoomEnabled = RTCVoiceRoomEnabledVal.isOn;
 
             LobbyManager.CreateLobby(lobbyProperties, UIOnLobbyUpdated);
 

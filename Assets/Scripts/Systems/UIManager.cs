@@ -88,6 +88,36 @@ namespace Damath.Systems
                 return null;
             }
         }
+
+        public void Dim(float duration)
+        {
+            dim.CrossFadeAlpha(0.25f, duration, false);
+        }
+
+        public void Undim(float duration)
+        {
+            dim.CrossFadeAlpha(0f, duration, false);
+        }
+
+        public IUIElement Create(string id, bool inSafeArea = true)
+        {
+            Transform parent = Canvas.transform;
+            if (!inSafeArea) parent = Canvas.transform;
+            foreach (PrefabId p in Prefabs)
+            {
+                if (p.Id == id)
+                {
+                    var go = Instantiate(p.Prefab, parent);
+                    go.name = p.Prefab.name;
+
+                    if (go.TryGetComponent(out IUIElement element))
+                    {
+                        return element;
+                    }
+                }
+            }
+            return null;
+        }
         
         public T Create<T>(string id, bool inSafeArea = true) where T : IUIElement
         {
@@ -109,16 +139,6 @@ namespace Damath.Systems
             Game.Console.Log("Unable to create UI element, it does not exist");
             Debug.Log("Unable to create UI element, it does not exist");
             return default;
-        }
-
-        public void Dim(float duration)
-        {
-            dim.CrossFadeAlpha(0.25f, duration, false);
-        }
-
-        public void Undim(float duration)
-        {
-            dim.CrossFadeAlpha(0f, duration, false);
         }
 
         internal T GetWindowFromId<T>(string v) where T : class

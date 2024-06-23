@@ -5,7 +5,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using Damath.Systems;
+using Damath.EOS;
 using PlayEveryWare.EpicOnlineServices;
+using static PlayEveryWare.EpicOnlineServices.EOSManager;
 
 namespace Damath
 {
@@ -22,7 +24,11 @@ namespace Damath
         public static Systems.Console Console { get; private set; }
         public static UIManager UI { get; private set; }
         public static AudioManager Audio { get; private set; }
-        public static EOSManager EOS { get; private set; }
+        /// <summary>
+        /// EOS Interface (Singleton).
+        /// </summary>
+        public static EOSSingleton EOS => EOSManager.Instance;
+        public static EOSSubManagers EOSManagers { get; private set; }
 
         public bool IsAlive { get; private set; }
         public bool IsPaused { get; private set; }
@@ -60,7 +66,7 @@ namespace Damath
                 Console = GetComponentInChildren<Systems.Console>();
                 UI = GetComponentInChildren<UIManager>();
                 Audio = GetComponentInChildren<AudioManager>();
-                EOS = GetComponentInChildren<EOSManager>();
+                EOSManagers = GetComponentInChildren<EOSSubManagers>();
             }
             mainInput = GetComponent<PlayerInput>();
         }
@@ -84,10 +90,7 @@ namespace Damath
             Console.Initialize();
             UI.Initialize();
             Audio.Initialize();
-            
-            
-
-            
+            EOSManagers.Initialize();
             
             OnLateInit?.Invoke();
         }

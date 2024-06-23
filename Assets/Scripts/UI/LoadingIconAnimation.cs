@@ -6,10 +6,15 @@ namespace Damath.UI
 {
     public class LoadingIconAnimation : MonoBehaviour
     {
-        void Start()
+        void OnEnable()
         {
-            LeanTween.rotate(transform as RectTransform, 360f, 3f)
+            LeanTween.rotate(transform as RectTransform, -360f, 3f)
                 .setLoopClamp();
+        }
+        
+        void OnDisable()
+        {
+            LeanTween.cancel(gameObject);
         }
     }
 }

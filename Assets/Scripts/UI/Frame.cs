@@ -15,6 +15,11 @@ namespace Damath.UI
             Name = name;
         }
 
+        void Awake()
+        {
+            rect ??= GetComponent<RectTransform>();
+        }
+
         void Start()
         {
             rect.sizeDelta = size;

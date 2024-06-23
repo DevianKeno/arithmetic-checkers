@@ -1,26 +1,61 @@
 using UnityEngine;
+using UnityEngine.UI;
 using Damath.UI;
 
 using Epic.OnlineServices.Auth;
 using Epic.OnlineServices;
 using PlayEveryWare.EpicOnlineServices;
+using System;
 
 namespace Damath.EOS
 {
     public class AuthHandler : MonoBehaviour
     {
-        [SerializeField] Button signInBtn;
+        AccountDisplay accountDisplay;
+
+        [SerializeField] UI.Button signInBtn;
+        [SerializeField] LoadingIconAnimation loadingIcon;
 
         void Awake()
         {
+            accountDisplay = GetComponent<AccountDisplay>();
             signInBtn.onClick.AddListener(OnSignInClick);
+        }
+
+        void Start()
+        {
+            SetUIForLogin();
         }
 
         public void OnSignInClick()
         {
             /// Try persistent login first
             EOSManager.Instance.StartPersistentLogin(PersistentLoginCallback);
-            signInBtn.interactable = false;
+            SetUIForLoading();
+        }
+
+        void SetUIForLogin()
+        {
+            signInBtn.gameObject.SetActive(true);
+            loadingIcon.gameObject.SetActive(false); 
+        }
+        
+        void SetUIForLoading()
+        {
+            accountDisplay.Username = "Signing in...";
+            signInBtn.gameObject.SetActive(false);
+            loadingIcon.gameObject.SetActive(true); 
+        }
+
+        void SetUIForLogout()
+        {
+            signInBtn.gameObject.SetActive(false);
+            loadingIcon.gameObject.SetActive(false); 
+        }
+
+        void OnSuccessfulLogin()
+        {
+            SetUIForLogout();
         }
 
         void PersistentLoginCallback(LoginCallbackInfo loginCallbackInfo)
@@ -49,6 +84,11 @@ namespace Damath.EOS
             if (connectLoginCallbackInfo.ResultCode == Result.Success)
             {
                 print("Connect Login Successful. [" + connectLoginCallbackInfo.ResultCode + "]");
+                OnSuccessfulLogin();
+            } else
+            {
+                print("Error logging in. [" + connectLoginCallbackInfo.ResultCode + "]");
+                SetUIForLogin();
             }
         }
 
@@ -56,44 +96,13 @@ namespace Damath.EOS
         {
             if (loginCallbackInfo.ResultCode == Result.Success)
             {
-                StartConnectLoginWithEpicAccount(loginCallbackInfo.LocalUserId);
+                LoginWithEpicAccount(loginCallbackInfo.LocalUserId);
             }
             else
             {
                 print("Error logging in. [" + loginCallbackInfo.ResultCode + "]");
-                signInBtn.interactable = true;
+                SetUIForLogin();
             }
-        }
-
-        void StartConnectLoginWithEpicAccount(EpicAccountId localUserId)
-        {
-            EOSManager.Instance.StartConnectLoginWithEpicAccount(localUserId, (Epic.OnlineServices.Connect.LoginCallbackInfo connectLoginCallbackInfo) =>
-            {
-                if (connectLoginCallbackInfo.ResultCode == Result.Success)
-                {
-                    print("Connect Login Successful. [" + connectLoginCallbackInfo.ResultCode + "]");
-                }
-                else if (connectLoginCallbackInfo.ResultCode == Result.InvalidUser)
-                {
-                    /// Ask user if they want to connect; sample assumes they do
-                    EOSManager.Instance.CreateConnectUserWithContinuanceToken(connectLoginCallbackInfo.ContinuanceToken, (Epic.OnlineServices.Connect.CreateUserCallbackInfo createUserCallbackInfo) =>
-                    {
-                        print("Creating new connect user");
-                        EOSManager.Instance.StartConnectLoginWithEpicAccount(localUserId, (Epic.OnlineServices.Connect.LoginCallbackInfo retryConnectLoginCallbackInfo) =>
-                        {
-                            if (retryConnectLoginCallbackInfo.ResultCode == Result.Success)
-                            {
-                                // ConfigureUIForLogout();
-                            }
-                            else
-                            {
-                                // For any other error, re-enable the login procedure
-                                // ConfigureUIForLogin();
-                            }
-                        });
-                    });
-                }
-            });
         }
     }
 }

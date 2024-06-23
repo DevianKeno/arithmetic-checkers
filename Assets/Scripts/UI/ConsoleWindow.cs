@@ -37,6 +37,11 @@ namespace Damath.UI
             InitializeInputs();
         }
 
+        void Start()
+        {
+            Hide();
+        }
+
         void InitializeInputs()
         {            
             actionMap = Game.Main.GetActionMap("Console Window");

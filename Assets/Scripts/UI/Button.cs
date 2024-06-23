@@ -1,6 +1,8 @@
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Damath.UI
 {
@@ -9,6 +11,11 @@ namespace Damath.UI
         public bool IsHovered { get; set; }
         public event Action<PointerEventData> OnStartHover;
         public event Action<PointerEventData> OnEndHover;
+
+        protected override void Start()
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(transform as RectTransform);
+        }
 
         public override void OnPointerEnter(PointerEventData eventData)
         {

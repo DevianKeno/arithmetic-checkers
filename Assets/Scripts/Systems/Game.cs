@@ -26,6 +26,7 @@ namespace Damath
         public static AudioManager Audio { get; private set; }
         /// <summary>
         /// EOS Interface (Singleton).
+        /// Just a shortcut to 'EOSManager.Instance'
         /// </summary>
         public static EOSSingleton EOS => EOSManager.Instance;
         public static EOSSubManagers EOSManagers { get; private set; }

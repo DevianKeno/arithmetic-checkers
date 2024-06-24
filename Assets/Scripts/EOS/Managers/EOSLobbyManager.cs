@@ -11,7 +11,7 @@ using PlayEveryWare.EpicOnlineServices;
 
 using Damath.EOS.Lobbies;
 
-namespace Damath.EOS
+namespace Damath.EOS.Managers
 {
     /// <summary>
     /// Class <c>EOSLobbyManager</c> is a simplified wrapper for EOS [Lobby Interface](https://dev.epicgames.com/docs/services/en-US/Interfaces/Lobby/index.html).

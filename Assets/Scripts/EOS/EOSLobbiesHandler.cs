@@ -8,6 +8,7 @@ using Epic.OnlineServices.Lobby;
 
 using Damath.UI.Lobbies;
 using Damath.EOS.Lobbies;
+using Damath.EOS.Managers;
 
 namespace Damath.EOS
 {

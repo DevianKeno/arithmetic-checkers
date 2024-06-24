@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using PlayEveryWare.EpicOnlineServices;
-using PlayEveryWare.EpicOnlineServices.Samples;
+
+using Damath.EOS.Managers;
 
 namespace Damath.EOS
 {

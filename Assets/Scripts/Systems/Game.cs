@@ -75,8 +75,6 @@ namespace Damath
         void Start()
         {
             IsAlive = true;
-            HasRuleset = false;
-            HasMatch = false;
             InitializeManagers();
             
             // Initialize components that needs to be initialized at run-time 
@@ -84,6 +82,9 @@ namespace Damath
             // Themes.Init();
 
             InitializeEvents();
+            
+            HasRuleset = false;
+            HasMatch = false;
         }
 
         void InitializeManagers()
@@ -91,8 +92,7 @@ namespace Damath
             Console.Initialize();
             UI.Initialize();
             Audio.Initialize();
-            EOSManagers.Initialize();
-            
+                        
             OnLateInit?.Invoke();
         }
 

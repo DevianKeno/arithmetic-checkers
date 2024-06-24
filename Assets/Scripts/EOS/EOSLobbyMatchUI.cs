@@ -5,6 +5,9 @@ using UnityEngine;
 using TMPro;
 
 using Epic.OnlineServices;
+using Epic.OnlineServices.Platform;
+
+using PlayEveryWare.EpicOnlineServices;
 
 using Damath.UI;
 using Damath.EOS.Lobbies;
@@ -22,15 +25,26 @@ namespace Damath
         void Start()
         {
             var lobby = Game.EOSManagers.LobbyManager.GetCurrentLobby();
-            if (!lobby.IsValid())
-            {
-                return;
-            }
 
-            currentLobby = lobby;
-            lobbyIdTMP.text = $"Lobby Id: {lobby.Id}";
-            SetLobbyOwnerAsBlue();
-            Game.EOSManagers.LobbyManager.AddNotifyMemberUpdateReceived(OnMemberUpdate);
+            if (lobby.IsValid())
+            {
+                Game.Console.Log($"Hosted lobby with id: {lobby.Id}");
+                bluePlayerDisplay.gameObject.SetActive(true);
+                orangePlayerDisplay.gameObject.SetActive(true);
+                lobbyIdTMP.gameObject.SetActive(true);
+
+                currentLobby = lobby;
+                lobbyIdTMP.text = $"Lobby Id: {lobby.Id}";
+                SetLobbyOwnerAsBlue();
+                Game.EOSManagers.LobbyManager.AddNotifyMemberUpdateReceived(OnMemberUpdate);
+                
+            } else
+            {
+                Game.Console.Log("Match has no lobby. Playing on sandbox mode.");
+                bluePlayerDisplay.gameObject.SetActive(false);
+                orangePlayerDisplay.gameObject.SetActive(false);
+                lobbyIdTMP.gameObject.SetActive(false);
+            }
         }
 
         void SetLobbyOwnerAsBlue()

@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4513938475614937227}
   - component: {fileID: 4391861052681602084}
-  - component: {fileID: 8730223700269432695}
   m_Layer: 5
   m_Name: Account Display
   m_TagString: Untagged
@@ -57,23 +56,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   signInBtn: {fileID: 8492913331199995795}
   signOutBtn: {fileID: 3093315836541463155}
+  usernameTMP: {fileID: 6654216365655121670}
   greetingTMP: {fileID: 2243919887423769617}
   loadingIcon: {fileID: 5857798756997327509}
---- !u!114 &8730223700269432695
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1786305606003682195}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a0abab250de91f40b6e31175ffd6b73, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  greetingTMP: {fileID: 2243919887423769617}
-  usernameTMP: {fileID: 6654216365655121670}
-  signInBtn: {fileID: 8492913331199995795}
 --- !u!1 &2359290463108007526
 GameObject:
   m_ObjectHideFlags: 0

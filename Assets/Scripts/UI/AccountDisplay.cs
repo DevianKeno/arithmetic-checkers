@@ -34,9 +34,6 @@ namespace Damath
 
         void OnEnable()
         {
-            EOSManager.Instance.AddConnectLoginListener(this);
-            EOSManager.Instance.AddAuthLoginListener(this);
-
             Username = NoUser;
 
             if (EOSManager.Instance.GetLocalUserId() != null)

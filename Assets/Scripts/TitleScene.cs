@@ -9,7 +9,7 @@ namespace Damath
 
         void Start()
         {
-            mainFrame.SwitchFrame("Title");
+            mainFrame.SwitchToFrame("Title");
         }
     }
 }

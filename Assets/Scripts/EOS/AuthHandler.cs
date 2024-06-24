@@ -6,6 +6,7 @@ using Epic.OnlineServices.Auth;
 using Epic.OnlineServices;
 using PlayEveryWare.EpicOnlineServices;
 using System;
+using TMPro;
 
 namespace Damath.EOS
 {
@@ -14,12 +15,16 @@ namespace Damath.EOS
         AccountDisplay accountDisplay;
 
         [SerializeField] UI.Button signInBtn;
+        [SerializeField] UI.Button signOutBtn;
+        [SerializeField] TextMeshProUGUI greetingTMP;
         [SerializeField] LoadingIconAnimation loadingIcon;
 
         void Awake()
         {
             accountDisplay = GetComponent<AccountDisplay>();
+
             signInBtn.onClick.AddListener(OnSignInClick);
+            signOutBtn.onClick.AddListener(OnSignOutClick);
         }
 
         void Start()
@@ -29,32 +34,51 @@ namespace Damath.EOS
 
         public void OnSignInClick()
         {
+            accountDisplay.Username = "Signing in...";
             /// Try persistent login first
-            EOSManager.Instance.StartPersistentLogin(PersistentLoginCallback);
+            Game.EOS.StartPersistentLogin(PersistentLoginCallback);
             SetUIForLoading();
+        }
+
+        public void OnSignOutClick()
+        {
+            greetingTMP.gameObject.SetActive(false);
+            accountDisplay.Username = "Logging out...";
+            var localEpicId = Game.EOS.GetLocalUserId();
+            Game.EOS.StartLogout(localEpicId, OnLogoutComplete);
+            Game.EOS.RemovePersistentToken();
+            SetUIForLoading();
+        }
+
+        void OnLogoutComplete(ref LogoutCallbackInfo data)
+        {
+            SetUIForLogin();
         }
 
         void SetUIForLogin()
         {
             signInBtn.gameObject.SetActive(true);
+            signOutBtn.gameObject.SetActive(false);
             loadingIcon.gameObject.SetActive(false); 
         }
         
         void SetUIForLoading()
         {
-            accountDisplay.Username = "Signing in...";
             signInBtn.gameObject.SetActive(false);
+            signOutBtn.gameObject.SetActive(false);
             loadingIcon.gameObject.SetActive(true); 
         }
 
         void SetUIForLogout()
         {
             signInBtn.gameObject.SetActive(false);
+            signOutBtn.gameObject.SetActive(true);
             loadingIcon.gameObject.SetActive(false); 
         }
 
         void OnSuccessfulLogin()
         {
+            greetingTMP.gameObject.SetActive(true);
             SetUIForLogout();
         }
 

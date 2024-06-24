@@ -1,21 +1,19 @@
 using System;
 using System.Collections.Generic;
+
 using UnityEngine;
 using TMPro;
-using Damath.UI;
-using Damath.EOS;
 
 using Epic.OnlineServices;
-using Epic.OnlineServices.Connect;
-using Epic.OnlineServices.UserInfo;
-using PlayEveryWare.EpicOnlineServices.Samples;
+
+using Damath.UI;
+using Damath.EOS.Lobbies;
 
 namespace Damath
 {
     public class EOSLobbyMatchUI : MonoBehaviour
     {
         Lobby currentLobby;
-        // List<UIMemberEntry> UIMemberEntries = new();
 
         [SerializeField] TextMeshProUGUI lobbyIdTMP;
         [SerializeField] MatchPlayerDisplay bluePlayerDisplay;
@@ -24,14 +22,32 @@ namespace Damath
         void Start()
         {
             var lobby = Game.EOSManagers.LobbyManager.GetCurrentLobby();
-
-            if (lobby.IsValid())
+            if (!lobby.IsValid())
             {
-                currentLobby = lobby;
-                lobbyIdTMP.text = $"Lobby Id: {lobby.Id}";
-
-                Game.EOSManagers.LobbyManager.AddNotifyMemberUpdateReceived(OnMemberUpdate);
+                return;
             }
+
+            currentLobby = lobby;
+            lobbyIdTMP.text = $"Lobby Id: {lobby.Id}";
+            SetLobbyOwnerAsBlue();
+            Game.EOSManagers.LobbyManager.AddNotifyMemberUpdateReceived(OnMemberUpdate);
+        }
+
+        void SetLobbyOwnerAsBlue()
+        {
+            var localEpicUserId = Game.EOS.GetLocalUserId();
+            var localProductUserId = Game.EOS.GetProductUserId();
+
+            if (currentLobby.IsOwner(localProductUserId))
+            {
+                Game.EOSManagers.UserInfoManager.QueryUserInfoById(localEpicUserId, OnQueryUserInfoCompleted);
+            }
+        }
+
+        void OnQueryUserInfoCompleted(EpicAccountId id, Result result)
+        {
+            var userInfo = Game.EOSManagers.UserInfoManager.GetUserInfoById(id);
+            bluePlayerDisplay.SetPlayerDisplayed(userInfo);
         }
 
         void OnMemberUpdate(string lobbyId, ProductUserId memberId)
@@ -42,15 +58,23 @@ namespace Damath
             }
             
             /// Check if memberId exists in the lobby
-            var member = currentLobby.Members.Find((LobbyMember member) =>
+            if (!currentLobby.FindLobbyMember(memberId, out LobbyMember member))
             {
-                return member.ProductId == memberId;
-            });
-            if (member != null)
-            {
-                currentLobby.Members.Add(member);
+                var newMember = new LobbyMember
+                {
+                    ProductId = memberId
+                };
+                currentLobby.Members.Add(newMember);
 
-                orangePlayerDisplay.DisplayName = member.DisplayName;
+                if (currentLobby.BluePlayer == null)
+                {
+                    currentLobby.BluePlayer = newMember;
+                    bluePlayerDisplay.DisplayName = member.DisplayName;
+                } else /// set as orange player
+                {
+                    currentLobby.OrangePlayer = newMember;
+                    orangePlayerDisplay.DisplayName = member.DisplayName;
+                }
             }
         }
     }

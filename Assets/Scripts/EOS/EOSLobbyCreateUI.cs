@@ -2,9 +2,10 @@ using System;
 using UnityEngine;
 using Damath.UI;
 
-using PlayEveryWare.EpicOnlineServices.Samples;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
+
+using Damath.EOS.Lobbies;
 
 namespace Damath.EOS
 {

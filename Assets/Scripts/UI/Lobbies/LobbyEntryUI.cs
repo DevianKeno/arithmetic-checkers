@@ -1,17 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
+
 using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
 
-using PlayEveryWare.EpicOnlineServices.Samples;
-using System;
+using Epic.OnlineServices.Lobby;
+
+using Damath.EOS.Lobbies;
 
 namespace Damath.UI.Lobbies
 {
     public class LobbyEntryUI : MonoBehaviour, IPointerDownHandler
     {
         public Lobby Lobby;
+        public LobbyDetails LobbyDetails;
         public event EventHandler OnClick;
         [SerializeField] TextMeshProUGUI displayNameTMP;
 
@@ -20,9 +22,10 @@ namespace Damath.UI.Lobbies
             OnClick?.Invoke(this, new());
         }
 
-        public void SetLobbyInfo(Lobby lobby)
+        public void SetLobbyInfo(Lobby lobby, LobbyDetails lobbyDetails)
         {
             Lobby = lobby;
+            LobbyDetails = lobbyDetails;
             foreach (var a in lobby.Attributes)
             {
                 if (a.Key == "RULESET")

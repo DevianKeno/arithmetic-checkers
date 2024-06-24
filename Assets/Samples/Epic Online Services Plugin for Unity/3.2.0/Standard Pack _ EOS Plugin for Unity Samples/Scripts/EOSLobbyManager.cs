@@ -35,7 +35,7 @@ namespace PlayEveryWare.EpicOnlineServices.Samples
     /// <summary>
     /// Class represents all Lobby properties
     /// </summary>
-    public class Lobby
+    public partial class Lobby
     {
         public string Id;
         public ProductUserId LobbyOwner = new ProductUserId();
@@ -65,6 +65,9 @@ namespace PlayEveryWare.EpicOnlineServices.Samples
         public List<LobbyAttribute> Attributes = new List<LobbyAttribute>();
         public List<LobbyMember> Members = new List<LobbyMember>();
 
+        public LobbyMember BluePlayer;
+        public LobbyMember OrangePlayer;
+
         // Utility data
 
         public bool _SearchResult = false;
@@ -77,6 +80,24 @@ namespace PlayEveryWare.EpicOnlineServices.Samples
         public bool IsValid()
         {
             return !string.IsNullOrEmpty(Id);
+        }
+
+        public bool TryGetAttribute(string KEY, out LobbyAttribute attribute)
+        {
+            attribute = Attributes.Find((LobbyAttribute attr) =>
+            {
+                return attr.Key == KEY;
+            });
+            return attribute != null;
+        }
+
+        public bool FindLobbyMember(ProductUserId memberId, out LobbyMember lobbyMember)
+        {
+            lobbyMember = Members.Find((LobbyMember member) =>
+            {
+                return member.ProductId == memberId;
+            });
+            return lobbyMember != null;
         }
 
         /// <summary>

@@ -31,50 +31,7 @@ namespace Damath.UI
 
         void Start()
         {
-            if (Side == Side.Blue)
-            {
-                var lobby = Game.EOSManagers.LobbyManager.GetCurrentLobby();
-                if (!lobby.IsValid())
-                {
-                    Debug.LogError("Lobby error??");
-                    return;
-                }
-                
-                var localUserId = Game.EOS.GetProductUserId();
-                var localEpicId = Game.EOS.GetLocalUserId();
-
-                if (lobby.IsOwner(localUserId))
-                {
-                    var options = new QueryUserInfoOptions()
-                    {
-                        LocalUserId = localEpicId,
-                        TargetUserId = localEpicId
-                    };
-
-                    Game.EOS.GetEOSUserInfoInterface().QueryUserInfo(ref options, null, OnQueryUserInfoComplete);
-                }
-            } else
-            {
-                SetNobody();
-            }
-        }
-
-        void OnQueryUserInfoComplete(ref QueryUserInfoCallbackInfo callbackInfo)
-        {
-            if (callbackInfo.ResultCode == Result.Success)
-            {
-                var userInfoOptions = new CopyUserInfoOptions()
-                {
-                    LocalUserId = callbackInfo.LocalUserId,
-                    TargetUserId = callbackInfo.TargetUserId
-                };
-
-                var result = Game.EOS.GetEOSUserInfoInterface().CopyUserInfo(ref userInfoOptions, out UserInfoData? userInfo);
-                if (result == Result.Success && userInfo.HasValue)
-                {
-                    SetPlayerDisplayed(userInfo.Value, true);
-                }
-            }
+            SetNobody();
         }
 
         public void SetNobody()
@@ -88,11 +45,11 @@ namespace Damath.UI
         {
             if (isLobbyOwner)
             {
-                DisplayName = $"{userInfo.DisplayName} (You)";
+                DisplayName = $"{userInfo.DisplayNameSanitized} (You)";
             }
             else
             {
-                DisplayName = userInfo.DisplayName;
+                DisplayName = userInfo.DisplayNameSanitized;
             }
             avatarImage.sprite = null; /// TODO:
             loadingIcon.gameObject.SetActive(false);

@@ -12,6 +12,8 @@ namespace Damath.EOS
     /// </summary>
     public class EOSSubManagers : MonoBehaviour
     {
+        EOSUserInfoManager userInfoManager;
+        public EOSUserInfoManager UserInfoManager => userInfoManager;
         EOSFriendsManager friendsManager;
         public EOSFriendsManager FriendsManager => friendsManager;
         EOSLobbyManager lobbyManager;
@@ -19,8 +21,9 @@ namespace Damath.EOS
 
         internal void Initialize()
         {
-            lobbyManager ??= Game.EOS.GetOrCreateManager<EOSLobbyManager>();
+            userInfoManager ??= Game.EOS.GetOrCreateManager<EOSUserInfoManager>();
             friendsManager ??= Game.EOS.GetOrCreateManager<EOSFriendsManager>();
+            lobbyManager ??= Game.EOS.GetOrCreateManager<EOSLobbyManager>();
         }
     }
 }

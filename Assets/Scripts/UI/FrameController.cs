@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.UI;
-
 
 namespace Damath.UI
 {
@@ -10,31 +10,27 @@ namespace Damath.UI
     {
         [field: SerializeField] public Frame CurrentFrame { get; set; }
         public List<Frame> Frames = new();
+        public LeanTweenType TweenType = LeanTweenType.easeOutExpo;
 
         bool _isTransitioning = false;
-        [SerializeField] string switchTo;
-
+        
         [SerializeField] GameObject inactive;
+
+#region Editor
+        [SerializeField] string switchTo;
+#endregion
 
         void Start()
         {
-            if (CurrentFrame == null)
-            CurrentFrame = GetComponentInChildren<Frame>();
-
-            if (Frames.Count > 0)
-            {
-                foreach (Frame frame in Frames)
-                {
-                    if (frame == null) continue;
-                    LayoutRebuilder.ForceRebuildLayoutImmediate(frame.transform as RectTransform);
-                }
-            }
+            CurrentFrame ??= GetComponentInChildren<Frame>();
+            inactive.SetActive(false);
         }
 
-        public void SwitchFrame(string name)
+        public void SwitchToFrame(string name)
         {
             Frame frame = GetFrame(name);
             if (frame == null) return;
+
             inactive.SetActive(false);
 
             if (CurrentFrame != null)
@@ -44,26 +40,41 @@ namespace Damath.UI
                 _isTransitioning = true;
 
                 LayoutRebuilder.ForceRebuildLayoutImmediate(CurrentFrame.transform as RectTransform);
+
                 if (Game.Main.Settings.EnableAnimations)
                 {
-                    LeanTween.move(CurrentFrame.rect, new Vector3(-1920f, 0f, 0f), Game.Main.Settings.AnimationFactor)
-                    .setEaseOutExpo()
-                    .setOnComplete( () =>
+                    /// Move old frame out of the way
+                    /// The value -1920 moves the frame one screen wide to the left
+                    LeanTween.move(CurrentFrame.rect, new Vector2(-1920f, 0f), Game.Main.Settings.AnimationFactor)
+                    .setEase(TweenType)
+                    .setOnComplete(() =>
                     {
                         CurrentFrame.transform.SetParent(inactive.transform);
                         CurrentFrame.rect.anchoredPosition = Vector2.zero;
                         CurrentFrame.gameObject.SetActive(false);
                     });
 
+                    /// Move new frame into view
                     frame.gameObject.SetActive(true);
-                    frame.gameObject.transform.SetParent(transform);
-                    LeanTween.move(frame.rect, new Vector3(0f, 0f, 0f), Game.Main.Settings.AnimationFactor)
-                    .setEaseOutExpo()
-                    .setOnComplete( () =>
+                    frame.transform.SetParent(transform);
+                    LeanTween.move(frame.rect, Vector2.zero, Game.Main.Settings.AnimationFactor)
+                    .setEase(TweenType)
+                    .setOnComplete(() =>
                     {
                         CurrentFrame = frame;
                         _isTransitioning = false;
                     });
+                } else
+                {
+                    CurrentFrame.transform.SetParent(inactive.transform);
+                    CurrentFrame.rect.anchoredPosition = Vector2.zero;
+                    CurrentFrame.gameObject.SetActive(false);
+
+                    frame.gameObject.SetActive(true);
+                    frame.transform.SetParent(transform);
+                    frame.rect.anchoredPosition = Vector2.zero;
+                    
+                    CurrentFrame = frame;
                 }
             }
         }
@@ -86,21 +97,32 @@ namespace Damath.UI
         }
 
         public void SwitchFrameEditor()
-        {            
-            Frame frame = GetFrame(switchTo);
+        {
+            Frame frame = null;
+            if (int.TryParse(switchTo, out int index))
+            {
+                if (index >= 0 && index < Frames.Count)
+                {
+                    frame = Frames[index];
+                }
+            } else
+            {
+                frame = GetFrame(switchTo);
+            }
             if (frame == null) return;
             if (CurrentFrame.Name == name) return;
 
             inactive.SetActive(false);
             /// Hide current frame
             CurrentFrame.transform.SetParent(inactive.transform);
+            CurrentFrame.rect.anchoredPosition = Vector2.zero;
+            CurrentFrame.gameObject.SetActive(false);
 
             /// Show new frame
             frame.gameObject.SetActive(true);
             frame.transform.SetParent(transform);
+            frame.rect.anchoredPosition = Vector2.zero;
 
-            var rect = frame.transform as RectTransform;
-            rect.anchoredPosition = Vector2.zero;
             CurrentFrame = frame;
             LayoutRebuilder.ForceRebuildLayoutImmediate(transform as RectTransform);
         }

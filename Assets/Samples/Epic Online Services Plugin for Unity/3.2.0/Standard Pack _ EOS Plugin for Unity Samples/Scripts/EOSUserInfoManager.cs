@@ -28,6 +28,7 @@ using UnityEngine;
 using Epic.OnlineServices;
 using Epic.OnlineServices.UserInfo;
 using Epic.OnlineServices.Auth;
+using Epic.OnlineServices.Lobby;
 
 namespace PlayEveryWare.EpicOnlineServices.Samples
 {
@@ -37,11 +38,12 @@ namespace PlayEveryWare.EpicOnlineServices.Samples
     public class EOSUserInfoManager : IEOSSubManager, IEOSOnConnectLogin, IEOSOnAuthLogin, IEOSOnAuthLogout
     {
         private UserInfoData LocalUserInfo;
-
         private UserInfoInterface UserInfoHandle;
+        private UserInfoInterface UserInfoHandles;
 
         public delegate void OnUserInfoChangedCallback(UserInfoData NewUserInfo);
         public delegate void OnUserInfoQueryIdCallback(EpicAccountId UserId, Result QueryResult);
+        public delegate void OnExternalUserInfoQueryIdCallback(ProductUserId UserId, Result QueryResult);
         public delegate void OnUserInfoQueryDisplayNameCallback(string DisplayName, Result QueryResult);
 
         private Dictionary<EpicAccountId, UserInfoData> UserInfoIdMapping;
@@ -264,5 +266,4 @@ namespace PlayEveryWare.EpicOnlineServices.Samples
             }
         }
     }
-
 }

@@ -1847,7 +1847,7 @@ namespace Damath.EOS.Managers
 
         void AddLocalUserAttributes()
         {
-            string localUserDisplayName = Game.EOSManagers.UserInfoManager.GetLocalUserInfo().DisplayName;
+            string localUserDisplayName = Game.EOSManagers.UserInfo.GetLocalUserInfo().DisplayName;
 
             if (!string.IsNullOrEmpty(localUserDisplayName))
             {

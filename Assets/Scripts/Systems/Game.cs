@@ -8,6 +8,7 @@ using Damath.Systems;
 using Damath.EOS;
 using PlayEveryWare.EpicOnlineServices;
 using static PlayEveryWare.EpicOnlineServices.EOSManager;
+using Epic.OnlineServices;
 
 namespace Damath
 {

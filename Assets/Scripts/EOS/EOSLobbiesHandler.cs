@@ -9,12 +9,13 @@ using Epic.OnlineServices.Lobby;
 using Damath.UI.Lobbies;
 using Damath.EOS.Lobbies;
 using Damath.EOS.Managers;
+using TMPro;
 
 namespace Damath.EOS
 {
     public class EOSLobbiesHandler : MonoBehaviour
     {
-        EOSLobbyManager lobbyManager => Game.EOSManagers.LobbyManager;
+        EOSLobbyManager lobbyManager => Game.EOSManagers.Lobbies;
         Lobby selectedLobby = null;
         LobbyDetails selectedLobbyDetails = null;
         List<LobbyEntryUI> lobbyEntries = new();
@@ -24,6 +25,7 @@ namespace Damath.EOS
 
         [Header("UI Elements")]
         [SerializeField] GameObject lobbyContainer;
+        [SerializeField] TMP_InputField searchField;
         [SerializeField] Button refreshBtn;
         [SerializeField] Button joinBtn;
         [SerializeField] LoadingIconAnimation loadingIcon;
@@ -46,7 +48,8 @@ namespace Damath.EOS
             joinBtn.gameObject.SetActive(false);
             loadingIcon.gameObject.SetActive(true);
             /// HMMMMMMMMMMMMMMMMMMMMMMMM
-            lobbyManager.SearchByAttribute("RULESET", "Standard", OnSearchCompleted);
+            string searchString = searchField.text; 
+            lobbyManager.SearchByAttribute("RULESET", searchString, OnSearchCompleted);
         }
         
         public void JoinSelectedLobby()
@@ -55,7 +58,7 @@ namespace Damath.EOS
             {
                 return;
             }
-            Game.EOSManagers.LobbyManager.JoinLobby(selectedLobby.Id, selectedLobbyDetails, false, OnJoinLobbyCompleted);
+            Game.EOSManagers.Lobbies.JoinLobby(selectedLobby.Id, selectedLobbyDetails, false, OnJoinLobbyCompleted);
         }
 
         void OnJoinLobbyCompleted(Result result)

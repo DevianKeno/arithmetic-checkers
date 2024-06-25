@@ -23,7 +23,7 @@ namespace Damath.UI
             }
         }
         public Side Side;
-        public const string NoPlayer = "Waiting for opponent...";
+        public const string NoPlayer = "Waiting...";
 
         [SerializeField] TextMeshProUGUI displayNameTMP;
         [SerializeField] Image avatarImage;

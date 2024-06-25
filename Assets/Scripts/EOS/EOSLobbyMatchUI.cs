@@ -17,6 +17,7 @@ namespace Damath
     public class EOSLobbyMatchUI : MonoBehaviour
     {
         Lobby currentLobby;
+        OpponentJoinedWindow ojw;
 
         [SerializeField] TextMeshProUGUI lobbyIdTMP;
         [SerializeField] MatchPlayerDisplay bluePlayerDisplay;
@@ -24,46 +25,77 @@ namespace Damath
 
         void Start()
         {
-            var lobby = Game.EOSManagers.LobbyManager.GetCurrentLobby();
+            var lobby = Game.EOSManagers.Lobbies.GetCurrentLobby();
 
-            if (lobby.IsValid())
+            if (lobby.IsValid()) /// Match has lobby, probably online
             {
-                Game.Console.Log($"Hosted lobby with id: {lobby.Id}");
-                bluePlayerDisplay.gameObject.SetActive(true);
-                orangePlayerDisplay.gameObject.SetActive(true);
-                lobbyIdTMP.gameObject.SetActive(true);
-
                 currentLobby = lobby;
-                lobbyIdTMP.text = $"Lobby Id: {lobby.Id}";
-                SetLobbyOwnerAsBlue();
-                Game.EOSManagers.LobbyManager.AddNotifyMemberUpdateReceived(OnMemberUpdate);
-                
-            } else
+
+                if (lobby.IsOwner(Game.EOS.GetProductUserId()))
+                {
+                    SetupMatchLobbyAsOwner();
+                } else
+                {
+                    SetupMatchLobbyAsMember();
+                }
+
+                Game.EOSManagers.Lobbies.AddNotifyMemberUpdateReceived(OnMemberUpdate);
+            } else /// probably offline
             {
-                Game.Console.Log("Match has no lobby. Playing on sandbox mode.");
+                Game.Console.Log("Match has no lobby. Playing offline.");
                 bluePlayerDisplay.gameObject.SetActive(false);
                 orangePlayerDisplay.gameObject.SetActive(false);
                 lobbyIdTMP.gameObject.SetActive(false);
             }
         }
 
+        void SetupMatchLobbyAsOwner()
+        {
+            Game.Console.Log($"Hosted lobby with id: {currentLobby.Id}");
+            bluePlayerDisplay.gameObject.SetActive(true);
+            orangePlayerDisplay.gameObject.SetActive(true);
+            lobbyIdTMP.gameObject.SetActive(true);
+            lobbyIdTMP.text = $"Lobby Id: {currentLobby.Id}";
+            SetLobbyOwnerAsBlue();
+        }
+
+        void SetupMatchLobbyAsMember()
+        {
+            Game.Console.Log($"Joined lobby with id: {currentLobby.Id}");
+            bluePlayerDisplay.gameObject.SetActive(true);
+            orangePlayerDisplay.gameObject.SetActive(true);
+            lobbyIdTMP.gameObject.SetActive(true);
+            lobbyIdTMP.text = $"Lobby Id: {currentLobby.Id}";
+
+            QueryPlayersAndSetDisplay();
+        }
+
+        /// <summary>
+        /// The lobby owner is automatically set as the blue player.
+        /// Can be changed though.
+        /// </summary>
         void SetLobbyOwnerAsBlue()
         {
-            var localEpicUserId = Game.EOS.GetLocalUserId();
-            var localProductUserId = Game.EOS.GetProductUserId();
+            var localEpicId = Game.EOS.GetLocalUserId();
+            var localProductId = Game.EOS.GetProductUserId();
 
-            if (currentLobby.IsOwner(localProductUserId))
+            /// I have no idea why the lobby uses ProductUserId
+            /// then the query uses EpicUserId
+            if (currentLobby.IsOwner(localProductId))
             {
-                Game.EOSManagers.UserInfoManager.QueryUserInfoById(localEpicUserId, OnQueryUserInfoCompleted);
+                Game.EOSManagers.UserInfo.QueryUserInfoById(localEpicId, (EpicAccountId id, Result result) =>
+                {
+                    var userInfo = Game.EOSManagers.UserInfo.GetUserInfoById(id);
+                    bluePlayerDisplay.SetPlayerDisplayed(userInfo);
+                });
             }
         }
 
-        void OnQueryUserInfoCompleted(EpicAccountId id, Result result)
-        {
-            var userInfo = Game.EOSManagers.UserInfoManager.GetUserInfoById(id);
-            bluePlayerDisplay.SetPlayerDisplayed(userInfo);
-        }
-
+        /// <summary>
+        /// I think this is called everytime someone joins/leaves the lobby?
+        /// </summary>
+        /// <param name="lobbyId"></param>
+        /// <param name="memberId"></param>
         void OnMemberUpdate(string lobbyId, ProductUserId memberId)
         {
             if (currentLobby.Id != lobbyId)
@@ -71,7 +103,7 @@ namespace Damath
                 return;
             }
             
-            /// Check if memberId exists in the lobby
+            /// Check if memberId already exists in the lobby
             if (!currentLobby.FindLobbyMember(memberId, out LobbyMember member))
             {
                 var newMember = new LobbyMember
@@ -79,17 +111,54 @@ namespace Damath
                     ProductId = memberId
                 };
                 currentLobby.Members.Add(newMember);
-
-                if (currentLobby.BluePlayer == null)
-                {
-                    currentLobby.BluePlayer = newMember;
-                    bluePlayerDisplay.DisplayName = member.DisplayName;
-                } else /// set as orange player
-                {
-                    currentLobby.OrangePlayer = newMember;
-                    orangePlayerDisplay.DisplayName = member.DisplayName;
-                }
+                SetMemberAsPlayer(newMember);
             }
+
+            if (memberId != currentLobby.LobbyOwner)
+            {
+                PrepareForMatch();
+            }
+        }
+
+        void SetMemberAsPlayer(LobbyMember member)
+        {
+            if (currentLobby.BluePlayer == null)
+            {
+                currentLobby.BluePlayer = member;
+                bluePlayerDisplay.DisplayName = member.DisplayName;
+            } else /// set as orange player
+            {
+                currentLobby.OrangePlayer = member;
+                orangePlayerDisplay.DisplayName = member.DisplayName;
+            }
+        }
+
+        void PrepareForMatch()
+        {
+            QueryPlayersAndSetDisplay();
+
+            ojw = Game.UI.Create<OpponentJoinedWindow>("opponent_joined");
+            ojw.SetPlayer(Side.Blue, currentLobby.BluePlayer);
+            ojw.SetPlayer(Side.Orange, currentLobby.OrangePlayer);
+            ojw.Show();
+        }
+
+        void QueryPlayersAndSetDisplay()
+        {
+            var blueId = currentLobby.BluePlayer.AccountId;
+            var orangeId = currentLobby.OrangePlayer.AccountId;
+
+            Game.EOSManagers.UserInfo.QueryUserInfoById(blueId, (EpicAccountId id, Result result) =>
+            {
+                var userInfo = Game.EOSManagers.UserInfo.GetUserInfoById(id);
+                bluePlayerDisplay.SetPlayerDisplayed(userInfo);
+            });
+
+            Game.EOSManagers.UserInfo.QueryUserInfoById(orangeId, (EpicAccountId id, Result result) =>
+            {
+                var userInfo = Game.EOSManagers.UserInfo.GetUserInfoById(id);
+                orangePlayerDisplay.SetPlayerDisplayed(userInfo);
+            });
         }
     }
 }

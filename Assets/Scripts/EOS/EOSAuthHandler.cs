@@ -39,7 +39,7 @@ namespace Damath.EOS
             EOSManager.Instance.RemoveAuthLoginListener(this);
             EOSManager.Instance.RemoveConnectLoginListener(this);
 
-            Game.EOSManagers.UserInfoManager.RemoveNotifyLocalUserInfoChanged(OnLocalUserInfoChanged);
+            Game.EOSManagers.UserInfo.RemoveNotifyLocalUserInfoChanged(OnLocalUserInfoChanged);
         }
 
         void Start()
@@ -89,6 +89,7 @@ namespace Damath.EOS
 
         void SetUIForLogin()
         {
+            usernameTMP.text = "Not logged in";
             signInBtn.gameObject.SetActive(true);
 
             signOutBtn.gameObject.SetActive(false);
@@ -113,10 +114,10 @@ namespace Damath.EOS
 
         void OnSuccessfulLogin()
         {
-            Game.EOSManagers.UserInfoManager.RemoveNotifyLocalUserInfoChanged(OnLocalUserInfoChanged);
-            Game.EOSManagers.UserInfoManager.AddNotifyLocalUserInfoChanged(OnLocalUserInfoChanged);
+            Game.EOSManagers.UserInfo.RemoveNotifyLocalUserInfoChanged(OnLocalUserInfoChanged);
+            Game.EOSManagers.UserInfo.AddNotifyLocalUserInfoChanged(OnLocalUserInfoChanged);
 
-            OnLocalUserInfoChanged(Game.EOSManagers.UserInfoManager.GetLocalUserInfo());
+            OnLocalUserInfoChanged(Game.EOSManagers.UserInfo.GetLocalUserInfo());
             
             SetUIForLogout();
             usernameTMP.text = "...";

@@ -115,7 +115,7 @@ namespace Damath.EOS
 
             Game.UI.Dim(0.25f);
             creatingLobbyWindow = Game.UI.Create("creating_lobby_window") as Window;
-            Game.EOSManagers.LobbyManager.CreateLobby(CreateLobbyProperties(), OnCreateLobbyCompleted);
+            Game.EOSManagers.Lobbies.CreateLobby(CreateLobbyProperties(), OnCreateLobbyCompleted);
         }
 
         void OnCreateLobbyCompleted(Result result)
@@ -125,7 +125,7 @@ namespace Damath.EOS
             if (result == Result.Success)
             {
                 var localUserId = Game.EOS.GetProductUserId();
-                Game.EOSManagers.LobbyManager.PromoteMember(localUserId, OnPromoteMemberCompleted);
+                Game.EOSManagers.Lobbies.PromoteMember(localUserId, OnPromoteMemberCompleted);
             } else
             {
                 Game.Console.Log($"Error creating lobby. [" + result + "]");

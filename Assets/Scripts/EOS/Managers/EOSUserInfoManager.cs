@@ -16,19 +16,18 @@ namespace Damath.EOS.Managers
     /// </summary>
     public class EOSUserInfoManager : IEOSSubManager, IEOSOnConnectLogin, IEOSOnAuthLogin, IEOSOnAuthLogout
     {
-        private UserInfoData LocalUserInfo;
-        private UserInfoInterface UserInfoHandle;
-        private UserInfoInterface UserInfoHandles;
+        UserInfoData LocalUserInfo;
+        UserInfoInterface UserInfoHandle;
 
         public delegate void OnUserInfoChangedCallback(UserInfoData NewUserInfo);
         public delegate void OnUserInfoQueryIdCallback(EpicAccountId UserId, Result QueryResult);
         public delegate void OnExternalUserInfoQueryIdCallback(ProductUserId UserId, Result QueryResult);
         public delegate void OnUserInfoQueryDisplayNameCallback(string DisplayName, Result QueryResult);
 
-        private Dictionary<EpicAccountId, UserInfoData> UserInfoIdMapping;
-        private Dictionary<string, UserInfoData> UserInfoDisplayNameMapping;
+        Dictionary<EpicAccountId, UserInfoData> UserInfoIdMapping;
+        Dictionary<string, UserInfoData> UserInfoDisplayNameMapping;
 
-        private List<OnUserInfoChangedCallback> LocalUserInfoChangedCallbacks;
+        List<OnUserInfoChangedCallback> LocalUserInfoChangedCallbacks;
 
         public EOSUserInfoManager()
         {
@@ -90,7 +89,7 @@ namespace Damath.EOS.Managers
             }
         }
 
-        private void UpdateLocalUserInfo()
+        void UpdateLocalUserInfo()
         {
             if (UserInfoHandle == null)
             {
@@ -134,7 +133,7 @@ namespace Damath.EOS.Managers
             UserInfoHandle.QueryUserInfo(ref options, Callback, OnQueryUserInfoIdCompleted);
         }
 
-        private void OnQueryUserInfoIdCompleted(ref QueryUserInfoCallbackInfo data)
+        void OnQueryUserInfoIdCompleted(ref QueryUserInfoCallbackInfo data)
         {
             OnUserInfoQueryIdCallback Callback = data.ClientData as OnUserInfoQueryIdCallback;
 
@@ -188,7 +187,7 @@ namespace Damath.EOS.Managers
             UserInfoHandle.QueryUserInfoByDisplayName(ref options, Callback, OnQueryUserInfoDisplayNameCompleted);
         }
 
-        private void OnQueryUserInfoDisplayNameCompleted(ref QueryUserInfoByDisplayNameCallbackInfo data)
+        void OnQueryUserInfoDisplayNameCompleted(ref QueryUserInfoByDisplayNameCallbackInfo data)
         {
             OnUserInfoQueryDisplayNameCallback Callback = data.ClientData as OnUserInfoQueryDisplayNameCallback;
 
@@ -227,7 +226,7 @@ namespace Damath.EOS.Managers
             Callback?.Invoke(displayNameCopy, data.ResultCode);
         }
 
-        private void AddUserInfo(UserInfoData UserInfo)
+        void AddUserInfo(UserInfoData UserInfo)
         {
             UserInfoIdMapping[UserInfo.UserId] = UserInfo;
             if (!string.IsNullOrEmpty(UserInfo.DisplayName))

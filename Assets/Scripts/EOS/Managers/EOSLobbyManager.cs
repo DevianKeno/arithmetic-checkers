@@ -18,53 +18,49 @@ namespace Damath.EOS.Managers
     /// </summary>
     public class EOSLobbyManager : IEOSSubManager
     {
-        private Lobby CurrentLobby;
-        private LobbyJoinRequest ActiveJoin;
+        Lobby CurrentLobby;
+        LobbyJoinRequest ActiveJoin;
 
         // Pending invites (up to one invite per friend)
-        private Dictionary<ProductUserId, LobbyInvite> Invites;
-        private LobbyInvite CurrentInvite;
+        Dictionary<ProductUserId, LobbyInvite> Invites;
+        LobbyInvite CurrentInvite;
 
         // Search 
-        private LobbySearch CurrentSearch;
-        private Dictionary<Lobby, LobbyDetails> SearchResults;
+        LobbySearch CurrentSearch;
+        Dictionary<Lobby, LobbyDetails> SearchResults;
 
 
         //NotificationId
-        private NotifyEventHandle LobbyUpdateNotification;
-        private NotifyEventHandle LobbyMemberUpdateNotification;
-        private NotifyEventHandle LobbyMemberStatusNotification;
-        private NotifyEventHandle LobbyInviteNotification;
-        private NotifyEventHandle LobbyInviteAcceptedNotification;
-        private NotifyEventHandle JoinLobbyAcceptedNotification;
-        private NotifyEventHandle LeaveLobbyRequestedNotification;
+        NotifyEventHandle LobbyUpdateNotification;
+        NotifyEventHandle LobbyMemberUpdateNotification;
+        NotifyEventHandle LobbyMemberStatusNotification;
+        NotifyEventHandle LobbyInviteNotification;
+        NotifyEventHandle LobbyInviteAcceptedNotification;
+        NotifyEventHandle JoinLobbyAcceptedNotification;
+        NotifyEventHandle LeaveLobbyRequestedNotification;
 
         // TODO: Does this constant exist in the EOS SDK C# Wrapper?
-        private const ulong EOS_INVALID_NOTIFICATIONID = 0;
+        const ulong EOS_INVALID_NOTIFICATIONID = 0;
 
         public bool _Dirty = true;
 
         // Manager Callbacks
-        private OnLobbySearchCallback LobbySearchCallback;
+        OnLobbySearchCallback LobbySearchCallback;
 
         public delegate void OnLobbyCallback(Result result);
         public delegate void OnLobbySearchCallback(Result result);
-
         public delegate void OnMemberUpdateCallback(string LobbyId, ProductUserId MemberId);
 
-        private List<OnMemberUpdateCallback> MemberUpdateCallbacks;
-        private List<Action> LobbyChangeCallbacks;
-        private List<Action> LobbyUpdateCallbacks;
+        List<OnMemberUpdateCallback> MemberUpdateCallbacks;
+        List<Action> LobbyChangeCallbacks;
+        List<Action> LobbyUpdateCallbacks;
 
-        private EOSUserInfoManager UserInfoManager;
         
         public LocalRTCOptions? customLocalRTCOptions;
 
         // Init
         public EOSLobbyManager()
         {
-            UserInfoManager = EOSManager.Instance.GetOrCreateManager<EOSUserInfoManager>();
-
             CurrentLobby = new Lobby();
             ActiveJoin = new LobbyJoinRequest();
 
@@ -106,37 +102,37 @@ namespace Damath.EOS.Managers
             return SearchResults;
         }
 
-        private bool IsLobbyNotificationValid(NotifyEventHandle handle)
+        bool IsLobbyNotificationValid(NotifyEventHandle handle)
         {
             return handle != null && handle.IsValid();
         }
 
         // Helper method to keep the code cleaner
-        private ulong AddNotifyLobbyUpdateReceived(LobbyInterface lobbyInterface, OnLobbyUpdateReceivedCallback notificationFn)
+        ulong AddNotifyLobbyUpdateReceived(LobbyInterface lobbyInterface, OnLobbyUpdateReceivedCallback notificationFn)
         {
             var options = new AddNotifyLobbyUpdateReceivedOptions();
             return lobbyInterface.AddNotifyLobbyUpdateReceived(ref options, null, notificationFn);
         }
 
-        private ulong AddNotifyLobbyMemberUpdateReceived(LobbyInterface lobbyInterface, OnLobbyMemberUpdateReceivedCallback notificationFn)
+        ulong AddNotifyLobbyMemberUpdateReceived(LobbyInterface lobbyInterface, OnLobbyMemberUpdateReceivedCallback notificationFn)
         {
             var options = new AddNotifyLobbyMemberUpdateReceivedOptions();
             return lobbyInterface.AddNotifyLobbyMemberUpdateReceived(ref options, null, notificationFn);
         }
 
-        private ulong AddNotifyLobbyMemberStatusReceived(LobbyInterface lobbyInterface, OnLobbyMemberStatusReceivedCallback notificationFn)
+        ulong AddNotifyLobbyMemberStatusReceived(LobbyInterface lobbyInterface, OnLobbyMemberStatusReceivedCallback notificationFn)
         {
             var options = new AddNotifyLobbyMemberStatusReceivedOptions();
             return lobbyInterface.AddNotifyLobbyMemberStatusReceived(ref options, null, notificationFn);
         }
 
-        private ulong AddNotifyLeaveLobbyRequested(LobbyInterface lobbyInterface, OnLeaveLobbyRequestedCallback notificationFn)
+        ulong AddNotifyLeaveLobbyRequested(LobbyInterface lobbyInterface, OnLeaveLobbyRequestedCallback notificationFn)
         {
             var options = new AddNotifyLeaveLobbyRequestedOptions();
             return lobbyInterface.AddNotifyLeaveLobbyRequested(ref options, null, notificationFn);
         }
 
-        private void SubscribeToLobbyUpdates()
+        void SubscribeToLobbyUpdates()
         {
             if(IsLobbyNotificationValid(LobbyUpdateNotification) ||
                 IsLobbyNotificationValid(LobbyMemberUpdateNotification) || 
@@ -170,7 +166,7 @@ namespace Damath.EOS.Managers
             });
         }
 
-        private void UnsubscribeFromLobbyUpdates()
+        void UnsubscribeFromLobbyUpdates()
         {
             LobbyUpdateNotification.Dispose();
             LobbyMemberUpdateNotification.Dispose();
@@ -179,7 +175,7 @@ namespace Damath.EOS.Managers
         }
 
         //-------------------------------------------------------------------------
-        private void SubscribeToLobbyInvites()
+        void SubscribeToLobbyInvites()
         {
             if (IsLobbyNotificationValid(LobbyInviteNotification) || 
                 IsLobbyNotificationValid(LobbyInviteAcceptedNotification) || 
@@ -210,14 +206,14 @@ namespace Damath.EOS.Managers
         }
 
         //-------------------------------------------------------------------------
-        private void UnsubscribeFromLobbyInvites()
+        void UnsubscribeFromLobbyInvites()
         {
             LobbyInviteNotification.Dispose(); 
             LobbyInviteAcceptedNotification.Dispose(); 
             JoinLobbyAcceptedNotification.Dispose();
         }
 
-        private string GetRTCRoomName()
+        string GetRTCRoomName()
         {
             GetRTCRoomNameOptions options = new GetRTCRoomNameOptions()
             {
@@ -238,7 +234,7 @@ namespace Damath.EOS.Managers
             return roomName;
         }
 
-        private void UnsubscribeFromRTCEvents()
+        void UnsubscribeFromRTCEvents()
         {
             if(!CurrentLobby.RTCRoomEnabled)
             {
@@ -252,7 +248,7 @@ namespace Damath.EOS.Managers
             CurrentLobby.RTCRoomName = string.Empty;
         }
 
-        private void SubscribeToRTCEvents()
+        void SubscribeToRTCEvents()
         {
             if(!CurrentLobby.RTCRoomEnabled)
             {
@@ -341,7 +337,7 @@ namespace Damath.EOS.Managers
             var disableAutoGainControlResult = rtcHandle.SetSetting(ref setSetting);
         }
 
-        private void OnRTCRoomConnectionChangedReceived(ref RTCRoomConnectionChangedCallbackInfo data)
+        void OnRTCRoomConnectionChangedReceived(ref RTCRoomConnectionChangedCallbackInfo data)
         {
             //if (data == null)
             //{
@@ -381,7 +377,7 @@ namespace Damath.EOS.Managers
             _Dirty = true;
         }
 
-        private void OnRTCRoomParticipantStatusChanged(ref ParticipantStatusChangedCallbackInfo data)
+        void OnRTCRoomParticipantStatusChanged(ref ParticipantStatusChangedCallbackInfo data)
         {
             //if (data == null)
             //{
@@ -434,7 +430,7 @@ namespace Damath.EOS.Managers
             }
         }
 
-        private void OnRTCRoomParticipantAudioUpdateRecieved(ref ParticipantUpdatedCallbackInfo data)
+        void OnRTCRoomParticipantAudioUpdateRecieved(ref ParticipantUpdatedCallbackInfo data)
         {
             //if (data == null)
             //{
@@ -828,7 +824,7 @@ namespace Damath.EOS.Managers
             EOSManager.Instance.GetEOSLobbyInterface().UpdateLobby(ref updateOptions, null, OnUpdateLobbyCallBack);
         }
 
-        private void OnSendInviteCompleted(ref SendInviteCallbackInfo data)
+        void OnSendInviteCompleted(ref SendInviteCallbackInfo data)
         {
             //if (data == null)
             //{
@@ -845,7 +841,7 @@ namespace Damath.EOS.Managers
             Debug.Log("Lobbies (OnSendInviteCompleted): invite sent.");
         }
 
-        private void OnCreateLobbyCompleted(ref CreateLobbyCallbackInfo createLobbyCallbackInfo)
+        void OnCreateLobbyCompleted(ref CreateLobbyCallbackInfo createLobbyCallbackInfo)
         {
             OnLobbyCallback LobbyCreatedCallback = createLobbyCallbackInfo.ClientData as OnLobbyCallback;
 
@@ -885,7 +881,7 @@ namespace Damath.EOS.Managers
             }
         }
 
-        private void OnCurrentLobbyChanged()
+        void OnCurrentLobbyChanged()
         {
             if (CurrentLobby.IsValid())
             {
@@ -897,7 +893,7 @@ namespace Damath.EOS.Managers
             }
         }
 
-        private void OnUpdateLobbyCallBack(ref UpdateLobbyCallbackInfo data)
+        void OnUpdateLobbyCallBack(ref UpdateLobbyCallbackInfo data)
         {
             OnLobbyCallback LobbyModifyCallback = data.ClientData as OnLobbyCallback;
 
@@ -920,7 +916,7 @@ namespace Damath.EOS.Managers
             OnLobbyUpdated(data.LobbyId, LobbyModifyCallback);
         }
 
-        private void OnLobbyUpdated(string lobbyId, OnLobbyCallback LobbyUpdateCompleted)
+        void OnLobbyUpdated(string lobbyId, OnLobbyCallback LobbyUpdateCompleted)
         {
             // Update Lobby
             if (!string.IsNullOrEmpty(lobbyId) && CurrentLobby.Id == lobbyId)
@@ -936,7 +932,7 @@ namespace Damath.EOS.Managers
             }
         }
 
-        private void OnLobbyUpdateReceived(ref LobbyUpdateReceivedCallbackInfo data)
+        void OnLobbyUpdateReceived(ref LobbyUpdateReceivedCallbackInfo data)
         {
             // Callback for LobbyUpdateNotification
 
@@ -991,7 +987,7 @@ namespace Damath.EOS.Managers
             CurrentLobby.Clear();
         }
 
-        private void OnDestroyLobbyCompleted(ref DestroyLobbyCallbackInfo data)
+        void OnDestroyLobbyCompleted(ref DestroyLobbyCallbackInfo data)
         {
             OnLobbyCallback DestroyLobbyCallback = data.ClientData as OnLobbyCallback;
 
@@ -1140,7 +1136,7 @@ namespace Damath.EOS.Managers
             }
         }
 
-        private void OnRTCRoomUpdateSendingCompleted(ref UpdateSendingCallbackInfo data)
+        void OnRTCRoomUpdateSendingCompleted(ref UpdateSendingCallbackInfo data)
         {
             OnLobbyCallback ToggleMuteCallback = data.ClientData as OnLobbyCallback;
 
@@ -1195,7 +1191,7 @@ namespace Damath.EOS.Managers
             ToggleMuteCallback?.Invoke(data.ResultCode);
         }
 
-        private void OnRTCRoomUpdateReceivingCompleted(ref UpdateReceivingCallbackInfo data)
+        void OnRTCRoomUpdateReceivingCompleted(ref UpdateReceivingCallbackInfo data)
         {
             OnLobbyCallback ToggleMuteCallback = data.ClientData as OnLobbyCallback;
 
@@ -1276,7 +1272,7 @@ namespace Damath.EOS.Managers
             EOSManager.Instance.GetEOSLobbyInterface().KickMember(ref kickOptions, KickMemberCompleted, OnKickMemberCompleted);
         }
 
-        private void OnKickMemberCompleted(ref KickMemberCallbackInfo data)
+        void OnKickMemberCompleted(ref KickMemberCallbackInfo data)
         {
             OnLobbyCallback KickMemberCallback = data.ClientData as OnLobbyCallback;
 
@@ -1298,7 +1294,7 @@ namespace Damath.EOS.Managers
             KickMemberCallback?.Invoke(Result.Success);
         }
 
-        private void OnKickedFromLobby(string lobbyId)
+        void OnKickedFromLobby(string lobbyId)
         {
             Debug.LogFormat("Lobbies (OnKickedFromLobby):  Kicked from lobby: {0}", lobbyId);
             if (CurrentLobby.IsValid() && CurrentLobby.Id.Equals(lobbyId, StringComparison.OrdinalIgnoreCase))
@@ -1341,7 +1337,7 @@ namespace Damath.EOS.Managers
             EOSManager.Instance.GetEOSLobbyInterface().PromoteMember(ref promoteOptions, PromoteMemberCompleted, OnPromoteMemberCompleted);
         }
 
-        private void OnPromoteMemberCompleted(ref PromoteMemberCallbackInfo data)
+        void OnPromoteMemberCompleted(ref PromoteMemberCallbackInfo data)
         {
             OnLobbyCallback PromoteMemberCallback = data.ClientData as OnLobbyCallback;
 
@@ -1364,12 +1360,12 @@ namespace Damath.EOS.Managers
             PromoteMemberCallback?.Invoke(Result.Success);
         }
 
-        private void OnLeaveLobbyRequested(ref LeaveLobbyRequestedCallbackInfo data)
+        void OnLeaveLobbyRequested(ref LeaveLobbyRequestedCallbackInfo data)
         {
             Debug.Log("Lobbies (OnLeaveLobbyRequested): Leave Lobby Requested via Overlay.");
             LeaveLobby(null);
         }
-        private void OnMemberStatusReceived(ref LobbyMemberStatusReceivedCallbackInfo data)
+        void OnMemberStatusReceived(ref LobbyMemberStatusReceivedCallbackInfo data)
         {
             // Callback for LobbyMemberStatusNotification
 
@@ -1413,7 +1409,7 @@ namespace Damath.EOS.Managers
             }
         }
 
-        private void OnMemberUpdateReceived(ref LobbyMemberUpdateReceivedCallbackInfo data)
+        void OnMemberUpdateReceived(ref LobbyMemberUpdateReceivedCallbackInfo data)
         {
             // Callback for LobbyMemberUpdateNotification
 
@@ -1587,7 +1583,7 @@ namespace Damath.EOS.Managers
             outLobbySearchHandle.Find(ref lobbySearchFindOptions, null, OnLobbySearchCompleted);
         }
 
-        private void OnLobbySearchCompleted(ref LobbySearchFindCallbackInfo data)
+        void OnLobbySearchCompleted(ref LobbySearchFindCallbackInfo data)
         {
             //if (data == null)
             //{
@@ -1665,7 +1661,7 @@ namespace Damath.EOS.Managers
             LobbySearchCallback?.Invoke(Result.Success);
         }
 
-        private void OnLobbyJoinFailed(string lobbyId)
+        void OnLobbyJoinFailed(string lobbyId)
         {
             _Dirty = true;
 
@@ -1674,7 +1670,7 @@ namespace Damath.EOS.Managers
 
         // Invite
 
-        private void OnLobbyInvite(string inviteId, ProductUserId senderUserId)
+        void OnLobbyInvite(string inviteId, ProductUserId senderUserId)
         {
             LobbyInvite newLobbyInvite = new LobbyInvite();
 
@@ -1728,7 +1724,7 @@ namespace Damath.EOS.Managers
             _Dirty = true;
         }
 
-        private void OnJoinLobbyAccepted(ref JoinLobbyAcceptedCallbackInfo data)
+        void OnJoinLobbyAccepted(ref JoinLobbyAcceptedCallbackInfo data)
         {
             // Callback for JoinLobbyAcceptedNotification
 
@@ -1755,7 +1751,7 @@ namespace Damath.EOS.Managers
             PopLobbyInvite();
         }
 
-        private void OnLobbyInviteReceived(ref LobbyInviteReceivedCallbackInfo data)
+        void OnLobbyInviteReceived(ref LobbyInviteReceivedCallbackInfo data)
         {
             // Callback for LobbyInviteNotification
 
@@ -1784,7 +1780,7 @@ namespace Damath.EOS.Managers
             OnLobbyInvite(data.InviteId, data.TargetUserId);
         }
 
-        private void OnLobbyInviteAccepted(ref LobbyInviteAcceptedCallbackInfo data)
+        void OnLobbyInviteAccepted(ref LobbyInviteAcceptedCallbackInfo data)
         {
             // Callback for LobbyInviteAcceptedNotification
 
@@ -1818,7 +1814,7 @@ namespace Damath.EOS.Managers
             JoinLobby(lobby.Id, outLobbyDetailsHandle, true, null);
         }
 
-        private void PopLobbyInvite()
+        void PopLobbyInvite()
         {
             if (Invites.Count > 0)
             {
@@ -1839,7 +1835,7 @@ namespace Damath.EOS.Managers
         // It appears that to get RTC to work on some platforms, the RTC API needs to be
         // 'kicked' to enumerate the input and output devices.
         //
-        private void HackWorkaroundRTCInitIssues()
+        void HackWorkaroundRTCInitIssues()
         {
             // Hack to get RTC working
             var audioOptions = new Epic.OnlineServices.RTCAudio.GetAudioInputDevicesCountOptions();
@@ -1849,9 +1845,9 @@ namespace Damath.EOS.Managers
             EOSManager.Instance.GetEOSRTCInterface().GetAudioInterface().GetAudioOutputDevicesCount(ref audioOutputOptions);
         }
 
-        private void AddLocalUserAttributes()
+        void AddLocalUserAttributes()
         {
-            string localUserDisplayName = UserInfoManager.GetLocalUserInfo().DisplayName;
+            string localUserDisplayName = Game.EOSManagers.UserInfoManager.GetLocalUserInfo().DisplayName;
 
             if (!string.IsNullOrEmpty(localUserDisplayName))
             {
@@ -1917,7 +1913,7 @@ namespace Damath.EOS.Managers
             EOSManager.Instance.GetEOSLobbyInterface().JoinLobby(ref joinOptions, JoinLobbyCompleted, OnJoinLobbyCompleted);
         }
 
-        private void OnJoinLobbyCompleted(ref JoinLobbyCallbackInfo data)
+        void OnJoinLobbyCompleted(ref JoinLobbyCallbackInfo data)
         {
             OnLobbyCallback JoinLobbyCallback = data.ClientData as OnLobbyCallback;
 
@@ -1960,7 +1956,7 @@ namespace Damath.EOS.Managers
             OnCurrentLobbyChanged();
         }
 
-        private void OnLeaveLobbyCompleted(ref LeaveLobbyCallbackInfo data)
+        void OnLeaveLobbyCompleted(ref LeaveLobbyCallbackInfo data)
         {
             OnLobbyCallback LeaveLobbyCallback = data.ClientData as OnLobbyCallback;
 
@@ -2013,7 +2009,7 @@ namespace Damath.EOS.Managers
             // LobbyId does not match current invite, reject can be ignored
         }
 
-        private void OnDeclineInviteCompleted(ref RejectInviteCallbackInfo data)
+        void OnDeclineInviteCompleted(ref RejectInviteCallbackInfo data)
         {
             //if (data == null)
             //{

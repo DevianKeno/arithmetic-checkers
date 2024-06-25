@@ -16,8 +16,8 @@ namespace Damath.EOS.Lobbies
     {
         public string Id;
         public string BucketId;
-        public ProductUserId LobbyOwner = new();
         public EpicAccountId LobbyOwnerAccountId = new();
+        public ProductUserId LobbyOwner = new();
         public string LobbyOwnerDisplayName;
         public uint MaxNumLobbyMembers = 0;
         public LobbyPermissionLevel LobbyPermissionLevel = LobbyPermissionLevel.Publicadvertised;
@@ -25,8 +25,8 @@ namespace Damath.EOS.Lobbies
         public bool AllowInvites = true;
         public bool? DisableHostMigration;
 
-        public List<LobbyAttribute> Attributes = new List<LobbyAttribute>();
-        public List<LobbyMember> Members = new List<LobbyMember>();
+        public List<LobbyAttribute> Attributes = new();
+        public List<LobbyMember> Members = new();
         public LobbyMember BluePlayer;
         public LobbyMember OrangePlayer;
 

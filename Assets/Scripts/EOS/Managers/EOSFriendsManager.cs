@@ -21,31 +21,30 @@ namespace Damath.EOS.Managers
     /// </summary>
     public class EOSFriendsManager : IEOSSubManager
     {
-        private Dictionary<EpicAccountId, FriendData> CachedFriends;
-        private bool CachedFriendsDirty;
+        Dictionary<EpicAccountId, FriendData> CachedFriends;
+        bool CachedFriendsDirty;
 
-        private Dictionary<EpicAccountId, FriendData> CachedSearchResults;
-        private bool CachedSearchResultsDirty;
+        Dictionary<EpicAccountId, FriendData> CachedSearchResults;
+        bool CachedSearchResultsDirty;
 
         // Manager Callbacks
-        private OnFriendsCallback AddFriendCallback;
-        private OnFriendsCallback QueryFriendCallback;
-        private OnFriendsCallback AcceptInviteCallback;
-        private OnFriendsCallback RejectInviteCallback;
-        private OnFriendsCallback ShowFriendsOverlayCallback;
-        private OnFriendsCallback HideFriendsOverlayCallback;
-
-        private OnFriendsCallback QueryUserInfoCallback;
+        OnFriendsCallback AddFriendCallback;
+        OnFriendsCallback QueryFriendCallback;
+        OnFriendsCallback AcceptInviteCallback;
+        OnFriendsCallback RejectInviteCallback;
+        OnFriendsCallback ShowFriendsOverlayCallback;
+        OnFriendsCallback HideFriendsOverlayCallback;
+        OnFriendsCallback QueryUserInfoCallback;
 
         public delegate void OnFriendsCallback(Result result);
 
-        private FriendsInterface FriendsHandle;
-        private UserInfoInterface UserInfoHandle;
-        private PresenceInterface PresenceHandle;
-        private ConnectInterface ConnectHandle;
+        FriendsInterface FriendsHandle;
+        UserInfoInterface UserInfoHandle;
+        PresenceInterface PresenceHandle;
+        ConnectInterface ConnectHandle;
 
-        private Dictionary<EpicAccountId, ulong> FriendNotifications = new Dictionary<EpicAccountId, ulong>();
-        private Dictionary<EpicAccountId, ulong> PresenceNotifications = new Dictionary<EpicAccountId, ulong>();
+        Dictionary<EpicAccountId, ulong> FriendNotifications = new Dictionary<EpicAccountId, ulong>();
+        Dictionary<EpicAccountId, ulong> PresenceNotifications = new Dictionary<EpicAccountId, ulong>();
 
         public EOSFriendsManager()
         {
@@ -138,7 +137,7 @@ namespace Damath.EOS.Managers
         }
 
         [Obsolete("OnSendInviteCompleted is obsolete.  ErrorCode=NotImplemented")]
-        private void OnSendInviteCompleted(ref SendInviteCallbackInfo data)
+        void OnSendInviteCompleted(ref SendInviteCallbackInfo data)
         {
             //if (data == null)
             //{
@@ -178,7 +177,7 @@ namespace Damath.EOS.Managers
             FriendsHandle.AcceptInvite(ref options, null, OnAcceptInviteCompleted);
         }
 
-        private void OnAcceptInviteCompleted(ref AcceptInviteCallbackInfo data)
+        void OnAcceptInviteCompleted(ref AcceptInviteCallbackInfo data)
         {
             //if (data == null)
             //{
@@ -218,7 +217,7 @@ namespace Damath.EOS.Managers
             FriendsHandle.RejectInvite(ref options, null, OnRejectInviteCompleted);
         }
 
-        private void OnRejectInviteCompleted(ref RejectInviteCallbackInfo data)
+        void OnRejectInviteCompleted(ref RejectInviteCallbackInfo data)
         {
             //if (data == null)
             //{
@@ -256,7 +255,7 @@ namespace Damath.EOS.Managers
             FriendsHandle.QueryFriends(ref options, null, QueryFriendsCallback);
         }
 
-        private void QueryFriendsCallback(ref QueryFriendsCallbackInfo data)
+        void QueryFriendsCallback(ref QueryFriendsCallbackInfo data)
         {
             //if (data == null)
             //{
@@ -337,7 +336,7 @@ namespace Damath.EOS.Managers
             QueryFriendCallback?.Invoke(Result.Success);
         }
 
-        private void QueryPresenceInfo(EpicAccountId localUserId, EpicAccountId targetUserId)
+        void QueryPresenceInfo(EpicAccountId localUserId, EpicAccountId targetUserId)
         {
             QueryPresenceOptions options = new QueryPresenceOptions()
             {
@@ -348,7 +347,7 @@ namespace Damath.EOS.Managers
             PresenceHandle.QueryPresence(ref options, null, OnQueryPresenceCompleted);
         }
 
-        private void OnQueryPresenceCompleted(ref QueryPresenceCallbackInfo data)
+        void OnQueryPresenceCompleted(ref QueryPresenceCallbackInfo data)
         {
             //if (data == null)
             //{
@@ -416,7 +415,7 @@ namespace Damath.EOS.Managers
             }
         }
 
-        private void QueryFriendsConnectMappings()
+        void QueryFriendsConnectMappings()
         {
             if(CachedFriends.Count == 0)
             {
@@ -451,7 +450,7 @@ namespace Damath.EOS.Managers
             ConnectHandle.QueryExternalAccountMappings(ref options, null, OnQueryExternalAccountMappingsCompleted);
         }
 
-        private void OnQueryExternalAccountMappingsCompleted(ref QueryExternalAccountMappingsCallbackInfo data)
+        void OnQueryExternalAccountMappingsCompleted(ref QueryExternalAccountMappingsCallbackInfo data)
         {
             //if (data == null)
             //{
@@ -548,7 +547,7 @@ namespace Damath.EOS.Managers
             UserInfoHandle.QueryUserInfoByDisplayName(ref options, null, QueryUserInfoByDisplaynameCompleted);
         }
 
-        private void QueryUserInfoByDisplaynameCompleted(ref QueryUserInfoByDisplayNameCallbackInfo data)
+        void QueryUserInfoByDisplaynameCompleted(ref QueryUserInfoByDisplayNameCallbackInfo data)
         {
             //if (data == null)
             //{
@@ -593,7 +592,7 @@ namespace Damath.EOS.Managers
             FriendsHandle.SendInvite(ref options, null, SendInviteCompleted);
         }
 
-        private void SendInviteCompleted(ref SendInviteCallbackInfo data)
+        void SendInviteCompleted(ref SendInviteCallbackInfo data)
         {
             //if (data == null)
             //{
@@ -634,7 +633,7 @@ namespace Damath.EOS.Managers
             UserInfoHandle.QueryUserInfo(ref options, null, OnQueryUserInfoCompleted);
         }
 
-        private void OnQueryUserInfoCompleted(ref QueryUserInfoCallbackInfo data)
+        void OnQueryUserInfoCompleted(ref QueryUserInfoCallbackInfo data)
         {
             //if (data == null)
             //{
@@ -701,7 +700,7 @@ namespace Damath.EOS.Managers
             EOSManager.Instance.GetEOSPlatformInterface().GetUIInterface().ShowFriends(ref showFriendsOptions, null, OnShowFriendsCallback);
         }
 
-        private void OnShowFriendsCallback(ref ShowFriendsCallbackInfo data)
+        void OnShowFriendsCallback(ref ShowFriendsCallbackInfo data)
         {
             //if (data == null)
             //{
@@ -731,7 +730,7 @@ namespace Damath.EOS.Managers
         }
 
         //-------------------------------------------------------------------------
-        private void OnHideFriendsCallback(ref HideFriendsCallbackInfo data)
+        void OnHideFriendsCallback(ref HideFriendsCallbackInfo data)
         {
             //if (data == null)
             //{
@@ -788,7 +787,7 @@ namespace Damath.EOS.Managers
             }
         }
 
-        private void UnsubscribeFromFriendUpdates(EpicAccountId userId)
+        void UnsubscribeFromFriendUpdates(EpicAccountId userId)
         {
             if(userId == null || !userId.IsValid())
             {
@@ -815,7 +814,7 @@ namespace Damath.EOS.Managers
             }
         }
 
-        private void OnFriendsUpdateCallbackHandler(ref OnFriendsUpdateInfo data)
+        void OnFriendsUpdateCallbackHandler(ref OnFriendsUpdateInfo data)
         {
             //if (data == null)
             //{
@@ -855,7 +854,7 @@ namespace Damath.EOS.Managers
             }
         }
 
-        private void OnPresenceChangedCallbackHandler(ref PresenceChangedCallbackInfo data)
+        void OnPresenceChangedCallbackHandler(ref PresenceChangedCallbackInfo data)
         {
             //if (data == null)
             //{

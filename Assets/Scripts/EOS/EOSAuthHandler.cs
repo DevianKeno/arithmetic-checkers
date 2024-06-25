@@ -13,7 +13,7 @@ using Damath.UI;
 
 namespace Damath.EOS
 {
-    public class EOSAuthHandler : MonoBehaviour, IEOSOnAuthLogin, IEOSOnConnectLogin
+    public class EOSAuthHandler : MonoBehaviour, IEOSOnConnectLogin//, IEOSOnAuthLogin
     {
         [Header("UI Elements")]
         [SerializeField] UI.Button signInBtn;
@@ -30,14 +30,14 @@ namespace Damath.EOS
 
         void OnEnable()
         {
-            Game.EOS.AddAuthLoginListener(this);
             Game.EOS.AddConnectLoginListener(this);
+            // Game.EOS.AddAuthLoginListener(this);
         }
 
         void OnDisable()
         {
-            EOSManager.Instance.RemoveAuthLoginListener(this);
             EOSManager.Instance.RemoveConnectLoginListener(this);
+            // EOSManager.Instance.RemoveAuthLoginListener(this);
 
             Game.EOSManagers.UserInfo.RemoveNotifyLocalUserInfoChanged(OnLocalUserInfoChanged);
         }
@@ -127,18 +127,74 @@ namespace Damath.EOS
         void PersistentLoginCallback(LoginCallbackInfo loginCallbackInfo)
         {
             /// Other result codes are unhandled
-            if (loginCallbackInfo.ResultCode == Result.Success)
+            // if (loginCallbackInfo.ResultCode == Result.Success)
+            // {
+            //     LoginWithEpicAccount(loginCallbackInfo.LocalUserId);
+            //     return;
+            // } else /// Persistent login failure
             {
-                LoginWithEpicAccount(loginCallbackInfo.LocalUserId);
+                // /// Login with account portal
+                // Game.EOS.StartLoginWithLoginTypeAndToken(LoginCredentialType.AccountPortal,
+                //                                          null,
+                //                                          null,
+                //                                          LoginWithLoginTypeAndTokenCallback);
+                
+                /// Login with external account (Discord)
+                ConnectWithDiscord();
+            }
+        }
+
+        void ConnectWithDiscord()
+        {
+            if (Game.EOSManagers.Discord == null)
+            {
+                Debug.LogError("Connect Login failed: DiscordManager unavailable");
+                SetUIForLogin();
                 return;
-            } else
+            }
+            Game.EOSManagers.Discord.RequestOAuth2Token(OnDiscordAuthReceived);
+        }
+
+        void OnDiscordAuthReceived(string token)
+        {
+            if (token == null)
             {
-                /// Persistent login failure
-                /// Login with account portal
-                Game.EOS.StartLoginWithLoginTypeAndToken(LoginCredentialType.AccountPortal,
-                                                         null,
-                                                         null,
-                                                         LoginWithLoginTypeAndTokenCallback);
+                Debug.LogError("Connect Login failed: Unable to get Discord OAuth2 token");
+                SetUIForLogin();
+                return;
+            }
+            
+            Game.EOS.StartConnectLoginWithOptions(ExternalCredentialType.DiscordAccessToken,
+                token,
+                onloginCallback: ConnectLoginTokenCallback);
+        }
+
+        void ConnectLoginTokenCallback(Epic.OnlineServices.Connect.LoginCallbackInfo connectLoginCallbackInfo)
+        {
+            if (connectLoginCallbackInfo.ResultCode == Result.Success)
+            {
+                print("Connect Login Successful. [" + connectLoginCallbackInfo.ResultCode + "]");
+                SetUIForLogout();
+            }
+            else if (connectLoginCallbackInfo.ResultCode == Result.InvalidUser)
+            {
+                /// Ask user if they want to connect; sample assumes they do
+                Game.EOS.CreateConnectUserWithContinuanceToken(connectLoginCallbackInfo.ContinuanceToken, (Epic.OnlineServices.Connect.CreateUserCallbackInfo createUserCallbackInfo) =>
+                {
+                    print("Creating new connect user");
+                    if (createUserCallbackInfo.ResultCode == Result.Success)
+                    {
+                        SetUIForLogout();
+                    }
+                    else
+                    {
+                        SetUIForLogin();
+                    }
+                });
+            }
+            else
+            {
+                SetUIForLogin();
             }
         }
 
@@ -173,14 +229,14 @@ namespace Damath.EOS
             }
         }
         
-        public void OnAuthLogin(Epic.OnlineServices.Auth.LoginCallbackInfo loginCallbackInfo)
-        {
-            OnSuccessfulLogin();
-        }
-
         public void OnConnectLogin(Epic.OnlineServices.Connect.LoginCallbackInfo loginCallbackInfo)
         {
             OnSuccessfulLogin();
         }
+
+        // public void OnAuthLogin(Epic.OnlineServices.Auth.LoginCallbackInfo loginCallbackInfo)
+        // {
+        //     OnSuccessfulLogin();
+        // }
     }
 }

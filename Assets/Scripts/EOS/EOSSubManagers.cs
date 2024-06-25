@@ -2,10 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using PlayEveryWare.EpicOnlineServices;
-
 using Damath.EOS.Managers;
-using Epic.OnlineServices.Auth;
 
 namespace Damath.EOS
 {
@@ -14,6 +11,7 @@ namespace Damath.EOS
     /// </summary>
     public class EOSSubManagers : MonoBehaviour
     {
+        public DiscordManager Discord => DiscordManager.Instance;
         public EOSUserInfoManager UserInfo => Game.EOS.GetOrCreateManager<EOSUserInfoManager>();
         public EOSFriendsManager Friends => Game.EOS.GetOrCreateManager<EOSFriendsManager>();
         public EOSLobbyManager Lobbies => Game.EOS.GetOrCreateManager<EOSLobbyManager>();

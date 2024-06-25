@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Epic.OnlineServices;
 using UnityEngine;
 
 namespace Damath.Systems
@@ -10,6 +11,11 @@ namespace Damath.Systems
 
         void InitCommands()
         {
+            RegisterCommand(Command.Create(
+                "auth <set> <provider>",
+                "Set external auth provider.")
+                .AddCallback(Command_Auth));
+
             RegisterCommand(Command.Create(
                 "chat <message>",
                 "Send a message.")
@@ -103,6 +109,16 @@ namespace Damath.Systems
         }
 
         #region Command actions
+
+        void Command_Auth(List<string> args)
+        {
+            // ExternalCredentialType auth = args[2] switch
+            // {
+            //     "itch" => ExternalCredentialType.I
+            // };
+
+            
+        }
 
         void Command_Chat(List<string> args)
         {

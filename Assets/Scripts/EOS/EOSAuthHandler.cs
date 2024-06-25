@@ -10,10 +10,11 @@ using Epic.OnlineServices.UserInfo;
 using PlayEveryWare.EpicOnlineServices;
 
 using Damath.UI;
+using Epic.OnlineServices.Connect;
 
 namespace Damath.EOS
 {
-    public class EOSAuthHandler : MonoBehaviour, IEOSOnConnectLogin//, IEOSOnAuthLogin
+    public class EOSAuthHandler : MonoBehaviour
     {
         [Header("UI Elements")]
         [SerializeField] UI.Button signInBtn;
@@ -28,20 +29,6 @@ namespace Damath.EOS
             signOutBtn.onClick.AddListener(OnSignOutClick);
         }
 
-        void OnEnable()
-        {
-            Game.EOS.AddConnectLoginListener(this);
-            // Game.EOS.AddAuthLoginListener(this);
-        }
-
-        void OnDisable()
-        {
-            EOSManager.Instance.RemoveConnectLoginListener(this);
-            // EOSManager.Instance.RemoveAuthLoginListener(this);
-
-            Game.EOSManagers.UserInfo.RemoveNotifyLocalUserInfoChanged(OnLocalUserInfoChanged);
-        }
-
         void Start()
         {
             SetUIForLogin();
@@ -52,8 +39,8 @@ namespace Damath.EOS
             SetUIForLoading();
             usernameTMP.text = "Signing in...";
             greetingTMP.gameObject.SetActive(false);
-            /// Try persistent login first
-            Game.EOS.StartPersistentLogin(PersistentLoginCallback);
+            
+            ConnectWithDiscord();
         }
 
         public void OnSignOutClick()
@@ -62,28 +49,40 @@ namespace Damath.EOS
             usernameTMP.text = "Logging out...";
             greetingTMP.gameObject.SetActive(false);
 
-            var localEpicId = Game.EOS.GetLocalUserId();
-            Game.EOS.StartLogout(localEpicId, OnLogoutComplete);
-            Game.EOS.RemovePersistentToken();
-        }
-        
-        void OnLocalUserInfoChanged(UserInfoData UserInfo)
-        {
-            if (UserInfo.UserId?.IsValid() == true)
+            var options = new Epic.OnlineServices.Connect.LogoutOptions()
             {
-                greetingTMP.gameObject.SetActive(true);
-                signInBtn.gameObject.SetActive(false);
-                usernameTMP.text = UserInfo.DisplayName;
-            }
-            else
-            {
-                greetingTMP.gameObject.SetActive(false);
-                usernameTMP.text = "Not logged in";
-            }
+                LocalUserId = Game.EOS.GetProductUserId()
+            };
+            Game.EOS.GetEOSConnectInterface().Logout(ref options, null, OnLogoutCompleted);
         }
 
-        void OnLogoutComplete(ref LogoutCallbackInfo data)
+        void OnLogoutCompleted(ref Epic.OnlineServices.Connect.LogoutCallbackInfo data)
         {
+            if (data.ResultCode == Result.Success)
+            {
+                var options = new UnlinkAccountOptions()
+                {
+                    LocalUserId = Game.EOS.GetProductUserId()
+                };
+                Game.EOS.GetEOSConnectInterface().UnlinkAccount(ref options, null, OnUnlinkAccountCompleted);
+                return;
+            }
+
+            Game.Console.Log($"Encountered an error upon logging out. [{data.ResultCode}]");
+            Debug.LogWarning($"Encountered an error upon logging out. [{data.ResultCode}]");
+            SetUIForLogout();
+        }
+
+        void OnUnlinkAccountCompleted(ref UnlinkAccountCallbackInfo data)
+        {
+            if (data.ResultCode == Result.Success)
+            {
+                SetUIForLogin();
+                return;
+            }
+            
+            Game.Console.Log($"Unlink error. [{data.ResultCode}]");
+            Debug.LogWarning($"Unlink error. [{data.ResultCode}]");
             SetUIForLogin();
         }
 
@@ -112,38 +111,6 @@ namespace Damath.EOS
             loadingIcon.gameObject.SetActive(false); 
         }
 
-        void OnSuccessfulLogin()
-        {
-            Game.EOSManagers.UserInfo.RemoveNotifyLocalUserInfoChanged(OnLocalUserInfoChanged);
-            Game.EOSManagers.UserInfo.AddNotifyLocalUserInfoChanged(OnLocalUserInfoChanged);
-
-            OnLocalUserInfoChanged(Game.EOSManagers.UserInfo.GetLocalUserInfo());
-            
-            SetUIForLogout();
-            usernameTMP.text = "...";
-            greetingTMP.gameObject.SetActive(true);
-        }
-
-        void PersistentLoginCallback(LoginCallbackInfo loginCallbackInfo)
-        {
-            /// Other result codes are unhandled
-            // if (loginCallbackInfo.ResultCode == Result.Success)
-            // {
-            //     LoginWithEpicAccount(loginCallbackInfo.LocalUserId);
-            //     return;
-            // } else /// Persistent login failure
-            {
-                // /// Login with account portal
-                // Game.EOS.StartLoginWithLoginTypeAndToken(LoginCredentialType.AccountPortal,
-                //                                          null,
-                //                                          null,
-                //                                          LoginWithLoginTypeAndTokenCallback);
-                
-                /// Login with external account (Discord)
-                ConnectWithDiscord();
-            }
-        }
-
         void ConnectWithDiscord()
         {
             if (Game.EOSManagers.Discord == null)
@@ -163,80 +130,69 @@ namespace Damath.EOS
                 SetUIForLogin();
                 return;
             }
-            
-            Game.EOS.StartConnectLoginWithOptions(ExternalCredentialType.DiscordAccessToken,
-                token,
-                onloginCallback: ConnectLoginTokenCallback);
+            Game.EOS.StartConnectLoginWithOptions(ExternalCredentialType.DiscordAccessToken, token, onloginCallback: ConnectLoginTokenCallback);
         }
 
         void ConnectLoginTokenCallback(Epic.OnlineServices.Connect.LoginCallbackInfo connectLoginCallbackInfo)
         {
             if (connectLoginCallbackInfo.ResultCode == Result.Success)
             {
-                print("Connect Login Successful. [" + connectLoginCallbackInfo.ResultCode + "]");
-                SetUIForLogout();
+                OnSuccessfulLogin(connectLoginCallbackInfo.LocalUserId);
+                return;
             }
             else if (connectLoginCallbackInfo.ResultCode == Result.InvalidUser)
             {
-                /// Ask user if they want to connect; sample assumes they do
+                /// Create new Connect user
                 Game.EOS.CreateConnectUserWithContinuanceToken(connectLoginCallbackInfo.ContinuanceToken, (Epic.OnlineServices.Connect.CreateUserCallbackInfo createUserCallbackInfo) =>
                 {
-                    print("Creating new connect user");
                     if (createUserCallbackInfo.ResultCode == Result.Success)
                     {
-                        SetUIForLogout();
-                    }
-                    else
-                    {
-                        SetUIForLogin();
+                        OnSuccessfulLogin(createUserCallbackInfo.LocalUserId);
+                        return;
                     }
                 });
             }
-            else
-            {
-                SetUIForLogin();
-            }
-        }
-
-        void LoginWithEpicAccount(EpicAccountId localUserId)
-        {
-            Game.EOS.StartConnectLoginWithEpicAccount(localUserId, LoginWithEpicAccountCallback);
-        }
-
-        void LoginWithEpicAccountCallback(Epic.OnlineServices.Connect.LoginCallbackInfo connectLoginCallbackInfo)
-        {
-            if (connectLoginCallbackInfo.ResultCode == Result.Success)
-            {
-                print("Connect Login Successful. [" + connectLoginCallbackInfo.ResultCode + "]");
-                OnSuccessfulLogin();
-            } else
-            {
-                print("Error logging in. [" + connectLoginCallbackInfo.ResultCode + "]");
-                SetUIForLogin();
-            }
-        }
-
-        void LoginWithLoginTypeAndTokenCallback(LoginCallbackInfo loginCallbackInfo)
-        {
-            if (loginCallbackInfo.ResultCode == Result.Success)
-            {
-                LoginWithEpicAccount(loginCallbackInfo.LocalUserId);
-            }
-            else
-            {
-                print("Error logging in. [" + loginCallbackInfo.ResultCode + "]");
-                SetUIForLogin();
-            }
+            
+            Game.Console.Log($"Encountered an error upon logging in. [{connectLoginCallbackInfo.ResultCode}]");
+            Debug.LogWarning($"Encountered an error upon logging in. [{connectLoginCallbackInfo.ResultCode}]");
+            /// Reset to login UI
+            SetUIForLogin();
         }
         
-        public void OnConnectLogin(Epic.OnlineServices.Connect.LoginCallbackInfo loginCallbackInfo)
+        void OnSuccessfulLogin(ProductUserId productUserId)
         {
-            OnSuccessfulLogin();
+            var options = new QueryProductUserIdMappingsOptions()
+            {
+                LocalUserId = productUserId,
+                ProductUserIds = new[] { productUserId }
+            };
+
+            Game.EOS.GetEOSConnectInterface().QueryProductUserIdMappings(ref options, null, OnQueryProductUserIdMappingsComplete);
         }
 
-        // public void OnAuthLogin(Epic.OnlineServices.Auth.LoginCallbackInfo loginCallbackInfo)
-        // {
-        //     OnSuccessfulLogin();
-        // }
+        void OnQueryProductUserIdMappingsComplete(ref QueryProductUserIdMappingsCallbackInfo data)
+        {
+            if (data.ResultCode == Result.Success)
+            {
+                var options = new CopyProductUserInfoOptions()
+                {
+                    TargetUserId = data.LocalUserId,
+                };
+
+                var result = Game.EOS.GetEOSConnectInterface().CopyProductUserInfo(ref options, out ExternalAccountInfo? outExternalAccountInfo);
+                
+                if (result == Result.Success && outExternalAccountInfo.HasValue)
+                {
+                    SetDisplayedAccount(outExternalAccountInfo.Value);
+                }
+                SetUIForLogout();
+            }
+        }
+
+        public void SetDisplayedAccount(ExternalAccountInfo info)
+        {
+            usernameTMP.text = info.DisplayName;
+            greetingTMP.gameObject.SetActive(true);
+        }
     }
 }

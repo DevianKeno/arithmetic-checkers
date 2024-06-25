@@ -1340,7 +1340,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lobbyInfo: {fileID: 20548817}
   lobbyContainer: {fileID: 1885318530}
-  searchField: {fileID: 0}
+  searchField: {fileID: 1519527586}
   refreshBtn: {fileID: 2144500210}
   joinBtn: {fileID: 1017906815}
   loadingIcon: {fileID: 294161922}
@@ -11982,7 +11982,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6934770837287217633, guid: ab1aaa765964f214581004ec6c62f2bd, type: 3}
       propertyPath: m_Name
-      value: Value Field
+      value: Search Field
       objectReference: {fileID: 0}
     - target: {fileID: 6934770837287217634, guid: ab1aaa765964f214581004ec6c62f2bd, type: 3}
       propertyPath: m_Pivot.x
@@ -12141,6 +12141,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6934770837287217634, guid: ab1aaa765964f214581004ec6c62f2bd, type: 3}
   m_PrefabInstance: {fileID: 1519527584}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1519527586 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6934770837287217635, guid: ab1aaa765964f214581004ec6c62f2bd, type: 3}
+  m_PrefabInstance: {fileID: 1519527584}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1534131916
 GameObject:
   m_ObjectHideFlags: 0

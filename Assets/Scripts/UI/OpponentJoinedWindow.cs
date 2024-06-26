@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-using Damath.EOS.Lobbies;
+// using Damath.EOS.Lobbies;
 
 namespace Damath.UI
 {
@@ -32,31 +32,31 @@ namespace Damath.UI
             orangeReadyIndicator.gameObject.SetActive(false);
         }
 
-        public void SetPlayer(Side side, LobbyMember member)
-        {
-            if (side == Side.Blue)
-            {
-                if (member != null)
-                {
-                    blueDisplayName.text = member.DisplayName;
-                    blueLoadingIcon.gameObject.SetActive(false);
-                } else
-                {
-                    blueDisplayName.text = "Waiting...";
-                    blueLoadingIcon.gameObject.SetActive(true);
-                }
-            } else if (side == Side.Orange)
-            {
-                if (member != null)
-                {
-                    orangeDisplayName.text = member.DisplayName;
-                    orangeLoadingIcon.gameObject.SetActive(false);
-                } else
-                {
-                    orangeDisplayName.text = "Waiting...";
-                    orangeLoadingIcon.gameObject.SetActive(true);
-                }
-            }
-        }
+        // public void SetPlayer(Side side, LobbyMember member)
+        // {
+        //     if (side == Side.Blue)
+        //     {
+        //         if (member != null)
+        //         {
+        //             blueDisplayName.text = member.DisplayName;
+        //             blueLoadingIcon.gameObject.SetActive(false);
+        //         } else
+        //         {
+        //             blueDisplayName.text = "Waiting...";
+        //             blueLoadingIcon.gameObject.SetActive(true);
+        //         }
+        //     } else if (side == Side.Orange)
+        //     {
+        //         if (member != null)
+        //         {
+        //             orangeDisplayName.text = member.DisplayName;
+        //             orangeLoadingIcon.gameObject.SetActive(false);
+        //         } else
+        //         {
+        //             orangeDisplayName.text = "Waiting...";
+        //             orangeLoadingIcon.gameObject.SetActive(true);
+        //         }
+        //     }
+        // }
     }
 }

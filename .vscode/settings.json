@@ -51,5 +51,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "arithmetic-checkers.sln"
+    "dotnet.defaultSolution": "arithmetic-checkers.sln",
+    "dotnet.preferCSharpExtension": true
 }

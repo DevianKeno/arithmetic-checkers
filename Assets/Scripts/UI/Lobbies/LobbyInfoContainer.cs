@@ -1,40 +1,40 @@
-using System.Collections;
-using System.Collections.Generic;
+// using System.Collections;
+// using System.Collections.Generic;
 
-using UnityEngine;
-using TMPro;
+// using UnityEngine;
+// using TMPro;
 
-using Damath.EOS.Lobbies;
+// using Damath.EOS.Lobbies;
 
-namespace Damath.UI
-{
-    public class LobbyInfoContainer : MonoBehaviour
-    {
-        [SerializeField] TextMeshProUGUI rulesetTMP;
-        [SerializeField] TextMeshProUGUI blueTMP;
-        [SerializeField] TextMeshProUGUI orangeTMP;
+// namespace Damath.UI
+// {
+//     public class LobbyInfoContainer : MonoBehaviour
+//     {
+//         [SerializeField] TextMeshProUGUI rulesetTMP;
+//         [SerializeField] TextMeshProUGUI blueTMP;
+//         [SerializeField] TextMeshProUGUI orangeTMP;
 
-        public void SetLobbyInfo(Lobby lobby)
-        {
-            foreach (var attr in lobby.Attributes)
-            {
-                if (attr.Key == "RULESET")
-                {
-                    rulesetTMP.text = $"Ruleset: {attr.AsString}";
-                }
-            }
-            blueTMP.text = $"Blue: {lobby.BluePlayer.DisplayName}";
-            orangeTMP.text = $"Orange: {lobby.OrangePlayer.DisplayName}";
+//         public void SetLobbyInfo(Lobby lobby)
+//         {
+//             foreach (var attr in lobby.Attributes)
+//             {
+//                 if (attr.Key == "RULESET")
+//                 {
+//                     rulesetTMP.text = $"Ruleset: {attr.AsString}";
+//                 }
+//             }
+//             blueTMP.text = $"Blue: {lobby.BluePlayer.DisplayName}";
+//             orangeTMP.text = $"Orange: {lobby.OrangePlayer.DisplayName}";
             
-            gameObject.SetActive(true);
-        }
+//             gameObject.SetActive(true);
+//         }
 
-        public void Clear()
-        {
-            gameObject.SetActive(false);
-            rulesetTMP.text = $"Ruleset: ";
-            blueTMP.text = $"Blue: ";
-            orangeTMP.text = $"Orange: ";
-        }
-    }
-}
+//         public void Clear()
+//         {
+//             gameObject.SetActive(false);
+//             rulesetTMP.text = $"Ruleset: ";
+//             blueTMP.text = $"Blue: ";
+//             orangeTMP.text = $"Orange: ";
+//         }
+//     }
+// }

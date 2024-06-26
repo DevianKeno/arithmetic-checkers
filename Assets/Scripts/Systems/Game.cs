@@ -1,14 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
+
+using Epic.OnlineServices.Logging;
+
+using PlayEveryWare.EpicOnlineServices;
+
 using Damath.Systems;
 using Damath.EOS;
-using PlayEveryWare.EpicOnlineServices;
-using static PlayEveryWare.EpicOnlineServices.EOSManager;
-using Epic.OnlineServices;
 
 namespace Damath
 {
@@ -29,7 +32,7 @@ namespace Damath
         /// EOS Interface (Singleton).
         /// Just a shortcut to 'EOSManager.Instance'
         /// </summary>
-        public static EOSSingleton EOS => EOSManager.Instance;
+        public static EOSManager.EOSSingleton EOS => EOSManager.Instance;
         public static EOSSubManagers EOSManagers { get; private set; }
 
         public bool IsAlive { get; private set; }
@@ -93,7 +96,6 @@ namespace Damath
             Console.Initialize();
             UI.Initialize();
             Audio.Initialize();
-                        
             OnLateInit?.Invoke();
         }
 

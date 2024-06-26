@@ -400,7 +400,7 @@ namespace Damath.Players
         /// </summary>
         public void ReleaseHeldPiece()
         {
-            HeldPiece?.ResetPosition();       
+            HeldPiece.ResetPosition();       
             HeldPiece = null;
         }
 

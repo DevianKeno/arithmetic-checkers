@@ -1,18 +1,1 @@
-{
-    "productName": "Arithmetic Checkers",
-    "productVersion": "1.0",
-    "productID": "f06f5a8df7af4675af164dab7d735c67",
-    "sandboxID": "0f6a184cbd334cc88777da955cae8617",
-    "deploymentID": "589a573996f7490d9c3032aa2a706534",
-    "clientID": "xyza78912Q29QImFCWDra9wtzes9GWfc",
-    "clientSecret": "Kg7rIvkmyyZdcCvF4GoASlgEZX1i6FlyAiXFviZEa/0",
-    "encryptionKey": "T2Zn/8uCQPn+dks/QLjROrTtqaW/sVLUoW7u67x9o8KErosjNNeIBD5MSNaLEuxS",
-    "platformOptionsFlags": [
-        ""
-    ],
-    "tickBudgetInMilliseconds": 0,
-    "alwaysSendInputToOverlay": true,
-    "initialButtonDelayForOverlay": "",
-    "repeatButtonDelayForOverlay": "",
-    "hackForceSendInputDirectlyToSDK": false
-}
+{"productName":"Arithmetic Checkers","productVersion":"1.0","productID":"f06f5a8df7af4675af164dab7d735c67","sandboxID":"0f6a184cbd334cc88777da955cae8617","deploymentID":"589a573996f7490d9c3032aa2a706534","sandboxDeploymentOverrides":[],"clientSecret":"Kg7rIvkmyyZdcCvF4GoASlgEZX1i6FlyAiXFviZEa/0","clientID":"xyza78912Q29QImFCWDra9wtzes9GWfc","encryptionKey":"D649AB7505A0BB8A57C15AE310AB2226178AC5B8C340CFBB72DCBEA6486EE6FC","platformOptionsFlags":[""],"authScopeOptionsFlags":[""],"tickBudgetInMilliseconds":0,"ThreadAffinity_networkWork":"","ThreadAffinity_storageIO":"","ThreadAffinity_webSocketIO":"","ThreadAffinity_P2PIO":"","ThreadAffinity_HTTPRequestIO":"","ThreadAffinity_RTCIO":"","alwaysSendInputToOverlay":true,"initialButtonDelayForOverlay":"","repeatButtonDelayForOverlay":"","hackForceSendInputDirectlyToSDK":false,"isServer":false}

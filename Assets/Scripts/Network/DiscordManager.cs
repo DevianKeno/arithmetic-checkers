@@ -1,8 +1,13 @@
+#if !(UNITY_STANDALONE || UNITY_ANDROID || UNITY_IOS)
+#define DISABLEDISCORD
+#endif
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
+
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -49,6 +54,9 @@ namespace Damath.Network
         const long clientId = 1255192173842796544;
         const string clientSecret = "cizf2Kvnpy5fis0gEXrGvrkjIoPv8zYO";
         const int listenPort = 54545;
+        
+        UserInfo localUser;
+        public UserInfo LocalUser => localUser;
 
         protected virtual void Awake()
         {
@@ -85,6 +93,11 @@ namespace Damath.Network
 
         event Action<string> onTokenReceived;
         event Action<UserInfo> onUserInfoFetched;
+
+        public void SetLocalUser(UserInfo userInfo)
+        {
+            localUser = userInfo;
+        }
 
         public void RequestOAuth2Token(Action<string> callback)
         {
@@ -156,25 +169,23 @@ namespace Damath.Network
 
         IEnumerator GetDiscordAuthCodeCoroutine(Action<string> callback)
         {
-            using (var listener = new HttpListener())
+            var listener = new HttpListener();
+            listener.Prefixes.Add($"http://127.0.0.1:{listenPort}/discord/");
+            listener.Start();
+
+            HttpListenerContext ctx = null;
+            while (ctx == null)
             {
-                listener.Prefixes.Add($"http://127.0.0.1:{listenPort}/discord/");
-                listener.Start();
-
-                HttpListenerContext ctx = null;
-                while (ctx == null)
+                if (listener.IsListening)
                 {
-                    if (listener.IsListening)
-                    {
-                        ctx = listener.GetContext();
-                    }
-                    yield return null;
+                    ctx = listener.GetContext();
                 }
-
-                string code = ctx.Request.QueryString.Get("code");
-                listener.Stop();
-                callback(code);
+                yield return null;
             }
+
+            string code = ctx.Request.QueryString.Get("code");
+            listener.Stop();
+            callback(code);
         }
 
         public void FetchUserInfo(string token, Action<UserInfo> callback)
@@ -185,7 +196,7 @@ namespace Damath.Network
 
         IEnumerator FetchUserInfoCoroutine(string token)
         {
-            using UnityWebRequest www = UnityWebRequest.Get("https://discord.com/api/v10/users/@me");
+            var www = UnityWebRequest.Get("https://discord.com/api/v10/users/@me");
             www.SetRequestHeader("Authorization", $"Bearer {token}");
 
             yield return www.SendWebRequest();

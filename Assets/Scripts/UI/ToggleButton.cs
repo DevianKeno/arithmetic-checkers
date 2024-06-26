@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -9,6 +10,11 @@ namespace Damath.UI
         public bool IsHovered { get; set; }
         public event Action<PointerEventData> OnStartHover;
         public event Action<PointerEventData> OnEndHover;
+
+        protected override void Awake()
+        {
+            onValueChanged.AddListener(ToggleColor);
+        }
 
         public override void OnPointerEnter(PointerEventData eventData)
         {

@@ -84,16 +84,18 @@ namespace Damath.Network
                 SetUIForLogin();
                 return;
             }
-            DiscordManager.Instance.FetchUserInfo(token, OnFetchUserInfoCompleted);
+            DiscordManager.Instance.FetchUserInfo(token, OnSuccessfulLogin);
         }
 
-        void OnFetchUserInfoCompleted(UserInfo userInfo)
+        void OnSuccessfulLogin(UserInfo userInfo)
         {
             Debug.Log("Successfully fetched user info");
             Debug.Log($"User info: {userInfo.username}#{userInfo.discriminator}");
+            Debug.Log("Now logging in...");
             
-            SetUIForLogout();
+            DiscordManager.Instance.SetLocalUser(userInfo);
             SetDisplayedAccount(userInfo);
+            SetUIForLogout();
         }
 
         public void SetDisplayedAccount(UserInfo userInfo)

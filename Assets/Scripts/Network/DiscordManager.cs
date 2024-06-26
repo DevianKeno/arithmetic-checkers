@@ -1,7 +1,3 @@
-#if !(UNITY_STANDALONE || UNITY_ANDROID || UNITY_IOS)
-#define DISABLEDISCORD
-#endif
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -93,6 +89,7 @@ namespace Damath.Network
 
         event Action<string> onTokenReceived;
         event Action<UserInfo> onUserInfoFetched;
+        event Action<Sprite> onFetchAvatarCompleted;
 
         public void SetLocalUser(UserInfo userInfo)
         {
@@ -212,6 +209,35 @@ namespace Damath.Network
                 onUserInfoFetched?.Invoke(null);
             }
             onUserInfoFetched = null;
+        }
+
+        public void FetchUserAvatar(UserInfo info, Action<Sprite> callback)
+        {
+            onFetchAvatarCompleted += callback;
+            StartCoroutine(FetchUserAvatar(info));
+        }
+
+        IEnumerator FetchUserAvatar(UserInfo info)
+        {
+            var userId = info.id;
+            var avatarHash = info.avatar;
+            string url = $"https://cdn.discordapp.com/avatars/{userId}/{avatarHash}.png?size=256";
+
+            UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
+            yield return www.SendWebRequest();
+
+            if (www.result == UnityWebRequest.Result.Success)
+            {
+                Texture2D texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+                Sprite avatarSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+
+                onFetchAvatarCompleted?.Invoke(avatarSprite);
+                onFetchAvatarCompleted = null;
+            }
+            else
+            {
+                Debug.LogError("Failed to download avatar image.");
+            }
         }
 
     #else

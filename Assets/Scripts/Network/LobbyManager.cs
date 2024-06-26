@@ -1,10 +1,10 @@
 using System;
+
 using UnityEngine;
+using TMPro;
 
 using Mirror;
-
-using Damath.UI;
-using TMPro;
+using Mirror.SimpleWeb;
 
 namespace Damath.Network
 {
@@ -47,7 +47,7 @@ namespace Damath.Network
             currentLobby = newLobby;
             
             Game.Network.StartHost();
-            var aa = NetworkManager.singleton.transport as TelepathyTransport;
+            var aa = NetworkManager.singleton.transport as SimpleWebTransport;
             Game.Console.Log($"Hosted lobby on port {aa.port}");
         }
 

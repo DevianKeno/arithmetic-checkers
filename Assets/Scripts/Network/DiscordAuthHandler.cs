@@ -1,18 +1,21 @@
 using System.Collections;
 
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 using Damath.UI;
+using System;
 
 namespace Damath.Network
 {
     public class DiscordAuthHandler : MonoBehaviour
     {
         [Header("UI Elements")]
-        [SerializeField] Button signInBtn;
-        [SerializeField] Button signOutBtn;
+        [SerializeField] UI.Button signInBtn;
+        [SerializeField] UI.Button signOutBtn;
         [SerializeField] TextMeshProUGUI usernameTMP;
+        [SerializeField] Image avatarImage;
         [SerializeField] TextMeshProUGUI greetingTMP;
         [SerializeField] LoadingIconAnimation loadingIcon;
 
@@ -101,7 +104,13 @@ namespace Damath.Network
         public void SetDisplayedAccount(UserInfo userInfo)
         {
             usernameTMP.text = userInfo.username;
+            DiscordManager.Instance.FetchUserAvatar(userInfo, OnFetchAvatarCompleted);
             greetingTMP.gameObject.SetActive(true);
+        }
+
+        void OnFetchAvatarCompleted(Sprite sprite)
+        {
+            avatarImage.sprite = sprite;
         }
     }
 }

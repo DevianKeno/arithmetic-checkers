@@ -6,6 +6,8 @@ using TMPro;
 using Mirror;
 using Mirror.SimpleWeb;
 
+using Damath.Network.Discord;
+
 namespace Damath.Network
 {
     /// <summary>

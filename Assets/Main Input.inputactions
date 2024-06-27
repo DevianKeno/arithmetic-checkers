@@ -56,6 +56,17 @@
                 },
                 {
                     "name": "",
+                    "id": "99a3f419-b07b-43a0-9be0-5de6f95a16a5",
+                    "path": "<Keyboard>/backquote",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Show/Hide",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "e3528863-be35-44dc-9805-bae6c9acbf65",
                     "path": "<Gamepad>/rightTrigger",
                     "interactions": "",

@@ -11,6 +11,13 @@
       },
       "hash": "115f1553fb0f06d61a2cc850abe56a229c29adbd"
     },
+    "com.gustavopsantos.unitymainthreaddispatcher": {
+      "version": "https://github.com/gustavopsantos/unitymainthreaddispatcher.git?path=/Assets/UnityMainThreadDispatcher/#1.0.0",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "5553609a79c1c093639afc2ea789a40594715cb6"
+    },
     "com.unity.2d.animation": {
       "version": "9.1.0",
       "depth": 1,

@@ -106,16 +106,32 @@ namespace Damath.EOS
 
         public void CreateLobby()
         {
-            ProductUserId currentUserProductId = Game.EOS.GetProductUserId();
-            if (!currentUserProductId.IsValid())
-            {
-                Debug.LogError("Lobbies (CreateLobby): Current player is invalid!");
-                return;
-            }
+            var loginStatus = Game.EOS.GetEOSAuthInterface().GetLoginStatus(Game.EOS.GetLocalUserId());
 
-            Game.UI.Dim(0.25f);
-            creatingLobbyWindow = Game.UI.Create("creating_lobby_window") as Window;
-            Game.EOSManagers.Lobbies.CreateLobby(CreateLobbyProperties(), OnCreateLobbyCompleted);
+            if (loginStatus == LoginStatus.NotLoggedIn)
+            {
+                cachedRuleset = CreateRuleset();
+                Game.Main.CreateMatch(cachedRuleset);
+                Game.Main.LoadScene("Match", playTransition: true);
+            }
+            else if (loginStatus == LoginStatus.LoggedIn)
+            {
+                ProductUserId currentUserProductId = Game.EOS.GetProductUserId();
+                if (!currentUserProductId.IsValid())
+                {
+                    Debug.LogError("Lobbies (CreateLobby): Current player is invalid!");
+                    return;
+                }
+
+                Game.UI.Dim(0.25f);
+                creatingLobbyWindow = Game.UI.Create("creating_lobby_window") as Window;
+                Game.EOSManagers.Lobbies.CreateLobby(CreateLobbyProperties(), OnCreateLobbyCompleted);
+            }
+            else if (loginStatus == LoginStatus.UsingLocalProfile)
+            {
+                Game.Console.Log($"Unhandled login status." + loginStatus);
+                Debug.LogError($"Unhandled login status." + loginStatus);
+            }
         }
 
         void OnCreateLobbyCompleted(Result result)

@@ -10,6 +10,11 @@ namespace Damath.UI
         public event Action<PointerEventData> OnStartHover;
         public event Action<PointerEventData> OnEndHover;
 
+        protected override void Awake()
+        {
+            onValueChanged.AddListener(ToggleColor);
+        }
+
         public override void OnPointerEnter(PointerEventData eventData)
         {
             base.OnPointerEnter(eventData);

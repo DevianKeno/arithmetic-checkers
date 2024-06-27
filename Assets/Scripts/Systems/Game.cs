@@ -49,9 +49,14 @@ namespace Damath
             {Side.Orange, "Opponent"}
         };
         public MatchController Match { get; private set; }
-        public Scene CurrentScene { get; private set; }
-
         public event Action OnLateInit;
+        public Scene CurrentScene
+        {
+            get
+            {
+                return SceneManager.GetActiveScene();
+            }
+        }
 
         [SerializeField] PlayerInput mainInput;
         public PlayerInput MainInput => mainInput;
@@ -221,7 +226,15 @@ namespace Damath
         public void StartMatch()
         {
             if (!HasMatch) return;
-            Match.StartMatch();
+            if (CurrentScene.name == "Match")
+            {
+                Match.StartMatch();
+            }
+            else
+            {
+                Game.Console.Log($"Unable to start match. You're not in a match!");
+                Debug.LogError($"Unable to start match. You're not in a match!");
+            }
         }
 
         public void SetNickname(Side side, string value)

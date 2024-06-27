@@ -34,7 +34,7 @@ namespace Damath.Players
         /// </summary>
         public bool IsPlaying { get; private set; }
         [field: SerializeField] public bool IsModerator { get; private set; }
-        public bool AllowControls { get; private set; }
+        public bool AllowControls { get; set; }
         /// <summary>
         /// Whether if the player is an AI.
         /// </summary>
@@ -209,6 +209,15 @@ namespace Damath.Players
             {
                 AllowControls = false;
                 IsMyTurn = false;
+            }
+        }
+
+        public void SetPieceOwnership(List<Piece> pieces)
+        {
+            foreach (Piece piece in pieces)
+            {
+                piece.SetOwner(this);
+                Pieces.Add(piece);
             }
         }
 
@@ -400,7 +409,7 @@ namespace Damath.Players
         /// </summary>
         public void ReleaseHeldPiece()
         {
-            HeldPiece.ResetPosition();       
+            HeldPiece?.ResetPosition();       
             HeldPiece = null;
         }
 

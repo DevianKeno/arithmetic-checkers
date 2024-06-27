@@ -181,7 +181,6 @@ namespace Damath
         public void SetOwner(Player player)
         {
             Owner = player;
-            player.Pieces.Add(this);
         }
 
         public void SetKing(bool value)

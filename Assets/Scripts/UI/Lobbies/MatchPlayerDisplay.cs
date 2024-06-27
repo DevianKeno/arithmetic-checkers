@@ -41,6 +41,11 @@ namespace Damath.UI
             loadingIcon.gameObject.SetActive(true);
         }
 
+        public void SetSomebody()
+        {
+            loadingIcon.gameObject.SetActive(false);
+        }
+
         public void SetPlayerDisplayed(UserInfoData userInfo, bool isLobbyOwner = false)
         {
             if (isLobbyOwner)

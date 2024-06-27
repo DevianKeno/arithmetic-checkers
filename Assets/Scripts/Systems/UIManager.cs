@@ -24,8 +24,8 @@ namespace Damath.Systems
         }
         
         public Canvas Canvas { get; private set; }
+        public Vector2 TooltipOffset = new(0.2f, 0.3f);
         Dictionary<string, Sprite> _iconsDict = new();
-
         Dictionary<string, IUIElement> windows = new();
         
         [Header("UI Prefabs")]

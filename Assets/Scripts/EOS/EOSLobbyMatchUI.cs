@@ -43,8 +43,6 @@ namespace Damath
             } else /// probably offline
             {
                 Game.Console.Log("Match has no lobby. Playing offline.");
-                bluePlayerDisplay.gameObject.SetActive(false);
-                orangePlayerDisplay.gameObject.SetActive(false);
                 lobbyIdTMP.gameObject.SetActive(false);
             }
         }

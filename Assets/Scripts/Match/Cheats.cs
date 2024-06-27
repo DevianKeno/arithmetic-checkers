@@ -156,6 +156,13 @@ namespace Damath.Systems
                     throw new NotImplementedException();
                 });
 
+            choiceWindow.AddChoice("Conclude Match", Game.UI.GetIcon("toggle_false"))
+                .AddCallback(() =>
+                {
+                    /// Add confirmation(?)
+                    match.ConcludeMatch();
+                });
+
             choiceWindow.Show();
         }
     }

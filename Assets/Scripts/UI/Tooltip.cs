@@ -32,7 +32,6 @@ namespace Damath.UI
                 image.color = value;
             }
         }
-
         public float ShowDelay = 1f;
         public float HideDelay = 0f;
         public bool FadeTransition = true;
@@ -54,8 +53,8 @@ namespace Damath.UI
             if (IsVisible)
             {
                 rect.anchoredPosition = new(
-                    Input.mousePosition.x + (rect.sizeDelta.x * 0.55f),
-                    Input.mousePosition.y - (rect.sizeDelta.y * 0.55f)
+                    Input.mousePosition.x + Game.UI.TooltipOffset.x,
+                    Input.mousePosition.y + Game.UI.TooltipOffset.y
                 );  
             }
         }
@@ -89,7 +88,7 @@ namespace Damath.UI
                 image.CrossFadeAlpha(0f, FadeInDuration, false);
                 text.CrossFadeAlpha(0f, FadeInDuration, false);
                 
-                await Task.Delay((int) FadeInDuration * 1000);
+                await Task.Delay((int) FadeInDuration * 1000); 
                 IsVisible = false;
                 Delete();
             }

@@ -34,7 +34,7 @@ namespace Damath
     public enum RulesetType { Standard, Speed, Custom }
 
     /// <summary>
-    /// Determines which/who're players are participating in the match. 
+    /// Determines which/who are players are participating in the match. 
     /// </summary>
     public enum RulesetPlayersType { Solo, TwoPlayer, VersusAI }
         

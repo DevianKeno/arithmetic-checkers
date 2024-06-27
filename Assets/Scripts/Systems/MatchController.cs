@@ -1,9 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using UnityEngine;
 using TMPro;
+
+using Epic.OnlineServices;
+
 using Damath.Players;
+using Damath.UI;
 
 namespace Damath.Systems
 {
@@ -20,6 +25,10 @@ namespace Damath.Systems
         public bool IsMultiplayer { get; set; }
         [field: SerializeField] public Ruleset Ruleset { get; private set; }
 
+        public Player BluePlayer;
+        public Player OrangePlayer;
+        public List<Player> Spectators = new();
+
         [SerializeField] Board board;
         public Board Board => board;
         [SerializeField] Scoreboard scoreboard;
@@ -29,9 +38,11 @@ namespace Damath.Systems
         [SerializeField] Cheats cheats;
         public Cheats Cheats => cheats;
 
+        [Header("UI Elements")]
         [SerializeField] TextMeshProUGUI rulesetText;
+        [SerializeField] MatchPlayerDisplay bluePlayerDisplay;
+        [SerializeField] MatchPlayerDisplay orangePlayerDisplay;
         
-
         [Header("Prefabs")]
         [SerializeField] GameObject boardPrefab;
         [SerializeField] GameObject playerPrefab;
@@ -48,6 +59,21 @@ namespace Damath.Systems
             InitializeScoreboard();
             InitializeTimers();
             InitializeEvents();
+        
+            var loginStatus = Game.EOS.GetEOSAuthInterface().GetLoginStatus(Game.EOS.GetLocalUserId());
+            if (loginStatus == LoginStatus.NotLoggedIn)
+            {
+                SetupLocalMatch();
+            }
+            else if (loginStatus == LoginStatus.LoggedIn)
+            {
+                SetupOnlineMatch();
+            }
+            else if (loginStatus == LoginStatus.UsingLocalProfile)
+            {
+                Game.Console.Log($"Unhandled login status." + loginStatus);
+                Debug.LogError($"Unhandled login status." + loginStatus);
+            }
 
             Game.Main.SetMatch(this);
         }
@@ -84,6 +110,7 @@ namespace Damath.Systems
 
         void InitializeScoreboard()
         {
+            scoreboard.Match = this;
             scoreboard.SetRuleset(Ruleset);
             scoreboard.Initialize();
         }
@@ -96,14 +123,117 @@ namespace Damath.Systems
 
         void InitializeEvents()
         {
-            board.OnPieceCapture += scoreboard.OnPieceCaptureCallback;
+            board.OnPieceMove += OnPieceMoveCallback;
+            board.OnPieceCapture += OnPieceCaptureCallback;
+            board.OnTurnChange += OnTurnChangedCallback;
+        }
+
+        void SetupLocalMatch()
+        {
+            BluePlayer = CreatePlayer(Side.Blue);
+            BluePlayer.SetPieceOwnership(board.BluePieces);
+            BluePlayer.ToggleControls(true);
+
+            OrangePlayer = CreatePlayer(Side.Orange);
+            OrangePlayer.SetPieceOwnership(board.OrangePieces);
+            OrangePlayer.ToggleControls(true);
+
+            var prematchWindow = Game.UI.Create<PrematchWindow>("prematch_window");
+            prematchWindow.OnStart += () =>
+            {
+                var blueName = prematchWindow.blueNameField.text;
+                BluePlayer.Name = blueName;
+                bluePlayerDisplay.DisplayName = blueName;
+                bluePlayerDisplay.SetSomebody();
+
+                var orangeName = prematchWindow.orangeNameField.text;
+                BluePlayer.Name = orangeName;
+                orangePlayerDisplay.DisplayName = orangeName;
+                orangePlayerDisplay.SetSomebody();
+            };
+        }
+
+        void SetupOnlineMatch()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        #region Callback listeners
+
+        void OnPieceMoveCallback(object sender, Move e)
+        {
             
-            board.OnTurnChange += timerManager.OnBoardTurnChangedCallback;
+        }
+
+        void OnPieceCaptureCallback(object sender, Move e)
+        {
+            var capturedPieceOwner = GetPlayerFromSide(e.CapturedPiece.Owner.Side);
+
+            var result = capturedPieceOwner.Pieces.Find((Piece piece) =>
+            {
+                return piece == e.CapturedPiece;
+            });
+            if (result != null)
+            {
+                capturedPieceOwner.Pieces.Remove(result);
+            }
+
+            if (capturedPieceOwner.Pieces.Count <= 0)
+            {
+                BluePlayer.ToggleControls(false);
+                OrangePlayer.ToggleControls(false);
+
+                /// Handled not pretty
+                Invoke(nameof(ConcludeMatch), 1f);
+            }
+
+            scoreboard.OnPieceCaptureCallback(sender, e);
+        }
+
+        void OnTurnChangedCallback(object sender, Side e)
+        {
+            timerManager.OnBoardTurnChangedCallback(sender, e);
+        }
+
+        #endregion
+
+
+        public void ConcludeMatch()
+        {
+            var postmatchWindow = Game.UI.Create<PostmatchWindow>("postmatch_window");
+            postmatchWindow.Match = this;
+            var conclusion = scoreboard.GetConclusion();
+
+            if (conclusion.MatchConclusion == MatchConclusion.Victory)
+            {
+                postmatchWindow.SetWinningSide(conclusion.Winner.Side);
+            }
+            else if (conclusion.MatchConclusion == MatchConclusion.Draw)
+            {
+                postmatchWindow.SetDraw();
+            }
+            postmatchWindow.Show();
+        }
+
+        public Player GetPlayerFromSide(Side side)
+        {
+            if (side == Side.Blue)
+            {
+                return BluePlayer;
+            } else if (side == Side.Orange)
+            {
+                return OrangePlayer;
+            }
+            throw new ArgumentOutOfRangeException();
         }
 
         public Player CreatePlayer(Side side)
         {
-            Player newPlayer = Instantiate(playerPrefab).GetComponent<Player>();
+            var go = Instantiate(playerPrefab);
+            go.name = $"{side} Player";
+            
+            Player newPlayer = go.GetComponent<Player>();
             newPlayer.SetSide(side);
             newPlayer.SetPlaying(true);
             Game.Events.PlayerCreate(newPlayer);
@@ -139,11 +269,7 @@ namespace Damath.Systems
 
         void StartSolo()
         {
-            Player bluePlayer = CreatePlayer(Side.Blue);
-            Player orangePlayer = CreatePlayer(Side.Orange);
             
-            bluePlayer.ToggleControls(true);
-            orangePlayer.ToggleControls(true);
         }
     }
 }

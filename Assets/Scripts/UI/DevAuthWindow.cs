@@ -7,8 +7,8 @@ using Epic.OnlineServices.Auth;
 using Epic.OnlineServices.UserInfo;
 
 using PlayEveryWare.EpicOnlineServices;
-using PlayEveryWare.EpicOnlineServices.Samples;
-using PlayEveryWare.EpicOnlineServices.Samples.Discord;
+
+using Damath.EOS.Managers;
 
 namespace Damath.UI
 {
@@ -20,6 +20,8 @@ namespace Damath.UI
         // const ExternalCredentialType invalidConnectType = (ExternalCredentialType) (-1);
         // [SerializeField] ExternalCredentialType connectType = invalidConnectType;
         
+        public event Action OnSignInBtnClick;
+
         [SerializeField] Dropdown loginTypeDropdown;
         [SerializeField] GameObject login;
         [SerializeField] GameObject loading;
@@ -43,19 +45,40 @@ namespace Damath.UI
             Game.UI.Undim(0.25f);
         }
 
+        public string GetUsername()
+        {
+            return usernameField.text.Trim();
+        }
+
+        public string GetPassword()
+        {
+            return passwordField.text.Trim();
+        }
+
+        public LoginCredentialType GetLoginType()
+        {
+            return loginTypeDropdown.value switch
+            {
+                0 => LoginCredentialType.AccountPortal,
+                1 => LoginCredentialType.PersistentAuth,
+                2 => LoginCredentialType.Developer
+            };
+        }
+
+        public void SetUIForLogin()
+        {
+            login.SetActive(true);
+            loading.SetActive(false);
+        }
+
         public void StartLogin()
         {
-            if (Application.internetReachability == NetworkReachability.NotReachable)
-            {
-                Debug.LogError("Internet not reachable.");
-                return;
-            }
-
             login.SetActive(false);
             loading.SetActive(true);
+            OnSignInBtnClick?.Invoke();
 
-            string usernameAsString = usernameField.text.Trim();
-            string passwordAsString = passwordField.text.Trim();
+            // string usernameAsString = usernameField.text.Trim();
+            // string passwordAsString = passwordField.text.Trim();
 
             // if (loginType == connect)
             // {
@@ -63,48 +86,48 @@ namespace Damath.UI
             // }
             // else
 
-            LoginCredentialType loginType = loginTypeDropdown.value switch
-            {
-                0 => LoginCredentialType.AccountPortal,
-                1 => LoginCredentialType.PersistentAuth,
-                2 => LoginCredentialType.Developer
-            };
+            // LoginCredentialType loginType = loginTypeDropdown.value switch
+            // {
+            //     0 => LoginCredentialType.AccountPortal,
+            //     1 => LoginCredentialType.PersistentAuth,
+            //     2 => LoginCredentialType.Developer
+            // };
 
             
 
-            if (loginType == LoginCredentialType.Developer)
-            {
-                if (usernameAsString.Length <= 0)
-                {
-                    print("Username is missing.");
-                    return;
-                }
-                if (passwordAsString.Length <= 0)
-                {
-                    print("Password is missing.");
-                    return;
-                }
+            // if (loginType == LoginCredentialType.Developer)
+            // {
+            //     if (usernameAsString.Length <= 0)
+            //     {
+            //         print("Username is missing.");
+            //         return;
+            //     }
+            //     if (passwordAsString.Length <= 0)
+            //     {
+            //         print("Password is missing.");
+            //         return;
+            //     }
 
-                EOSManager.Instance.StartLoginWithLoginTypeAndToken(loginType,
-                                                                    usernameAsString,
-                                                                    passwordAsString,
-                                                                    StartLoginWithLoginTypeAndTokenCallback);
-            }
-            else if (loginType == LoginCredentialType.AccountPortal)
-            {
-                EOSManager.Instance.StartLoginWithLoginTypeAndToken(loginType,
-                                                                    usernameAsString,
-                                                                    passwordAsString,
-                                                                    StartLoginWithLoginTypeAndTokenCallback);
-            }
-            else if (loginType == LoginCredentialType.PersistentAuth)
-            {
-                EOSManager.Instance.StartPersistentLogin(StartLoginWithLoginTypeAndTokenCallback);
-            }
-            else if (loginType == LoginCredentialType.ExternalAuth)
-            {
-                throw new NotImplementedException();
-            }
+            //     EOSManager.Instance.StartLoginWithLoginTypeAndToken(loginType,
+            //                                                         usernameAsString,
+            //                                                         passwordAsString,
+            //                                                         StartLoginWithLoginTypeAndTokenCallback);
+            // }
+            // else if (loginType == LoginCredentialType.AccountPortal)
+            // {
+            //     EOSManager.Instance.StartLoginWithLoginTypeAndToken(loginType,
+            //                                                         usernameAsString,
+            //                                                         passwordAsString,
+            //                                                         StartLoginWithLoginTypeAndTokenCallback);
+            // }
+            // else if (loginType == LoginCredentialType.PersistentAuth)
+            // {
+            //     EOSManager.Instance.StartPersistentLogin(StartLoginWithLoginTypeAndTokenCallback);
+            // }
+            // else if (loginType == LoginCredentialType.ExternalAuth)
+            // {
+            //     throw new NotImplementedException();
+            // }
         }
         
         void StartLoginWithLoginTypeAndTokenCallback(LoginCallbackInfo loginCallbackInfo)

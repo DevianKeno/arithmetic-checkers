@@ -13,6 +13,10 @@ namespace Damath
         /// The player that performed this move.
         /// </summary>
         public Player Player;
+        /// <summary>
+        /// The player that performed this move.
+        /// </summary>
+        public Player Performer => Player;
         public Cell Origin, From;
         public Cell Destination, To;
         /// <summary>
@@ -60,6 +64,11 @@ namespace Damath
             CapturedPiece = toCapture;
             HasCapture = true;
             type = MoveType.Capture;
+        }
+
+        public bool PerformedBy(Player player)
+        {
+            return Player == player;
         }
 
         public void SetScoreValue(float value)

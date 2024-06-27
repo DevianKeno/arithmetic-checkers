@@ -39,8 +39,6 @@ namespace Damath.UI
                 if (_isTransitioning) return;
                 _isTransitioning = true;
 
-                LayoutRebuilder.ForceRebuildLayoutImmediate(CurrentFrame.transform as RectTransform);
-
                 if (Game.Main.Settings.EnableAnimations)
                 {
                     /// Move old frame out of the way
@@ -56,6 +54,7 @@ namespace Damath.UI
 
                     /// Move new frame into view
                     frame.gameObject.SetActive(true);
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(frame.transform as RectTransform);
                     frame.transform.SetParent(transform);
                     LeanTween.move(frame.rect, Vector2.zero, Game.Main.Settings.AnimationFactor)
                     .setEase(TweenType)

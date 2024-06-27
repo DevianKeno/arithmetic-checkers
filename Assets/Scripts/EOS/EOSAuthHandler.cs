@@ -11,14 +11,18 @@ using PlayEveryWare.EpicOnlineServices;
 
 using Damath.UI;
 using Epic.OnlineServices.Connect;
+using Unity.VisualScripting;
 
 namespace Damath.EOS
 {
     public class EOSAuthHandler : MonoBehaviour
     {
+        DevAuthWindow devAuthWindow;
+
         [Header("UI Elements")]
         [SerializeField] UI.Button signInBtn;
         [SerializeField] UI.Button signOutBtn;
+        [SerializeField] UI.Button closeBtn;
         [SerializeField] TextMeshProUGUI usernameTMP;
         [SerializeField] TextMeshProUGUI greetingTMP;
         [SerializeField] LoadingIconAnimation loadingIcon;
@@ -27,6 +31,7 @@ namespace Damath.EOS
         {
             signInBtn.onClick.AddListener(OnSignInClick);
             signOutBtn.onClick.AddListener(OnSignOutClick);
+            closeBtn.onClick.AddListener(OnCloseClick);
         }
 
         void Start()
@@ -34,18 +39,128 @@ namespace Damath.EOS
             SetUIForLogin();
         }
 
+        #region Login flow
         public void OnSignInClick()
         {
-            SetUIForLoading();
-            usernameTMP.text = "Signing in...";
-            greetingTMP.gameObject.SetActive(false);
-            
-            ConnectWithDiscord();
+            devAuthWindow = Game.UI.Create<DevAuthWindow>("dev_auth_window");
+            devAuthWindow.OnSignInBtnClick += OnStartLogin;
         }
 
+        void OnStartLogin()
+        {
+            devAuthWindow.OnSignInBtnClick -= OnStartLogin;
+
+            if (Application.internetReachability == NetworkReachability.NotReachable)
+            {
+                Debug.LogError("Internet not reachable.");
+                return;
+            }
+
+            SetAccountDisplayForLoading();
+            usernameTMP.text = "Signing in...";
+            greetingTMP.gameObject.SetActive(false);
+
+            var authType = devAuthWindow.GetLoginType();
+            if (authType == LoginCredentialType.AccountPortal)
+            {
+                Game.EOS.StartLoginWithLoginTypeAndToken(LoginCredentialType.AccountPortal,
+                                                        null,
+                                                        null,
+                                                        OnAuthLoginCallback);
+            }
+            else if (authType == LoginCredentialType.Developer)
+            {
+                var usernameAsString = devAuthWindow.GetUsername();
+                var passwordAsString = devAuthWindow.GetPassword();
+
+                Game.EOS.StartLoginWithLoginTypeAndToken(LoginCredentialType.Developer,
+                                                        usernameAsString,
+                                                        passwordAsString,
+                                                        OnAuthLoginCallback);
+            }
+            else if (authType == LoginCredentialType.ExternalAuth)
+            {
+                ConnectWithDiscord();
+            }
+            else
+            {
+                Game.Console.Log("Unhandled login type." + authType.ToString());
+                Debug.LogError("Unhandled login type." + authType.ToString());
+                devAuthWindow.SetUIForLogin();
+                SetUIForLogin();
+            }
+        }
+
+        void OnAuthLoginCallback(Epic.OnlineServices.Auth.LoginCallbackInfo info)
+        {
+            if (info.ResultCode == Result.Success)
+            {
+                Game.EOS.StartConnectLoginWithEpicAccount(info.LocalUserId, OnConnectLoginCallback);
+            }
+            else
+            {
+                Game.Console.Log($"Encountered an error logging in. [{info.ResultCode}]");
+                Debug.LogError($"Encountered an error logging in. [{info.ResultCode}]");
+                devAuthWindow.SetUIForLogin();
+                SetUIForLogin();
+            }
+        }
+
+        void OnConnectLoginCallback(Epic.OnlineServices.Connect.LoginCallbackInfo info)
+        {
+            if (info.ResultCode == Result.Success)
+            {
+                devAuthWindow.Destroy();
+                SetAccountDisplayForLogout();
+
+                var options = new QueryProductUserIdMappingsOptions()
+                {
+                    LocalUserId = info.LocalUserId,
+                    ProductUserIds = new ProductUserId[]
+                    {
+                        info.LocalUserId
+                    }
+                };
+                Game.EOS.GetEOSConnectInterface().QueryProductUserIdMappings(ref options, null, OnQueryUserInfoCallback);
+            }
+            else
+            {
+                Game.Console.Log($"Encountered an error logging in. [{info.ResultCode}]");
+                Debug.LogError($"Encountered an error logging in. [{info.ResultCode}]");
+                devAuthWindow.SetUIForLogin();
+                SetUIForLogin();
+            }
+        }
+
+        void OnQueryUserInfoCallback(ref QueryProductUserIdMappingsCallbackInfo info)
+        {
+            if (info.ResultCode == Result.Success)
+            {
+                var options = new CopyProductUserInfoOptions()
+                {
+                    TargetUserId = info.LocalUserId
+                };
+                var result = Game.EOS.GetEOSConnectInterface().CopyProductUserInfo(ref options, out ExternalAccountInfo? outUserInfo);
+
+                if (result == Result.Success && outUserInfo.HasValue)
+                {
+                    var userInfo = outUserInfo.Value;
+                    SetDisplayedAccount(userInfo);
+                    return;
+                }
+                info.ResultCode = result;
+            }
+
+            Game.Console.Log($"Failed to retrieve user information. [{info.ResultCode}]");
+            Debug.LogError($"Failed to retrieve user information. [{info.ResultCode}]");
+        }
+        #endregion
+
+
+        #region Logout flow
         public void OnSignOutClick()
         {
-            SetUIForLoading();
+            SetAccountDisplayForLoading();
             usernameTMP.text = "Logging out...";
             greetingTMP.gameObject.SetActive(false);
 
@@ -56,9 +171,9 @@ namespace Damath.EOS
             Game.EOS.GetEOSConnectInterface().Logout(ref options, null, OnLogoutCompleted);
         }
 
-        void OnLogoutCompleted(ref Epic.OnlineServices.Connect.LogoutCallbackInfo data)
+        void OnLogoutCompleted(ref Epic.OnlineServices.Connect.LogoutCallbackInfo info)
         {
-            if (data.ResultCode == Result.Success)
+            if (info.ResultCode == Result.Success)
             {
                 var options = new UnlinkAccountOptions()
                 {
@@ -68,9 +183,9 @@ namespace Damath.EOS
                 return;
             }
 
-            Game.Console.Log($"Encountered an error upon logging out. [{data.ResultCode}]");
-            Debug.LogWarning($"Encountered an error upon logging out. [{data.ResultCode}]");
-            SetUIForLogout();
+            Game.Console.Log($"Encountered an error upon logging out. [{info.ResultCode}]");
+            Debug.LogWarning($"Encountered an error upon logging out. [{info.ResultCode}]");
+            SetAccountDisplayForLogout();
         }
 
         void OnUnlinkAccountCompleted(ref UnlinkAccountCallbackInfo data)
@@ -86,6 +201,9 @@ namespace Damath.EOS
             SetUIForLogin();
         }
 
+        #endregion
+
+
         void SetUIForLogin()
         {
             usernameTMP.text = "Not logged in";
@@ -95,7 +213,7 @@ namespace Damath.EOS
             loadingIcon.gameObject.SetActive(false); 
         }
         
-        void SetUIForLoading()
+        void SetAccountDisplayForLoading()
         {
             loadingIcon.gameObject.SetActive(true);
 
@@ -103,7 +221,7 @@ namespace Damath.EOS
             signOutBtn.gameObject.SetActive(false);
         }
 
-        void SetUIForLogout()
+        void SetAccountDisplayForLogout()
         {
             signOutBtn.gameObject.SetActive(true);
 
@@ -185,7 +303,7 @@ namespace Damath.EOS
                 {
                     SetDisplayedAccount(outExternalAccountInfo.Value);
                 }
-                SetUIForLogout();
+                SetAccountDisplayForLogout();
             }
         }
 
@@ -194,5 +312,17 @@ namespace Damath.EOS
             usernameTMP.text = info.DisplayName;
             greetingTMP.gameObject.SetActive(true);
         }
+
+        public void SetDisplayedAccount(UserInfoData info)
+        {
+            usernameTMP.text = info.DisplayName;
+            greetingTMP.gameObject.SetActive(true);
+        }
+        
+        void OnCloseClick()
+        {
+            SetUIForLogin();
+        }
+
     }
 }

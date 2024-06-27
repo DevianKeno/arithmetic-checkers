@@ -356,10 +356,7 @@ namespace Damath.Systems
         
         public void MoveTypeRequest(MoveType moveType)
         {
-            if (OnMoveTypeRequest != null)
-            {
-                OnMoveTypeRequest(moveType);
-            }
+            OnMoveTypeRequest?.Invoke(moveType);
         }
 
         public void PieceCapture(Move move)
@@ -377,10 +374,7 @@ namespace Damath.Systems
 
         public void Refresh()
         {
-            if (OnRefresh != null)
-            {
-                OnRefresh();
-            }
+            OnRefresh?.Invoke();
         }
 
         /// <summary>

@@ -10,8 +10,8 @@ namespace Damath
     public class Board : MonoBehaviour
     {
         [Header("Board Game.Main.Settings")]
-        [SerializeField] int MaxColumns = 8;
-        [SerializeField] int MaxRows = 8;
+        public const int MaxColumns = 8;
+        public const int MaxRows = 8;
 
         Ruleset Ruleset { get; set; }
         public Themes Theme;
@@ -19,6 +19,8 @@ namespace Damath
         List<Cell> _cells = new();
         Dictionary<Vector2, Cell> _cellCoordinates = new();
         List<Piece> _pieces = new();
+        public List<Piece> BluePieces = new();
+        public List<Piece> OrangePieces = new();
 
         [SerializeField] Cell selectedCell = null;
         public Piece SelectedPiece = null;
@@ -31,10 +33,12 @@ namespace Damath
         public Side TurnOf;
 
         public event EventHandler<Side> OnTurnChange;
+        public event EventHandler<Move> OnPieceMove;
         public event EventHandler<Move> OnPieceCapture;
 
-        private bool SymbolVisible;
-        private bool PieceVisible;
+        bool SymbolVisible;
+        bool PieceVisible;
+
 
         [Header("Objects")]
         [SerializeField] GameObject cellGroup;
@@ -43,8 +47,11 @@ namespace Damath
         [SerializeField] GameObject graveyardB;
         [SerializeField] GameObject graveyardT;
         [SerializeField] GameObject boardPrefab;
+        
+        [Header("Prefabs")]
         [SerializeField] Cell cellPrefab;
         [SerializeField] Piece piecePrefab;
+
         RectTransform rectTransform;
 
         void Awake()
@@ -161,17 +168,24 @@ namespace Damath
                 Piece newPiece = Instantiate(piecePrefab, pieceGroup.transform);
                 newPiece.name = $"Piece ({pieceData.Value}) {pieceData.Side}";
 
-                // Transform piece position
+                /// Transform piece position
                 newPiece.transform.localScale = new (Constants.PieceScale, Constants.PieceScale);
                 newPiece.transform.position = cell.transform.position;
 
-                // Initialize piece values
+                /// Initialize piece values
                 newPiece.SetCell(cell);
                 newPiece.SetValue(pieceData.Value);
                 newPiece.SetSide(pieceData.Side);
                 newPiece.SetKing(pieceData.IsKing);
                 cell.SetPiece(newPiece);
                 _pieces.Add(newPiece);
+                if (pieceData.Side == Side.Blue)
+                {
+                    BluePieces.Add(newPiece);
+                } else if (pieceData.Side == Side.Orange)
+                {
+                    OrangePieces.Add(newPiece);
+                }
             }
         }
 
@@ -366,6 +380,7 @@ namespace Damath
         public void PerformMove(Move move)
         {
             ClearValidMoves();
+            OnPieceMove?.Invoke(this, move);
             Piece movedPiece = move.Piece;
             Game.Events.PieceMove(move);
             Game.Console.Log($"[ACTION]: Moved {movedPiece.Value}: ({move.Origin.Col}, {move.Origin.Row}) -> ({move.Destination.Col}, {move.Destination.Row})");

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public class FrameController : MonoBehaviour
     {

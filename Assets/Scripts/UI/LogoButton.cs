@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public class LogoButton : MonoBehaviour
     {

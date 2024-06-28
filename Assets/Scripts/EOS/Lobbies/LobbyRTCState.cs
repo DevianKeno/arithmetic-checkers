@@ -1,4 +1,4 @@
-namespace Damath.EOS.Lobbies
+namespace Aritche.EOS.Lobbies
 {
     /// <summary>
     /// Class represents RTC State (Voice) of a Lobby

@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-using Damath.Systems;
+using Aritche.Systems;
 using System;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public class PostmatchWindow : Window
     {

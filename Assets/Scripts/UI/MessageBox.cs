@@ -1,8 +1,8 @@
 using UnityEngine;
 using TMPro;
-using Damath.Players;
+using Aritche.Players;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public class MessageBox : MonoBehaviour
     {

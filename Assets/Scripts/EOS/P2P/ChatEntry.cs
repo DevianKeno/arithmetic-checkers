@@ -1,4 +1,4 @@
-namespace Damath.EOS.P2P
+namespace Aritche.EOS.P2P
 {
     /// <summary>
     /// Struct <c>ChatEntry</c> is used to store cached chat data in <c>UIPeer2PeerMenu</c>.

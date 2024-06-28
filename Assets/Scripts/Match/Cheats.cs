@@ -1,13 +1,13 @@
 using UnityEngine;
 using System;
-using Damath.UI;
-using Damath.Players;
+using Aritche.UI;
+using Aritche.Players;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using System.Text.RegularExpressions;
 
-namespace Damath.Systems
+namespace Aritche.Systems
 {
     public partial class Cheats : MonoBehaviour
     {

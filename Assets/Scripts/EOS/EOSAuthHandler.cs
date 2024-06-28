@@ -9,11 +9,11 @@ using Epic.OnlineServices.UserInfo;
 
 using PlayEveryWare.EpicOnlineServices;
 
-using Damath.UI;
+using Aritche.UI;
 using Epic.OnlineServices.Connect;
 using Unity.VisualScripting;
 
-namespace Damath.EOS
+namespace Aritche.EOS
 {
     public class EOSAuthHandler : MonoBehaviour
     {

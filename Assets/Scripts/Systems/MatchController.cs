@@ -7,10 +7,11 @@ using TMPro;
 
 using Epic.OnlineServices;
 
-using Damath.Players;
-using Damath.UI;
+using Aritche.Rules;
+using Aritche.Players;
+using Aritche.UI;
 
-namespace Damath.Systems
+namespace Aritche.Systems
 {
     /// <summary>
     /// Controls the behavior of a match.
@@ -22,9 +23,9 @@ namespace Damath.Systems
         /// Whether if the match is currently active.
         /// </summary>
         public bool IsPlaying { get; set; }
+        public bool IsPaused { get; private set; }
         public bool IsMultiplayer { get; set; }
         [field: SerializeField] public Ruleset Ruleset { get; private set; }
-
         public Player BluePlayer;
         public Player OrangePlayer;
         public List<Player> Spectators = new();
@@ -37,6 +38,8 @@ namespace Damath.Systems
         public TimerManager TimerManager => timerManager;
         [SerializeField] Cheats cheats;
         public Cheats Cheats => cheats;
+
+        PauseMenu pauseMenu;
 
         [Header("UI Elements")]
         [SerializeField] TextMeshProUGUI rulesetText;
@@ -84,11 +87,11 @@ namespace Damath.Systems
             if (Game.Main.HasRuleset)
             {
                 Ruleset = Game.Main.Ruleset;
-                rulesetText.text = Ruleset.Type.ToString();
+                rulesetText.text = Ruleset.Preset.ToString();
 
                 Game.Events.RulesetDistribute(Ruleset);
                 Game.Events.MatchCreate(this);
-                Game.Console.Log($"Created {Ruleset.Type} match");
+                Game.Console.Log($"Created {Ruleset.Preset} match");
                 
                 if (Ruleset.GetValue<bool>("EnableCheats"))
                 {
@@ -199,6 +202,8 @@ namespace Damath.Systems
         #endregion
 
 
+        #region Public methods
+
         public void ConcludeMatch()
         {
             var postmatchWindow = Game.UI.Create<PostmatchWindow>("postmatch_window");
@@ -228,7 +233,44 @@ namespace Damath.Systems
             throw new ArgumentOutOfRangeException();
         }
 
-        public Player CreatePlayer(Side side)
+        public void Pause(Player requestor)
+        {
+            if (IsPaused) /// unpause
+            {
+                IsPaused = false;
+                pauseMenu.Destroy();
+            }
+            else /// pause
+            {
+                IsPaused = true;
+                pauseMenu = Game.UI.Create<PauseMenu>("pause_menu");
+
+                if (requestor.Side == Side.Blue)
+                {
+                    pauseMenu.BorderColor = Colors.RichCerulean;
+                }
+                else if (requestor.Side == Side.Orange)
+                {
+                    pauseMenu.BorderColor = Colors.PersimmonOrange;
+                }
+
+                pauseMenu.Show();
+            }
+        }
+
+        public void Unpause()
+        {
+            if (IsPaused) /// unpause
+            {
+                IsPaused = false;
+                pauseMenu.Destroy();
+            }
+        }
+
+        #endregion
+
+
+        Player CreatePlayer(Side side)
         {
             var go = Instantiate(playerPrefab);
             go.name = $"{side} Player";

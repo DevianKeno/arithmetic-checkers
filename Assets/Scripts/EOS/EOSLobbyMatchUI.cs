@@ -9,10 +9,10 @@ using Epic.OnlineServices.Platform;
 
 using PlayEveryWare.EpicOnlineServices;
 
-using Damath.UI;
-using Damath.EOS.Lobbies;
+using Aritche.UI;
+using Aritche.EOS.Lobbies;
 
-namespace Damath
+namespace Aritche
 {
     public class EOSLobbyMatchUI : MonoBehaviour
     {

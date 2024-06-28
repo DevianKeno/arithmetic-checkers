@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 using Epic.OnlineServices;
 
-namespace Damath.EOS.P2P
+namespace Aritche.EOS.P2P
 {
     /// <summary>
     /// Struct <c>ChatWithFriendData</c> is used to store cached friend chat data in <c>UIPeer2PeerMenu</c>.

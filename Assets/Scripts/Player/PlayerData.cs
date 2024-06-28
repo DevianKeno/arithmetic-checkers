@@ -1,6 +1,6 @@
 using System;
 
-namespace Damath
+namespace Aritche
 {
     /// <summary>
     /// This is used for network transport.

@@ -1,6 +1,6 @@
 using Epic.OnlineServices.Presence;
 
-namespace Damath.EOS.Friends
+namespace Aritche.EOS.Friends
 {
     /// <summary>
     /// Class <c>PresenceInfo</c> stores Player Presence data.

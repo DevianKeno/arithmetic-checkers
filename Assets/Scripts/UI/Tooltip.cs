@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public class Tooltip : MonoBehaviour, IUIElement
     {

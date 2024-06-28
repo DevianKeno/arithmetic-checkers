@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 
-namespace Damath.Players
+namespace Aritche.Players
 {
     public class Player : Actor
     {
@@ -62,6 +62,7 @@ namespace Damath.Players
         /// Whether if it's this player's turn or not.
         /// </summary>
         public bool IsMyTurn { get; private set; }
+        public bool IsPaused { get; private set; }
 
         [SerializeField] private float MouseHoldTime = 0f;
 
@@ -132,10 +133,12 @@ namespace Damath.Players
             // inputs["Right Click"].started += HandleRightClickStarted;
             inputs["Right Click"].performed += HandleRightClick;
             inputs["Right Click"].canceled += HandleRightClickRelease;
+            inputs["Pause"].performed += HandlePause;
         }
 
         void HandleLeftClick(InputAction.CallbackContext c)
         {
+            if (IsPaused) return;
             /// Check if there's a piece currently selected and if the player is not holding the mouse button
             /// This is to avoid selecting the moved piece again after selecting a cell via left click
             if (SelectedPiece != null && !IsHoldingMouse) return;
@@ -152,6 +155,8 @@ namespace Damath.Players
 
         void HandleRightClick(InputAction.CallbackContext c)
         {
+            if (IsPaused) return;
+
             CastRay();
             Game.Events.PlayerRightClick(this);   
             OnClick?.Invoke(this, PointerEventData.InputButton.Right);
@@ -159,6 +164,7 @@ namespace Damath.Players
 
         void HandleLeftClickRelease(InputAction.CallbackContext c)
         {
+            if (IsPaused) return;
             
         }
 
@@ -169,7 +175,20 @@ namespace Damath.Players
 
         void HandleRightClickRelease(InputAction.CallbackContext c)
         {
+            if (IsPaused) return;
             
+        }
+
+        void HandlePause(InputAction.CallbackContext c)
+        {
+            /// When on online matches, these should be handled differently
+            /// As they will now be "requesting" pauses or just pause on their own
+            if (IsMyTurn)
+            {
+                Deselect();
+                IsPaused = !IsPaused;
+                Game.Main.Match.Pause(this);
+            }
         }
 
         #region Public
@@ -225,6 +244,8 @@ namespace Damath.Players
 
         void DetectRaycast()
         {
+            if (IsPaused) return;
+            
             /// Left click and hold
             if (Mouse.current.leftButton.isPressed)
             {

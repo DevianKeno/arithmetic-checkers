@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Damath.Players
+namespace Aritche.Players
 {
     /// <summary>
     /// An actor can represent either a player or just a spectator.

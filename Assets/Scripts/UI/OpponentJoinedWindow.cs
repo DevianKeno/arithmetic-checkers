@@ -2,9 +2,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-using Damath.EOS.Lobbies;
+using Aritche.EOS.Lobbies;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public class OpponentJoinedWindow : Window
     {

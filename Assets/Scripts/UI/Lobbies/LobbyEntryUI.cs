@@ -6,9 +6,9 @@ using TMPro;
 
 using Epic.OnlineServices.Lobby;
 
-using Damath.EOS.Lobbies;
+using Aritche.EOS.Lobbies;
 
-namespace Damath.UI.Lobbies
+namespace Aritche.UI.Lobbies
 {
     public class LobbyEntryUI : MonoBehaviour, IPointerDownHandler
     {

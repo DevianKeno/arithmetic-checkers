@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-namespace Damath
+namespace Aritche
 {
     public class Coordinates : MonoBehaviour
     {

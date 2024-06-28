@@ -1,11 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using Damath.UI;
-using System;
-using Damath.Players;
 
-namespace Damath
+using UnityEngine;
+
+using Aritche.Players;
+using Aritche.Rules;
+using Aritche.UI;
+
+namespace Aritche
 {
     public class Board : MonoBehaviour
     {

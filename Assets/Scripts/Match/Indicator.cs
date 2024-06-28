@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-namespace Damath
+namespace Aritche
 {
     public class Indicator : MonoBehaviour
     {

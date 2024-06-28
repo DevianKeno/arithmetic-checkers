@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public class Colors
     {

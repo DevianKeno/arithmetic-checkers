@@ -1,4 +1,4 @@
-namespace Damath.UI
+namespace Aritche.UI
 {
     /// <summary>
     /// Base interface for Damath UI elements.

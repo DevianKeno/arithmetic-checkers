@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Damath
+namespace Aritche
 {
     /// <summary>
     /// Represents cellmap data where T is the cell's content.

@@ -7,7 +7,7 @@ using TMPro;
 using Epic.OnlineServices;
 using Epic.OnlineServices.UserInfo;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public class MatchPlayerDisplay : MonoBehaviour
     {

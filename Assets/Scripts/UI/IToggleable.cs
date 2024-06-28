@@ -1,4 +1,4 @@
-namespace Damath.UI
+namespace Aritche.UI
 {
     /// <summary>
     /// Make objects toggle visibility.

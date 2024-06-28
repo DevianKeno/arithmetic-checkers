@@ -1,13 +1,14 @@
 using System;
 using UnityEngine;
-using Damath.UI;
+using Aritche.UI;
 
 using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 
-using Damath.EOS.Lobbies;
+using Aritche.EOS.Lobbies;
+using Aritche.Rules;
 
-namespace Damath.EOS
+namespace Aritche.EOS
 {
     public class EOSLobbyCreateUI : MonoBehaviour
     {
@@ -15,7 +16,7 @@ namespace Damath.EOS
         public LobbyPermissionLevel lobbyPermissionLevel;
 
         Ruleset cachedRuleset;
-        RulesetType selectedRulesetType;
+        RulesetPreset selectedRulesetType;
         Window creatingLobbyWindow;
 
         [SerializeField] Button createLobbyBtn;
@@ -29,9 +30,10 @@ namespace Damath.EOS
         {
             var ruleset = selectedRulesetType switch
             {
-                RulesetType.Standard => Ruleset.CreateStandard(),
-                RulesetType.Speed => Ruleset.CreateSpeed(),
-                RulesetType.Custom => throw new NotImplementedException()
+                RulesetPreset.Classic => Ruleset.CreateStandard(),
+                RulesetPreset.ClassicRandom => Ruleset.CreateClassicRandom(),
+                RulesetPreset.Speed => Ruleset.CreateSpeed(),
+                RulesetPreset.Custom => Ruleset.CreateCustom()
             };
             return ruleset;
         }
@@ -41,10 +43,10 @@ namespace Damath.EOS
             /// Lmao all standard hshuhuw
             selectedRulesetType = type switch
             {
-                "classic" => RulesetType.Standard,
-                "classic_random" => RulesetType.Standard,
-                "speed" => RulesetType.Standard,
-                "custom" => RulesetType.Standard,
+                "classic" => RulesetPreset.Classic,
+                "classic_random" => RulesetPreset.ClassicRandom,
+                "speed" => RulesetPreset.Speed,
+                "custom" => RulesetPreset.Custom,
             };
         }
 
@@ -60,7 +62,7 @@ namespace Damath.EOS
             /// The top-level, game-specific filtering information for session searches.
             /// This criteria should be set with mostly static, coarse settings,
             /// often formatted like "GameMode:Region:MapName".
-            string rulesetType = cachedRuleset.Type.ToString();
+            string rulesetType = cachedRuleset.Preset.ToString();
             string region = "ASIA";
             string bucketId = $"{rulesetType}:{region}";
 

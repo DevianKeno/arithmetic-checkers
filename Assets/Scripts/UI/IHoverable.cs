@@ -1,7 +1,7 @@
 using System;
 using UnityEngine.EventSystems;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public interface IHoverable : IPointerEnterHandler, IPointerExitHandler
     {

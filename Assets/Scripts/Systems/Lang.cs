@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Damath.Systems
+namespace Aritche.Systems
 {
     public class Lang : MonoBehaviour
     {

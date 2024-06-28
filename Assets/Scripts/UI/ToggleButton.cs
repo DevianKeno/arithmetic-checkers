@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public class ToggleButton : UnityEngine.UI.Toggle, IHoverable
     {

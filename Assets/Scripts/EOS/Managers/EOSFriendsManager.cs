@@ -11,10 +11,10 @@ using Epic.OnlineServices.Friends;
 
 using PlayEveryWare.EpicOnlineServices;
 
-using Damath.EOS.Friends;
+using Aritche.EOS.Friends;
 using Epic.OnlineServices.UI;
 
-namespace Damath.EOS.Managers
+namespace Aritche.EOS.Managers
 {
     /// <summary>
     /// Class <c>EOSFriendsManager</c> is a simplified wrapper for EOS [FriendsInterface](https://dev.epicgames.com/docs/services/en-US/Interfaces/Friends/index.html).

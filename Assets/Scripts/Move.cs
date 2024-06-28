@@ -1,6 +1,6 @@
-using Damath.Players;
+using Aritche.Players;
 
-namespace Damath
+namespace Aritche
 {
     public enum MoveType {All, Normal, Capture}
 

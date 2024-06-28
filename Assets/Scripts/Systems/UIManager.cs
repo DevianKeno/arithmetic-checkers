@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using Damath.UI;
+using Aritche.UI;
 
-namespace Damath.Systems
+namespace Aritche.Systems
 {
     public class UIManager : MonoBehaviour
     {
@@ -28,11 +28,11 @@ namespace Damath.Systems
         Dictionary<string, Sprite> _iconsDict = new();
         Dictionary<string, IUIElement> windows = new();
         
-        [Header("UI Prefabs")]
-        public List<PrefabId> Prefabs;
-
         [SerializeField] Image dim;
 
+        [Header("UI Prefabs")]
+        public List<PrefabId> Prefabs;
+        
         PlayerInput mainInput;
 
         void Awake()

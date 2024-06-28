@@ -10,10 +10,11 @@ using Epic.OnlineServices.Logging;
 
 using PlayEveryWare.EpicOnlineServices;
 
-using Damath.Systems;
-using Damath.EOS;
+using Aritche.Systems;
+using Aritche.Rules;
+using Aritche.EOS;
 
-namespace Damath
+namespace Aritche
 {
     /// <summary>
     /// Main game controller.
@@ -165,9 +166,9 @@ namespace Damath
         /// <summary>
         /// Host a multiplayer match.
         /// </summary>
-        public void HostMatch(RulesetType mode)
+        public void HostMatch(RulesetPreset preset)
         {
-            CacheRuleset(Ruleset.Create(mode));
+            CacheRuleset(Ruleset.Create(preset));
 
             // Network.Main.StartHost();
         }
@@ -204,7 +205,7 @@ namespace Damath
         /// <summary>
         /// Creates a match given a ruleset type.
         /// </summary>
-        public void CreateMatch(RulesetType mode)
+        public void CreateMatch(RulesetPreset mode)
         {
             CacheRuleset(Ruleset.Create(mode));
         }

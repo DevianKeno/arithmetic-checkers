@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Damath.Players;
 
-namespace Damath.Systems
+using Aritche.Rules;
+using Aritche.Players;
+
+namespace Aritche.Systems
 {
     public class EventsManager : MonoBehaviour
     {

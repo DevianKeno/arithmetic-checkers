@@ -1,4 +1,4 @@
-namespace Damath.EOS.P2P
+namespace Aritche.EOS.P2P
 {
     public struct MessageData
     {

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Unity.VisualScripting;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public class SidebarController : MonoBehaviour
     {

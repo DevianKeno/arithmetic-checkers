@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
-using Damath.UI;
+using Aritche.UI;
 
-namespace Damath.Systems
+namespace Aritche.Systems
 {
     public partial class Cheats : MonoBehaviour
     {

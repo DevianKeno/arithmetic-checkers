@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Damath
+namespace Aritche
 {
     public class GlobalTimerPointerHandler : MonoBehaviour, IPointerDownHandler
     {

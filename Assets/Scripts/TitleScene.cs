@@ -1,7 +1,7 @@
 using UnityEngine;
-using Damath.UI;
+using Aritche.UI;
 
-namespace Damath
+namespace Aritche
 {
     public class TitleScene : MonoBehaviour
     {

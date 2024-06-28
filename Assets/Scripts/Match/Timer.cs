@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using TMPro;
 
-namespace Damath
+namespace Aritche
 {
     public enum TimerFormat {MM_SS, SS}
 

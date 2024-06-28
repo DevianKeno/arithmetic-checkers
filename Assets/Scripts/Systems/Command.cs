@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine.Events;
 
-namespace Damath
+namespace Aritche
 {
     public class Command
     {

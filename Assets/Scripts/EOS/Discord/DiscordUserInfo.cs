@@ -1,6 +1,6 @@
 using System;
 
-namespace Damath.EOS
+namespace Aritche.EOS
 {
     [Serializable]
     public class DiscordUserInfo

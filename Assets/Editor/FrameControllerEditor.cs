@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     [CustomEditor(typeof(FrameController))]
     public class FrameControllerEditor : Editor

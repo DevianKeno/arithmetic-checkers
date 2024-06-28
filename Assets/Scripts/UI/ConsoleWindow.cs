@@ -4,7 +4,7 @@ using TMPro;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public class ConsoleWindow : Window
     {

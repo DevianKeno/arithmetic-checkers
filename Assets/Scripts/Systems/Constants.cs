@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Damath
+namespace Aritche
 {
     public enum Side {Blue, Orange, Spectator}
 

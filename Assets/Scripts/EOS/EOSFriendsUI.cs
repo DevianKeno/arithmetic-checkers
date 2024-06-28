@@ -2,14 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Damath.UI;
+using Aritche.UI;
 
 using Epic.OnlineServices;
 using Epic.OnlineServices.Connect;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 
-namespace Damath.EOS
+namespace Aritche.EOS
 {
     public class EOSFriendsUI : MonoBehaviour, IEOSOnConnectLogin
     {

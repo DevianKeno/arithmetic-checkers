@@ -7,7 +7,7 @@ using Epic.OnlineServices.Lobby;
 
 using PlayEveryWare.EpicOnlineServices;
 
-namespace Damath.EOS.Lobbies
+namespace Aritche.EOS.Lobbies
 {
     /// <summary>
     /// Class represents all Lobby properties

@@ -9,7 +9,7 @@ using Epic.OnlineServices.Lobby;
 
 using PlayEveryWare.EpicOnlineServices;
 
-namespace Damath.EOS.Managers
+namespace Aritche.EOS.Managers
 {
     /// <summary>
     /// Class <c>EOSUserInfoManager</c> is a general purpose access point for user info, including local user.

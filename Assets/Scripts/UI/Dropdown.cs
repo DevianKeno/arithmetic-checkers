@@ -3,7 +3,7 @@ using TMPro;
 using System;
 using UnityEngine.EventSystems;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public class Dropdown : TMP_Dropdown
     {

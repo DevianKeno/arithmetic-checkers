@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Epic.OnlineServices;
 
-namespace Damath.EOS.Lobbies
+namespace Aritche.EOS.Lobbies
 {
     /// <summary>
     /// Class represents all Lobby Member properties

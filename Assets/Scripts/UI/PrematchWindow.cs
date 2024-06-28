@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using TMPro;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public class PrematchWindow : Window
     {

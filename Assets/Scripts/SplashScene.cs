@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Damath
+namespace Aritche
 {
     public class SplashScene : MonoBehaviour
     {

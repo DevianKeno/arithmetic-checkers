@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public class Button : UnityEngine.UI.Button, IHoverable
     {

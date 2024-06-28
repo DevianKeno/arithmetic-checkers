@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using Damath.EOS.Managers;
+using Aritche.EOS.Managers;
 
-namespace Damath.EOS
+namespace Aritche.EOS
 {
     /// <summary>
     /// Wrapper for EOS sub managers.

@@ -4,7 +4,7 @@ using System;
 using UnityEngine.UIElements;
 using UnityEngine.EventSystems;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public class AddPieceMenu : Window
     {

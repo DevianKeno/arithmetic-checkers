@@ -1,5 +1,5 @@
 
-namespace Damath.Players
+namespace Aritche.Players
 {
     public class Spectator : Actor
     {

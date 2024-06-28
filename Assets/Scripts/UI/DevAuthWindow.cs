@@ -8,9 +8,9 @@ using Epic.OnlineServices.UserInfo;
 
 using PlayEveryWare.EpicOnlineServices;
 
-using Damath.EOS.Managers;
+using Aritche.EOS.Managers;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public class DevAuthWindow : Window
     {

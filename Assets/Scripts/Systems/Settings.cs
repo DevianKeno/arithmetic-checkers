@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Damath.Systems
+namespace Aritche.Systems
 {
     [Serializable]
     [CreateAssetMenu(fileName = "Settings", menuName = "Damath/Settings")]

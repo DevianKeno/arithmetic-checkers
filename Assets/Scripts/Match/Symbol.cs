@@ -1,5 +1,5 @@
 
-namespace Damath
+namespace Aritche
 {
     public class Symbol
     {

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-using Damath.EOS.Lobbies;
+using Aritche.EOS.Lobbies;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public class LobbyInfoContainer : MonoBehaviour
     {

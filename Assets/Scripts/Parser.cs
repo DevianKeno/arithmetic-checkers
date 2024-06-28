@@ -1,6 +1,6 @@
 using System.Linq;
 
-namespace Damath
+namespace Aritche
 {
     public enum Pack {Ruleset, Chat, Command}
     public interface IParsable
@@ -18,9 +18,9 @@ namespace Damath
         {
             var pack = type switch
             {
-                Damath.Pack.Ruleset => "r",
-                Damath.Pack.Chat => "m",
-                Damath.Pack.Command => "c",
+                Aritche.Pack.Ruleset => "r",
+                Aritche.Pack.Chat => "m",
+                Aritche.Pack.Command => "c",
                 _ => throw new System.Exception()
             };
 
@@ -36,9 +36,9 @@ namespace Damath
 
             Pack type = args[0] switch
             {
-                "r" => Damath.Pack.Ruleset,
-                "m" => Damath.Pack.Chat,
-                "c" => Damath.Pack.Command,
+                "r" => Aritche.Pack.Ruleset,
+                "m" => Aritche.Pack.Chat,
+                "c" => Aritche.Pack.Command,
                 _ => throw new System.Exception()
             };
 

@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
-using Damath.UI;
+
 using UnityEngine;
 
-namespace Damath
+using Aritche.Rules;
+using Aritche.UI;
+
+namespace Aritche
 {
     public enum IndicatorType {Circle, Box}
 

@@ -6,7 +6,7 @@ using UnityEngine.Events;
 using TMPro;
 using System;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public class Choice : MonoBehaviour
     {

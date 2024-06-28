@@ -8,9 +8,9 @@ using Epic.OnlineServices;
 using Epic.OnlineServices.P2P;
 using PlayEveryWare.EpicOnlineServices;
 
-using Damath.EOS.P2P;
+using Aritche.EOS.P2P;
 
-namespace Damath.EOS.Managers
+namespace Aritche.EOS.Managers
 {
     public class EOSPeer2PeerManager : IEOSSubManager
     {

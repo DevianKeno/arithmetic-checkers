@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Epic.OnlineServices;
+
 using UnityEngine;
 
-namespace Damath.Systems
+using Aritche.Rules;
+
+namespace Aritche.Systems
 {
     public partial class Console : MonoBehaviour
     {
@@ -199,10 +201,10 @@ namespace Damath.Systems
         {
             try
             {
-                RulesetType ruleset = args[1] switch
+                RulesetPreset ruleset = args[1] switch
                 {
-                    "standard" or "1" => RulesetType.Standard,
-                    "speed" or "2" => RulesetType.Speed,
+                    "classic" or "1" => RulesetPreset.Classic,
+                    "speed" or "2" => RulesetPreset.Speed,
                     // "custom" or "3" => Ruleset.Type.Custom,
                     _ => throw new Exception()
                 };
@@ -247,11 +249,11 @@ namespace Damath.Systems
                 case "create":
                     try
                     {
-                        RulesetType ruleset = args[2] switch
+                        RulesetPreset ruleset = args[2] switch
                         {
-                            "standard" or "1" => RulesetType.Standard,
-                            "speed" or "2" => RulesetType.Speed,
-                            // "custom" or "3" => RulesetType.Custom,
+                            "classic" or "1" => RulesetPreset.Classic,
+                            "speed" or "2" => RulesetPreset.Speed,
+                            // "custom" or "3" => RulesetPreset.Custom,
                             _ => throw new Exception()
                         };
 
@@ -281,11 +283,11 @@ namespace Damath.Systems
                 default:
                     try
                     {
-                        RulesetType ruleset = args[1] switch
+                        RulesetPreset ruleset = args[1] switch
                         {
-                            "standard" or "1" => RulesetType.Standard,
-                            "speed" or "2" => RulesetType.Speed,
-                            // "custom" or "3" => RulesetType.Custom,
+                            "classic" or "1" => RulesetPreset.Classic,
+                            "speed" or "2" => RulesetPreset.Speed,
+                            // "custom" or "3" => RulesetPreset.Custom,
                             _ => throw new Exception()
                         };
                         
@@ -345,7 +347,7 @@ namespace Damath.Systems
 
         void Command_Sandbox(List<string> args)
         {
-            var ruleset = Ruleset.Create(RulesetType.Standard);
+            var ruleset = Ruleset.Create(RulesetPreset.Classic);
             ruleset.SetRule("EnableCheats", true);
             Game.Main.CreateMatch(ruleset);
             Game.Main.LoadScene("Match", playTransition: true);

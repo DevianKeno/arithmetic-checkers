@@ -2,14 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using Damath.UI;
+using Aritche.UI;
 
 using Epic.OnlineServices.Connect;
 using Epic.OnlineServices.UserInfo;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 
-namespace Damath
+namespace Aritche
 {
     public class AccountDisplay : MonoBehaviour, IEOSOnConnectLogin, IEOSOnAuthLogin
     {

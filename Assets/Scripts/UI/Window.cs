@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public class Window : MonoBehaviour, IUIElement
     {
@@ -140,11 +140,6 @@ namespace Damath.UI
         public void Move(Vector3 position)
         {
             rect.position = position;
-        }
-
-        public void Delete()
-        {
-            Destroy(gameObject);
         }
     }
 }

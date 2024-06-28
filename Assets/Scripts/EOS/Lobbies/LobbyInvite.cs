@@ -1,7 +1,7 @@
 using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 
-namespace Damath.EOS.Lobbies
+namespace Aritche.EOS.Lobbies
 {
     /// <summary>
     /// Class represents all Lobby Invite properties

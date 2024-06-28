@@ -1,7 +1,7 @@
 using Epic.OnlineServices;
 using Epic.OnlineServices.Friends;
 
-namespace Damath.EOS.Friends
+namespace Aritche.EOS.Friends
 {
     /// <summary>
     /// Class <c>FriendData</c> stores Friend data.

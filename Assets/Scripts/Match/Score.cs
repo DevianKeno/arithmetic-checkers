@@ -1,4 +1,4 @@
-namespace Damath
+namespace Aritche
 {
     /// <summary>
     /// This class imlpements methods for score evalution.

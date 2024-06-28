@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using TMPro;
-using Damath.UI;
-using Damath.Players;
+using Aritche.UI;
+using Aritche.Players;
 
-namespace Damath.Systems
+namespace Aritche.Systems
 {
     public partial class Console : MonoBehaviour
     {

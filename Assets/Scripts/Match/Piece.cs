@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using Damath.UI;
-using Damath.Players;
+using Aritche.UI;
+using Aritche.Players;
 
-namespace Damath
+namespace Aritche
 {
     /// <summary>
     /// This class implements conversion methods to convert a "string value" to a computable score value.

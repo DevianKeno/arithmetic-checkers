@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 // using UnityEditor;
 // using UnityEditor.UI;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     // [CustomEditor(typeof(Toggle))]
     // public class ToggleEditor : UnityEditor.UI.ToggleEditor

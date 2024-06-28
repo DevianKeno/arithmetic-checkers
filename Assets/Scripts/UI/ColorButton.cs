@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using Unity.VisualScripting;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     public class ColorButton : MonoBehaviour
     {

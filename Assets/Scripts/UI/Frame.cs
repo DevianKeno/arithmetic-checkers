@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Damath.UI
+namespace Aritche.UI
 {
     [RequireComponent(typeof(RectTransform))]
     public class Frame : MonoBehaviour

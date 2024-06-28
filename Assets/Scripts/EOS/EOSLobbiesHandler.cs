@@ -1,17 +1,19 @@
 using System;
 using System.Collections.Generic;
+
 using UnityEngine;
-using Damath.UI;
+using TMPro;
 
 using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 
-using Damath.UI.Lobbies;
-using Damath.EOS.Lobbies;
-using Damath.EOS.Managers;
-using TMPro;
+using Aritche.Rules;
+using Aritche.UI;
+using Aritche.UI.Lobbies;
+using Aritche.EOS.Lobbies;
+using Aritche.EOS.Managers;
 
-namespace Damath.EOS
+namespace Aritche.EOS
 {
     public class EOSLobbiesHandler : MonoBehaviour
     {
@@ -69,9 +71,9 @@ namespace Damath.EOS
                 {
                     Ruleset ruleset = attr.AsString switch
                     {
-                        "Standard" => Ruleset.Create(RulesetType.Standard),
-                        "Speed" => Ruleset.Create(RulesetType.Speed),
-                        "Custom" => Ruleset.Create(RulesetType.Custom),
+                        "Standard" => Ruleset.Create(RulesetPreset.Classic),
+                        "Speed" => Ruleset.Create(RulesetPreset.Speed),
+                        "Custom" => Ruleset.Create(RulesetPreset.Custom),
                     };
                     Game.Main.CreateMatch(ruleset);
                     Game.Main.LoadScene("Match", playTransition: true);

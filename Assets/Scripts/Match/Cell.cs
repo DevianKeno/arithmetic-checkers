@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Damath.UI;
+using Aritche.UI;
 using System;
 using UnityEngine.EventSystems;
 
-namespace Damath
+namespace Aritche
 {
     public enum Operation { None, Addition, Subtraction, Multiplication, Division }
 

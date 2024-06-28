@@ -2,13 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Damath
+namespace Aritche.Rules
 {
-    public static class JSONReader
-    {
-
-    }
-    
     public struct Rule<T>
     {
         public int Id { get; private set; }
@@ -28,10 +23,28 @@ namespace Damath
         }
     }
 
+    public enum PieceValueType {
+        Naturals,
+        Integers,
+        Fractions,
+        Radicals,
+        Polynomials,
+        Binary,
+        Octal,
+        Hexadecimal
+    }
+
+    public enum SymbolMapType {
+        Standard,
+        RandomSymmetrical,
+        Random,
+        Custom
+    }
+
     /// <summary>
     /// Pertains which predefined ruleset a ruleset is based on.
     /// </summary>
-    public enum RulesetType { Standard, Speed, Custom }
+    public enum RulesetPreset { Classic, ClassicRandom, Speed, Custom }
 
     /// <summary>
     /// Determines which/who are players are participating in the match. 
@@ -45,23 +58,28 @@ namespace Damath
     [Serializable]
     public class Ruleset
     {
-        public RulesetType Type;
+        public RulesetPreset Preset;
+        public PieceValueType PieceValueType;
+        public SymbolMapType SymbolMapType;
         /// <summary>
-        /// The individual rules this ruleset holds. Accessible by indexing.
+        /// The individual rules this ruleset holds.
         /// </summary>
         public Dictionary<string, object> Rules = new();
         public Dictionary<Vector2Int, Operation> SymbolMap = new();
         public Dictionary<Vector2Int, PieceData> PieceMap = new();
 
+
         /// <summary>
         /// These data is initialized from files at every start of the program (game).
         /// </summary>
         #region Predefined data
+
         static Dictionary<Vector2Int, Operation> SymbolMapStandard { get; set; }
         static Dictionary<Vector2Int, PieceData> PieceMapStandard { get; set; }
         
         public static Ruleset Standard { get; private set; }
         public static Ruleset Speed { get; private set; }
+
         #endregion
                 
         /// <summary>
@@ -157,19 +175,31 @@ namespace Damath
         /// Create a ruleset given a ruleset type.
         /// </summary>
         /// <returns> A ruleset object. </returns>
-        public static Ruleset Create(RulesetType mode)
+        public static Ruleset Create(RulesetPreset preset)
         {
-            if (mode == RulesetType.Standard) return CreateStandard();
-            if (mode == RulesetType.Speed) return CreateSpeed();            
-            if (mode == RulesetType.Custom) return CreateCustom();
+            if (preset == RulesetPreset.Classic) return CreateStandard();
+            if (preset == RulesetPreset.ClassicRandom) return CreateClassicRandom();
+            if (preset == RulesetPreset.Speed) return CreateSpeed();            
+            if (preset == RulesetPreset.Custom) return CreateCustom();
             return null;
+        }
+
+        public static Ruleset CreateClassicRandom()
+        {
+            Ruleset ruleset = new()
+            {
+                Preset = RulesetPreset.ClassicRandom,
+                SymbolMapType = SymbolMapType.RandomSymmetrical
+            };
+
+            return ruleset;
         }
 
         public static Ruleset CreateStandard()
         {
             Ruleset ruleset = new()
             {
-                Type = RulesetType.Standard
+                Preset = RulesetPreset.Classic
             };
 
             ruleset.AddRule(0, "AllowCapture", true);
@@ -198,7 +228,7 @@ namespace Damath
         {
             Ruleset ruleset = new()
             {
-                Type = RulesetType.Speed
+                Preset = RulesetPreset.Speed
             };
 
             ruleset.AddRule(0, "AllowCapture", true);
@@ -226,7 +256,7 @@ namespace Damath
         public static Ruleset CreateCustom()
         {
             Ruleset ruleset = CreateStandard();
-            ruleset.Type = RulesetType.Custom;
+            ruleset.Preset = RulesetPreset.Custom;
 
             return ruleset;
         }
@@ -282,7 +312,7 @@ namespace Damath
 
         public int GetRulesetType()
         {
-            return (int) Type;
+            return (int) Preset;
         }
 
         // public new string ToString()

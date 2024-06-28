@@ -1,8 +1,8 @@
 using UnityEngine;
-using Damath.UI;
-using Damath.Players;
+using Aritche.UI;
+using Aritche.Players;
 
-namespace Damath
+namespace Aritche
 {
     public class Selector : MonoBehaviour
     {

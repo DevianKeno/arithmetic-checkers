@@ -1,6 +1,6 @@
 using System;
 
-namespace Damath.Systems.Configuration
+namespace Aritche.Systems.Configuration
 {
     [Serializable]
     public class EOSConfig

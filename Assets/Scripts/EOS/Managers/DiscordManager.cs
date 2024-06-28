@@ -13,7 +13,7 @@ using UnityEngine;
 
 using JsonUtility = PlayEveryWare.EpicOnlineServices.Utility.JsonUtility;
 
-namespace Damath.EOS.Managers
+namespace Aritche.EOS.Managers
 {
     [DisallowMultipleComponent]
     public class DiscordManager : MonoBehaviour

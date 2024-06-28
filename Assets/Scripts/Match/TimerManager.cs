@@ -1,9 +1,12 @@
 using System;
-using TMPro;
+
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
-namespace Damath
+using Aritche.Rules;
+
+namespace Aritche
 {
     public class TimerManager : MonoBehaviour
     {
@@ -111,6 +114,20 @@ namespace Damath
                 orangeChipImage.CrossFadeAlpha(1f, FadeDuration, IgnoreTimeScale);
                 orangeChipText.CrossFadeAlpha(1f, FadeDuration, IgnoreTimeScale);
             }
+        }
+        
+        public void PauseAll()
+        {
+            globalTimer.Pause();
+            blueTimer.Pause();
+            orangeTimer.Pause();
+        }
+
+        public void ResumeAll()
+        {
+            globalTimer.Resume();
+            blueTimer.Resume();
+            orangeTimer.Resume();
         }
 
         // public Timer CreateTimer(float startingTimeInSeconds, string name="New Timer", TextMeshProUGUI textComponent=null)

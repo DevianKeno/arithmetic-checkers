@@ -5,10 +5,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-using Damath.Systems;
-using Damath.Players;
+using Aritche.Systems;
+using Aritche.Rules;
+using Aritche.Players;
 
-namespace Damath
+namespace Aritche
 {
     public enum MatchConclusion
     {

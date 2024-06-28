@@ -8,7 +8,7 @@ namespace Aritche
     {
         void Start()
         {
-            Game.Main.LoadScene("Splash");
+            Game.Main.LoadScene("Splash", playTransition: true);
         }
     }
 }

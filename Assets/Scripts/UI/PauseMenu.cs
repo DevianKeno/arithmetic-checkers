@@ -53,8 +53,8 @@ namespace Aritche.UI
         }
         void OnForfeitClick()
         {
-            throw new NotImplementedException();
+            Destroy();
+            Game.Main.LoadScene("Title");
         }
-
     }
 }

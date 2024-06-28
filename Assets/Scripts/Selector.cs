@@ -42,12 +42,12 @@ namespace Aritche
         
         public void Show()
         {
-            spriteRenderer.enabled = true;
+            gameObject.SetActive(true);
         }
 
         public void Hide()
         {
-            spriteRenderer.enabled = false;
+            gameObject.SetActive(false);
         }
 
         public void Hide(Piece piece)

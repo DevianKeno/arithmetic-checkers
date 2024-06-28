@@ -22,7 +22,6 @@ namespace Aritche.EOS
         [Header("UI Elements")]
         [SerializeField] UI.Button signInBtn;
         [SerializeField] UI.Button signOutBtn;
-        [SerializeField] UI.Button closeBtn;
         [SerializeField] TextMeshProUGUI usernameTMP;
         [SerializeField] TextMeshProUGUI greetingTMP;
         [SerializeField] LoadingIconAnimation loadingIcon;
@@ -31,7 +30,6 @@ namespace Aritche.EOS
         {
             signInBtn.onClick.AddListener(OnSignInClick);
             signOutBtn.onClick.AddListener(OnSignOutClick);
-            closeBtn.onClick.AddListener(OnCloseClick);
         }
 
         void Start()
@@ -318,11 +316,5 @@ namespace Aritche.EOS
             usernameTMP.text = info.DisplayName;
             greetingTMP.gameObject.SetActive(true);
         }
-        
-        void OnCloseClick()
-        {
-            SetUIForLogin();
-        }
-
     }
 }

@@ -38,7 +38,13 @@ namespace Aritche
 
         public bool IsAlive { get; private set; }
         public bool IsPaused { get; private set; }
-        public bool IsOnline { get; private set; }
+        public bool IsOnline
+        {
+            get
+            {
+                return EOSManager.Instance.GetEOSPlatformInterface() != null;
+            }
+        }
         public bool IsHosting { get; private set; }
         public bool IsPlaying { get; private set; }
         public bool HasRuleset { get; private set; }
@@ -126,30 +132,55 @@ namespace Aritche
             IsPaused = value;
         }
 
-        public void LoadScene(string sceneName, bool playTransition = false, float delayInSeconds = 0f)
+
+        event Action OnLoadSceneCompleted;
+
+        public void LoadScene(string sceneName, bool playTransition = true, float delayInSeconds = 0f, Action OnLoadSceneCompletedCallback = null)
         {
             try
             {
-                if (playTransition)
-                {
-                    // Play transition
-                    // UI.PlayTransition();
-                    StartCoroutine(Load(sceneName, delayInSeconds));
-                } else
-                {
-                    SceneManager.LoadScene(sceneName);
-                }
-            } catch (NullReferenceException e)
+                OnLoadSceneCompleted += OnLoadSceneCompletedCallback;
+                StartCoroutine(Load(sceneName, playTransition, Game.UI.TransitionOptions.AnimationSpeed / 2f));
+            }
+            catch (NullReferenceException e)
             {
-                Debug.Log("Scene does not exist" + e);
+                Debug.LogError($"Scene does not exist" + e);
             }
         }
 
-        IEnumerator Load(string scene, float delayInSeconds)
+        void Update()
         {
-            yield return new WaitForSeconds(delayInSeconds);
-            SceneManager.LoadScene(scene);
-            // CurrentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            if (asyncOp != null)
+            {
+                var progress = asyncOp.progress * 100f;
+                Debug.Log($"LOADING: {progress}%");
+            }
+        }
+
+        AsyncOperation asyncOp = null;
+
+        IEnumerator Load(string scene, bool playTransition, float delayInSeconds)
+        {
+            var asyncOp = SceneManager.LoadSceneAsync(scene);
+            asyncOp.allowSceneActivation = false;
+
+            while (asyncOp.progress < 0.9f)
+            {
+                yield return null;
+            }
+
+            if (playTransition)
+            {
+                Game.UI.PlayTransitionHalf(() =>
+                {
+                    asyncOp.allowSceneActivation = true;
+                    Game.UI.PlayTransitionEnd(() =>
+                    {
+                        OnLoadSceneCompleted?.Invoke();
+                        OnLoadSceneCompleted = null;
+                    });
+                });
+            }
         }
 
         void CacheRuleset(Ruleset ruleset)

@@ -55,7 +55,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   border: {fileID: 3964859726411652660}
   backBtn: {fileID: 842118048430761423}
-  optionsBtn: {fileID: 0}
+  optionsBtn: {fileID: 6344178327539690052}
   drawBtn: {fileID: 2274264648407765528}
   forfeitBtn: {fileID: 5998341305200123531}
 --- !u!1 &5571360319152901834
@@ -672,6 +672,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7610968387121975239, guid: 8b374f5abc5646d41ab741f3592f92e2, type: 3}
   m_PrefabInstance: {fileID: 3572651925063856463}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6344178327539690052 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7610968386318097163, guid: 8b374f5abc5646d41ab741f3592f92e2, type: 3}
+  m_PrefabInstance: {fileID: 3572651925063856463}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d80807a58673cd941a601e267d1524a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4224927094359344512
 PrefabInstance:
   m_ObjectHideFlags: 0

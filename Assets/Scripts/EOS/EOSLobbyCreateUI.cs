@@ -26,6 +26,11 @@ namespace Aritche.EOS
             createLobbyBtn.onClick.AddListener(CreateLobby);
         }
 
+        void Start()
+        {
+            createLobbyBtn.interactable = true;
+        }
+
         public void SetSelectedRulesetPreset(string value)
         {
             selectedRulesetPreset = value switch
@@ -97,31 +102,41 @@ namespace Aritche.EOS
 
         public void CreateLobby()
         {
-            var loginStatus = Game.EOS.GetEOSAuthInterface().GetLoginStatus(Game.EOS.GetLocalUserId());
-
-            if (loginStatus == LoginStatus.NotLoggedIn)
+            if (Game.Main.IsOnline) /// Network
             {
+                var loginStatus = Game.EOS.GetEOSAuthInterface().GetLoginStatus(Game.EOS.GetLocalUserId());
+
+                if (loginStatus == LoginStatus.NotLoggedIn)
+                {
+                    cachedRuleset = Ruleset.CreateFromPreset(selectedRulesetPreset);
+                    Game.Main.CreateMatch(cachedRuleset);
+                    Game.Main.LoadScene("Match", playTransition: true, 3f);
+                }
+                else if (loginStatus == LoginStatus.LoggedIn)
+                {
+                    ProductUserId currentUserProductId = Game.EOS.GetProductUserId();
+                    if (!currentUserProductId.IsValid())
+                    {
+                        Debug.LogError("Lobbies (CreateLobby): Current player is invalid!");
+                        return;
+                    }
+
+                    Game.UI.Dim(0.25f);
+                    creatingLobbyWindow = Game.UI.Create("creating_lobby_window") as Window;
+                    Game.EOSManagers.Lobbies.CreateLobby(CreateLobbyProperties(), OnCreateLobbyCompleted);
+                }
+                else if (loginStatus == LoginStatus.UsingLocalProfile)
+                {
+                    Game.Console.Log($"Unhandled login status." + loginStatus);
+                    Debug.LogError($"Unhandled login status." + loginStatus);
+                }
+            }
+            else
+            {
+                createLobbyBtn.interactable = false;
                 cachedRuleset = Ruleset.CreateFromPreset(selectedRulesetPreset);
                 Game.Main.CreateMatch(cachedRuleset);
-                Game.Main.LoadScene("Match", playTransition: true);
-            }
-            else if (loginStatus == LoginStatus.LoggedIn)
-            {
-                ProductUserId currentUserProductId = Game.EOS.GetProductUserId();
-                if (!currentUserProductId.IsValid())
-                {
-                    Debug.LogError("Lobbies (CreateLobby): Current player is invalid!");
-                    return;
-                }
-
-                Game.UI.Dim(0.25f);
-                creatingLobbyWindow = Game.UI.Create("creating_lobby_window") as Window;
-                Game.EOSManagers.Lobbies.CreateLobby(CreateLobbyProperties(), OnCreateLobbyCompleted);
-            }
-            else if (loginStatus == LoginStatus.UsingLocalProfile)
-            {
-                Game.Console.Log($"Unhandled login status." + loginStatus);
-                Debug.LogError($"Unhandled login status." + loginStatus);
+                Game.Main.LoadScene("Match", playTransition: true, 3f);
             }
         }
 

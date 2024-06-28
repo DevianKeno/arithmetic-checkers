@@ -221,7 +221,7 @@ namespace Aritche.Systems
         
         void Command_Leave(List<string> args)
         {
-            Game.Main.LoadScene("Title");
+            Game.Main.LoadScene("Title", playTransition: true);
         }
 
         void Command_Lobby(List<string> args)

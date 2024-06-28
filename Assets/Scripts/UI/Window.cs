@@ -57,10 +57,10 @@ namespace Aritche.UI
             OnClose?.Invoke();
         }
 
-        public void Destroy()
+        public void Destroy(float delay = 0f)
         {
             Hide();
-            Destroy(gameObject);
+            Destroy(gameObject, delay);
         }
 
         public void ToggleVisibility()

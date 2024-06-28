@@ -4,9 +4,19 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Aritche.UI;
+using UnityEngine.SceneManagement;
 
 namespace Aritche.Systems
 {
+    [Serializable]
+    public class TransitionOptions
+    {
+        public LeanTweenType Tween = LeanTweenType.easeInOutQuart;
+        public float AnimationSpeed = 1.5f;
+        public float Delay = 0.25f;
+        public float Multiplier = 1.2f;
+    }
+
     public class UIManager : MonoBehaviour
     {
         [Serializable]
@@ -24,11 +34,14 @@ namespace Aritche.Systems
         }
         
         public Canvas Canvas { get; private set; }
+        public TransitionOptions TransitionOptions = new();
         public Vector2 TooltipOffset = new(0.2f, 0.3f);
+
         Dictionary<string, Sprite> _iconsDict = new();
         Dictionary<string, IUIElement> windows = new();
-        
+
         [SerializeField] Image dim;
+        [SerializeField] Canvas transitionCanvas;
 
         [Header("UI Prefabs")]
         public List<PrefabId> Prefabs;
@@ -67,9 +80,19 @@ namespace Aritche.Systems
             
         }
 
-        public void PlayTransition()
+        TransitionEffect transitionEffect;
+
+        public void PlayTransitionHalf(Action callback = null)
         {
-            //
+            transitionEffect = Create<TransitionEffect>("transition");
+            transitionEffect.transform.SetParent(transitionCanvas.transform);
+            transitionEffect.SetOptions(TransitionOptions);
+            transitionEffect.PlayToHalf(callback);
+        }
+
+        public void PlayTransitionEnd(Action callback = null)
+        {
+            transitionEffect.PlayToEnd(callback);
         }
 
         public void AddIcon(string id, Sprite sprite)

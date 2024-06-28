@@ -22,13 +22,14 @@ namespace Aritche.UI
         
         public event Action OnSignInBtnClick;
 
+        [Header("UI Elements")]
         [SerializeField] Dropdown loginTypeDropdown;
         [SerializeField] GameObject login;
         [SerializeField] GameObject loading;
-
         [SerializeField] TMP_InputField usernameField;
         [SerializeField] TMP_InputField passwordField;
         [SerializeField] Button loginBtn;
+        [SerializeField] UI.Button closeBtn;
 
         void Start()
         {

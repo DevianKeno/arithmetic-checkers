@@ -23,6 +23,12 @@ namespace Aritche.UI
         void Start()
         {
             CurrentFrame ??= GetComponentInChildren<Frame>();
+
+            inactive.SetActive(true);
+            foreach (Transform c in inactive.transform)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(c as RectTransform);
+            }
             inactive.SetActive(false);
         }
 
@@ -35,7 +41,7 @@ namespace Aritche.UI
 
             if (CurrentFrame != null)
             {
-                if (CurrentFrame.Name == name) return;
+                if (CurrentFrame.Name == name) return; /// Same frame to switch to
                 if (_isTransitioning) return;
                 _isTransitioning = true;
 
@@ -53,9 +59,8 @@ namespace Aritche.UI
                     });
 
                     /// Move new frame into view
-                    frame.gameObject.SetActive(true);
-                    LayoutRebuilder.ForceRebuildLayoutImmediate(frame.transform as RectTransform);
                     frame.transform.SetParent(transform);
+                    frame.gameObject.SetActive(true);
                     LeanTween.move(frame.rect, Vector2.zero, Game.Main.Settings.AnimationFactor)
                     .setEase(TweenType)
                     .setOnComplete(() =>
@@ -63,15 +68,18 @@ namespace Aritche.UI
                         CurrentFrame = frame;
                         _isTransitioning = false;
                     });
-                } else
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(frame.transform as RectTransform);
+                }
+                else
                 {
                     CurrentFrame.transform.SetParent(inactive.transform);
                     CurrentFrame.rect.anchoredPosition = Vector2.zero;
                     CurrentFrame.gameObject.SetActive(false);
 
-                    frame.gameObject.SetActive(true);
                     frame.transform.SetParent(transform);
+                    frame.gameObject.SetActive(true);
                     frame.rect.anchoredPosition = Vector2.zero;
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(frame.transform as RectTransform);
                     
                     CurrentFrame = frame;
                 }

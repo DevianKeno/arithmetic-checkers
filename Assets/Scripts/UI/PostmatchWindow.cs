@@ -51,13 +51,13 @@ namespace Aritche.UI
         void OnRematch()
         {
             Destroy();
-            Game.Main.LoadScene("Title", true);
+            Game.Main.LoadScene("Title", playTransition: true);
         }
 
         void OnTitle()
         {
             Destroy();
-            Game.Main.LoadScene("Title", true);
+            Game.Main.LoadScene("Title", playTransition: true);
         }
 
         public override void OnShow()

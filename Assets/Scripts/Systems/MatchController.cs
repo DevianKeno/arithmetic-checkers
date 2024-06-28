@@ -63,19 +63,27 @@ namespace Aritche.Systems
             InitializeTimers();
             InitializeEvents();
         
-            var loginStatus = Game.EOS.GetEOSAuthInterface().GetLoginStatus(Game.EOS.GetLocalUserId());
-            if (loginStatus == LoginStatus.NotLoggedIn)
+            if (Game.Main.IsOnline)
+            {
+                var loginStatus = Game.EOS.GetEOSAuthInterface().GetLoginStatus(Game.EOS.GetLocalUserId());
+
+                if (loginStatus == LoginStatus.NotLoggedIn)
+                {
+                    SetupLocalMatch();
+                }
+                else if (loginStatus == LoginStatus.LoggedIn)
+                {
+                    SetupOnlineMatch();
+                }
+                else if (loginStatus == LoginStatus.UsingLocalProfile)
+                {
+                    Game.Console.Log($"Unhandled login status." + loginStatus);
+                    Debug.LogError($"Unhandled login status." + loginStatus);
+                }
+            }
+            else
             {
                 SetupLocalMatch();
-            }
-            else if (loginStatus == LoginStatus.LoggedIn)
-            {
-                SetupOnlineMatch();
-            }
-            else if (loginStatus == LoginStatus.UsingLocalProfile)
-            {
-                Game.Console.Log($"Unhandled login status." + loginStatus);
-                Debug.LogError($"Unhandled login status." + loginStatus);
             }
 
             Game.Main.SetMatch(this);

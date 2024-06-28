@@ -71,9 +71,9 @@ namespace Aritche.EOS
                 {
                     Ruleset ruleset = attr.AsString switch
                     {
-                        "Standard" => Ruleset.Create(RulesetPreset.Classic),
-                        "Speed" => Ruleset.Create(RulesetPreset.Speed),
-                        "Custom" => Ruleset.Create(RulesetPreset.Custom),
+                        "Standard" => Ruleset.CreateFromPreset(RulesetPreset.Classic),
+                        "Speed" => Ruleset.CreateFromPreset(RulesetPreset.Speed),
+                        "Custom" => Ruleset.CreateFromPreset(RulesetPreset.Custom),
                     };
                     Game.Main.CreateMatch(ruleset);
                     Game.Main.LoadScene("Match", playTransition: true);

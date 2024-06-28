@@ -144,9 +144,9 @@ namespace Aritche
                     // Cell initialization
                     newCell.SetColRow(col, row);
 
-                    if (Ruleset.SymbolMap.ContainsKey(coords))
+                    if (Ruleset.SymbolMap.ContainsKey((coords.x, coords.y)))
                     {
-                        newCell.SetOperation(Ruleset.SymbolMap[coords]);
+                        newCell.SetOperation(Ruleset.SymbolMap[(coords.x, coords.y)]);
                     }
 
                     _cells.Add(newCell);
@@ -164,7 +164,7 @@ namespace Aritche
         {
             foreach (var entry in Ruleset.PieceMap)
             {
-                Vector2Int coords = entry.Key;
+                Vector2Int coords = new(entry.Key.Item1, entry.Key.Item2);
                 PieceData pieceData = entry.Value;
                 Cell cell = GetCell(coords);    
 

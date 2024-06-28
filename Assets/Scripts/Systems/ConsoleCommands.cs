@@ -251,10 +251,18 @@ namespace Aritche.Systems
                     {
                         RulesetPreset ruleset = args[2] switch
                         {
-                            "classic" or "1" => RulesetPreset.Classic,
-                            "speed" or "2" => RulesetPreset.Speed,
-                            // "custom" or "3" => RulesetPreset.Custom,
-                            _ => throw new Exception()
+                            "classic" or "1"
+                                => RulesetPreset.Classic,
+                            "classicrandom" or "cr" or "2"
+                                => RulesetPreset.ClassicRandom,
+                            "speed" or "3"
+                                => RulesetPreset.Speed,
+                            "100" or "full" or "4"
+                                => RulesetPreset.HundredPercent,
+                            "custom" or "0"
+                                => RulesetPreset.Custom,
+                            _
+                                => throw new Exception()
                         };
 
                         Game.Main.CreateMatch(ruleset);
@@ -347,7 +355,7 @@ namespace Aritche.Systems
 
         void Command_Sandbox(List<string> args)
         {
-            var ruleset = Ruleset.Create(RulesetPreset.Classic);
+            var ruleset = Ruleset.CreateFromPreset(RulesetPreset.Classic);
             ruleset.SetRule("EnableCheats", true);
             Game.Main.CreateMatch(ruleset);
             Game.Main.LoadScene("Match", playTransition: true);

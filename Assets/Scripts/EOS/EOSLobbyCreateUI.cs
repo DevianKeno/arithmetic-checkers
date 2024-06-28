@@ -16,7 +16,7 @@ namespace Aritche.EOS
         public LobbyPermissionLevel lobbyPermissionLevel;
 
         Ruleset cachedRuleset;
-        RulesetPreset selectedRulesetType;
+        RulesetPreset selectedRulesetPreset;
         Window creatingLobbyWindow;
 
         [SerializeField] Button createLobbyBtn;
@@ -26,37 +26,26 @@ namespace Aritche.EOS
             createLobbyBtn.onClick.AddListener(CreateLobby);
         }
 
-        public Ruleset CreateRuleset()
+        public void SetSelectedRulesetPreset(string value)
         {
-            var ruleset = selectedRulesetType switch
-            {
-                RulesetPreset.Classic => Ruleset.CreateStandard(),
-                RulesetPreset.ClassicRandom => Ruleset.CreateClassicRandom(),
-                RulesetPreset.Speed => Ruleset.CreateSpeed(),
-                RulesetPreset.Custom => Ruleset.CreateCustom()
-            };
-            return ruleset;
-        }
-
-        public void SetSelectedRulesetType(string type)
-        {
-            /// Lmao all standard hshuhuw
-            selectedRulesetType = type switch
+            selectedRulesetPreset = value switch
             {
                 "classic" => RulesetPreset.Classic,
-                "classic_random" => RulesetPreset.ClassicRandom,
+                "random" => RulesetPreset.ClassicRandom,
                 "speed" => RulesetPreset.Speed,
+                "100" => RulesetPreset.HundredPercent,
                 "custom" => RulesetPreset.Custom,
             };
         }
 
         public Lobby CreateLobbyProperties()
         {
-            cachedRuleset = CreateRuleset();
+            cachedRuleset = Ruleset.CreateFromPreset(selectedRulesetPreset);
             if (cachedRuleset == null)
             {
                 Game.Console.Log("Error creating lobby, no ruleset specified.");
                 Debug.LogError("Error creating lobby, no ruleset specified.");
+                return null;
             }
 
             /// The top-level, game-specific filtering information for session searches.
@@ -112,7 +101,7 @@ namespace Aritche.EOS
 
             if (loginStatus == LoginStatus.NotLoggedIn)
             {
-                cachedRuleset = CreateRuleset();
+                cachedRuleset = Ruleset.CreateFromPreset(selectedRulesetPreset);
                 Game.Main.CreateMatch(cachedRuleset);
                 Game.Main.LoadScene("Match", playTransition: true);
             }

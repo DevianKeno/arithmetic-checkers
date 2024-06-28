@@ -168,7 +168,7 @@ namespace Aritche
         /// </summary>
         public void HostMatch(RulesetPreset preset)
         {
-            CacheRuleset(Ruleset.Create(preset));
+            CacheRuleset(Ruleset.CreateFromPreset(preset));
 
             // Network.Main.StartHost();
         }
@@ -207,7 +207,7 @@ namespace Aritche
         /// </summary>
         public void CreateMatch(RulesetPreset mode)
         {
-            CacheRuleset(Ruleset.Create(mode));
+            CacheRuleset(Ruleset.CreateFromPreset(mode));
         }
         
         /// <summary>

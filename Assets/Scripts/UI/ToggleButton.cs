@@ -9,7 +9,7 @@ namespace Aritche.UI
         public bool IsHovered { get; set; }
         public event Action<PointerEventData> OnStartHover;
         public event Action<PointerEventData> OnEndHover;
-
+        
         protected override void Awake()
         {
             onValueChanged.AddListener(ToggleColor);

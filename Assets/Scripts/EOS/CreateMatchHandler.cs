@@ -1,52 +1,140 @@
 using System;
+
 using UnityEngine;
-using Aritche.UI;
+using UnityEngine.UI;
 
 using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 
-using Aritche.EOS.Lobbies;
 using Aritche.Rules;
+using Aritche.UI;
+using Aritche.EOS.Lobbies;
 
 namespace Aritche.EOS
 {
-    public class EOSLobbyCreateUI : MonoBehaviour
+    public class CreateMatchHandler : MonoBehaviour
     {
         public uint MaxPlayers = 2;
         public LobbyPermissionLevel lobbyPermissionLevel;
 
-        Ruleset cachedRuleset;
+        Ruleset ruleset;
         RulesetPreset selectedRulesetPreset;
         Window creatingLobbyWindow;
+        CustomMatchHandler customMatchHandler;
 
-        [SerializeField] Button createLobbyBtn;
+        [Header("UI Elements")]
+        [SerializeField] FrameController firstFrameController;
+        [SerializeField] UI.Button createLobbyBtn;
+        
+        [Header("Button Groups")]
+        [SerializeField] ToggleGroup rulePresetBtnGrp;
         
         void Awake()
         {
+            customMatchHandler = GetComponent<CustomMatchHandler>();
             createLobbyBtn.onClick.AddListener(CreateLobby);
         }
 
         void Start()
         {
             createLobbyBtn.interactable = true;
+            ruleset = new();
+
+            /// UnityToggles execute events twice, when setting it to true and to false
+            /// I want to execute an event only when true, and still use it in the inspector
+            /// This is my third option on implementing this
+            /// I can definitely make my own UI elements but I have no time right now
+            InitializeRulesetPresetButtons();
         }
 
-        public void SetSelectedRulesetPreset(string value)
+        void InitializeRulesetPresetButtons()
         {
-            selectedRulesetPreset = value switch
+            /// Classic
+            rulePresetBtnGrp.transform.GetChild(0).GetComponent<UnityEngine.UI.Toggle>().onValueChanged.AddListener((value) =>
             {
-                "classic" => RulesetPreset.Classic,
-                "random" => RulesetPreset.ClassicRandom,
-                "speed" => RulesetPreset.Speed,
-                "100" => RulesetPreset.HundredPercent,
-                "custom" => RulesetPreset.Custom,
-            };
+                if (value)
+                {
+                    ruleset = Ruleset.CreateFromPreset(RulesetPreset.Classic);
+                    Debug.Log($"Set current match ruleset to {RulesetPreset.Classic}");
+                }
+            });
+            /// Classic Random
+            rulePresetBtnGrp.transform.GetChild(1).GetComponent<UnityEngine.UI.Toggle>().onValueChanged.AddListener((value) =>
+            {
+                if (value)
+                {
+                    ruleset = Ruleset.CreateFromPreset(RulesetPreset.ClassicRandom);
+                    Debug.Log($"Set current match ruleset to {RulesetPreset.ClassicRandom}");
+                }
+            });
+            /// Speed
+            rulePresetBtnGrp.transform.GetChild(2).GetComponent<UnityEngine.UI.Toggle>().onValueChanged.AddListener((value) =>
+            {
+                if (value)
+                {
+                    ruleset = Ruleset.CreateFromPreset(RulesetPreset.Speed);
+                    Debug.Log($"Set current match ruleset to {RulesetPreset.Speed}");
+                }
+            });
+            /// 100%
+            rulePresetBtnGrp.transform.GetChild(3).GetComponent<UnityEngine.UI.Toggle>().onValueChanged.AddListener((value) =>
+            {
+                if (value)
+                {
+                    ruleset = Ruleset.CreateFromPreset(RulesetPreset.HundredPercent);
+                    Debug.Log($"Set current match ruleset to {RulesetPreset.HundredPercent}");
+                }
+            });
+            /// Custom
+            rulePresetBtnGrp.transform.GetChild(4).GetComponent<UnityEngine.UI.Toggle>().onValueChanged.AddListener((value) =>
+            {
+                if (value)
+                {
+                    ruleset = Ruleset.CreateFromPreset(RulesetPreset.Custom);
+                    firstFrameController.SwitchToFrame("Custom");
+                    Debug.Log($"Set current match ruleset to {RulesetPreset.Custom}");
+                }
+            });
         }
+
+        // public void SetSelectedRulesetPreset(string value)
+        // {
+        //     selectedRulesetPreset = value switch
+        //     {
+        //         "classic" => RulesetPreset.Classic,
+        //         "random" => RulesetPreset.ClassicRandom,
+        //         "speed" => RulesetPreset.Speed,
+        //         "100" => RulesetPreset.HundredPercent,
+        //         "custom" => RulesetPreset.Custom,
+        //     };
+
+        //     if (value != "custom")
+        //     {
+        //         var preset = value switch
+        //         {
+        //             "classic" => RulesetPreset.Classic,
+        //             "random" => RulesetPreset.ClassicRandom,
+        //             "speed" => RulesetPreset.Speed,
+        //             "100" => RulesetPreset.HundredPercent
+        //         };
+
+        //         ruleset = Ruleset.CreateFromPreset(preset);
+        //     }
+        //     else
+        //     {
+        //         ruleset = new();
+        //     }
+        //     Debug.Log($"Set current match ruleset to {RulesetPreset.Classic}");
+        // }
 
         public Lobby CreateLobbyProperties()
         {
-            cachedRuleset = Ruleset.CreateFromPreset(selectedRulesetPreset);
-            if (cachedRuleset == null)
+            if (selectedRulesetPreset == RulesetPreset.Custom)
+            {
+                ruleset = customMatchHandler.GetCachedCustomRuleset();
+            }
+
+            if (ruleset == null)
             {
                 Game.Console.Log("Error creating lobby, no ruleset specified.");
                 Debug.LogError("Error creating lobby, no ruleset specified.");
@@ -56,7 +144,7 @@ namespace Aritche.EOS
             /// The top-level, game-specific filtering information for session searches.
             /// This criteria should be set with mostly static, coarse settings,
             /// often formatted like "GameMode:Region:MapName".
-            string rulesetType = cachedRuleset.Preset.ToString();
+            string rulesetType = ruleset.Preset.ToString();
             string region = "ASIA";
             string bucketId = $"{rulesetType}:{region}";
 
@@ -108,8 +196,8 @@ namespace Aritche.EOS
 
                 if (loginStatus == LoginStatus.NotLoggedIn)
                 {
-                    cachedRuleset = Ruleset.CreateFromPreset(selectedRulesetPreset);
-                    Game.Main.CreateMatch(cachedRuleset);
+                    ruleset = Ruleset.CreateFromPreset(selectedRulesetPreset);
+                    Game.Main.CreateMatch(ruleset);
                     Game.Main.LoadScene("Match", playTransition: true, 3f);
                 }
                 else if (loginStatus == LoginStatus.LoggedIn)
@@ -134,8 +222,7 @@ namespace Aritche.EOS
             else
             {
                 createLobbyBtn.interactable = false;
-                cachedRuleset = Ruleset.CreateFromPreset(selectedRulesetPreset);
-                Game.Main.CreateMatch(cachedRuleset);
+                Game.Main.CreateMatch(ruleset);
                 Game.Main.LoadScene("Match", playTransition: true, 3f);
             }
         }
@@ -160,7 +247,7 @@ namespace Aritche.EOS
             if (result == Result.Success)
             {
                 Game.UI.Undim(0.25f);
-                Game.Main.CreateMatch(cachedRuleset);
+                Game.Main.CreateMatch(ruleset);
                 Game.Main.LoadScene("Match", playTransition: true);
             } else
             {

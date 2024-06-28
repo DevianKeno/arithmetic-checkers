@@ -8,12 +8,11 @@ namespace Aritche.UI
 {
     public class FrameController : MonoBehaviour
     {
+        [field: SerializeField] public bool IsTransitioning { get; private set; }
         [field: SerializeField] public Frame CurrentFrame { get; set; }
         public List<Frame> Frames = new();
         public LeanTweenType TweenType = LeanTweenType.easeOutExpo;
 
-        bool _isTransitioning = false;
-        
         [SerializeField] GameObject inactive;
 
 #region Editor
@@ -42,8 +41,8 @@ namespace Aritche.UI
             if (CurrentFrame != null)
             {
                 if (CurrentFrame.Name == name) return; /// Same frame to switch to
-                if (_isTransitioning) return;
-                _isTransitioning = true;
+                if (IsTransitioning) return;
+                IsTransitioning = true;
 
                 if (Game.Main.Settings.EnableAnimations)
                 {
@@ -66,7 +65,7 @@ namespace Aritche.UI
                     .setOnComplete(() =>
                     {
                         CurrentFrame = frame;
-                        _isTransitioning = false;
+                        IsTransitioning = false;
                     });
                     LayoutRebuilder.ForceRebuildLayoutImmediate(frame.transform as RectTransform);
                 }

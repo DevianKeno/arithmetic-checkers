@@ -51,6 +51,7 @@ namespace Aritche.UI
         {
             throw new NotImplementedException();
         }
+
         void OnForfeitClick()
         {
             Destroy();

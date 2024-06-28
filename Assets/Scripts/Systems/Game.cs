@@ -74,8 +74,9 @@ namespace Aritche
 
             if (Main != null && Main != this)
             {
-                Destroy(this);
-            } else
+                Destroy(gameObject);
+            }
+            else
             {
                 Main = this;
                 Lang = GetComponentInChildren<Lang>();

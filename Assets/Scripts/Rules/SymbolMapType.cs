@@ -5,8 +5,8 @@ namespace Aritche.Rules
     /// </summary>
     public enum SymbolMapType {
         Standard,
-        RandomSymmetrical,
         Random,
+        TrueRandom,
         Custom
     }
 }

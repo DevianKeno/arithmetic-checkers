@@ -21,22 +21,19 @@ namespace Aritche.UI
 
         void Start()
         {
+            (inactive.transform as RectTransform).anchoredPosition = new(0, 1080f);
             CurrentFrame ??= GetComponentInChildren<Frame>();
 
-            inactive.SetActive(true);
             foreach (Transform c in inactive.transform)
             {
                 LayoutRebuilder.ForceRebuildLayoutImmediate(c as RectTransform);
             }
-            inactive.SetActive(false);
         }
 
         public void SwitchToFrame(string name)
         {
             Frame frame = GetFrame(name);
             if (frame == null) return;
-
-            inactive.SetActive(false);
 
             if (CurrentFrame != null)
             {
@@ -54,10 +51,10 @@ namespace Aritche.UI
                     {
                         CurrentFrame.transform.SetParent(inactive.transform);
                         CurrentFrame.rect.anchoredPosition = Vector2.zero;
-                        CurrentFrame.gameObject.SetActive(false);
                     });
 
                     /// Move new frame into view
+                    frame.rect.anchoredPosition = new(1670f, -1080f);
                     frame.transform.SetParent(transform);
                     frame.gameObject.SetActive(true);
                     LeanTween.move(frame.rect, Vector2.zero, Game.Main.Settings.AnimationFactor)
@@ -73,7 +70,6 @@ namespace Aritche.UI
                 {
                     CurrentFrame.transform.SetParent(inactive.transform);
                     CurrentFrame.rect.anchoredPosition = Vector2.zero;
-                    CurrentFrame.gameObject.SetActive(false);
 
                     frame.transform.SetParent(transform);
                     frame.gameObject.SetActive(true);
@@ -118,11 +114,9 @@ namespace Aritche.UI
             if (frame == null) return;
             if (CurrentFrame.Name == name) return;
 
-            inactive.SetActive(false);
             /// Hide current frame
             CurrentFrame.transform.SetParent(inactive.transform);
             CurrentFrame.rect.anchoredPosition = Vector2.zero;
-            CurrentFrame.gameObject.SetActive(false);
 
             /// Show new frame
             frame.gameObject.SetActive(true);

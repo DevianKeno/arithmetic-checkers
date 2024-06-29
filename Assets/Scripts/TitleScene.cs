@@ -9,7 +9,7 @@ namespace Aritche
 
         void Start()
         {
-            mainFrame.SwitchToFrame("Title");
+            mainFrame.SwitchFrameEditor("Title");
         }
     }
 }

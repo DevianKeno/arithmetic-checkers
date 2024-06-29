@@ -20,7 +20,7 @@ namespace Aritche.EOS
         Ruleset ruleset;
         RulesetPreset selectedRulesetPreset;
         Window creatingLobbyWindow;
-        CustomMatchHandler customMatchHandler;
+        [SerializeField] CustomMatchHandler customMatchHandler;
 
         [Header("UI Elements")]
         [SerializeField] FrameController firstFrameController;
@@ -31,7 +31,6 @@ namespace Aritche.EOS
         
         void Awake()
         {
-            customMatchHandler = GetComponent<CustomMatchHandler>();
             createLobbyBtn.onClick.AddListener(CreateLobby);
         }
 
@@ -49,50 +48,27 @@ namespace Aritche.EOS
 
         void InitializeRulesetPresetButtons()
         {
-            /// Classic
-            rulePresetBtnGrp.transform.GetChild(0).GetComponent<UnityEngine.UI.Toggle>().onValueChanged.AddListener((value) =>
+            for (int i = 0; i < rulePresetBtnGrp.transform.childCount; i++)
             {
-                if (value)
+                int btnIndex = i;
+                rulePresetBtnGrp.transform.GetChild(i).GetComponent<UnityEngine.UI.Toggle>().onValueChanged.AddListener((value) =>
                 {
-                    ruleset = Ruleset.CreateFromPreset(RulesetPreset.Classic);
-                    Debug.Log($"Set current match ruleset to {RulesetPreset.Classic}");
-                }
-            });
-            /// Classic Random
-            rulePresetBtnGrp.transform.GetChild(1).GetComponent<UnityEngine.UI.Toggle>().onValueChanged.AddListener((value) =>
-            {
-                if (value)
-                {
-                    ruleset = Ruleset.CreateFromPreset(RulesetPreset.ClassicRandom);
-                    Debug.Log($"Set current match ruleset to {RulesetPreset.ClassicRandom}");
-                }
-            });
-            /// Speed
-            rulePresetBtnGrp.transform.GetChild(2).GetComponent<UnityEngine.UI.Toggle>().onValueChanged.AddListener((value) =>
-            {
-                if (value)
-                {
-                    ruleset = Ruleset.CreateFromPreset(RulesetPreset.Speed);
-                    Debug.Log($"Set current match ruleset to {RulesetPreset.Speed}");
-                }
-            });
-            /// 100%
-            rulePresetBtnGrp.transform.GetChild(3).GetComponent<UnityEngine.UI.Toggle>().onValueChanged.AddListener((value) =>
-            {
-                if (value)
-                {
-                    ruleset = Ruleset.CreateFromPreset(RulesetPreset.HundredPercent);
-                    Debug.Log($"Set current match ruleset to {RulesetPreset.HundredPercent}");
-                }
-            });
+                    if (value)
+                    {
+                        var preset = (RulesetPreset) btnIndex;
+                        ruleset = Ruleset.CreateFromPreset(preset);
+                        customMatchHandler.SetFromPreset(preset);
+                        Debug.Log($"Set current match ruleset to {preset}");
+                    }
+                });
+            }
+
             /// Custom
             rulePresetBtnGrp.transform.GetChild(4).GetComponent<UnityEngine.UI.Toggle>().onValueChanged.AddListener((value) =>
             {
                 if (value)
                 {
-                    ruleset = Ruleset.CreateFromPreset(RulesetPreset.Custom);
                     firstFrameController.SwitchToFrame("Custom");
-                    Debug.Log($"Set current match ruleset to {RulesetPreset.Custom}");
                 }
             });
         }
@@ -196,7 +172,6 @@ namespace Aritche.EOS
 
                 if (loginStatus == LoginStatus.NotLoggedIn)
                 {
-                    ruleset = Ruleset.CreateFromPreset(selectedRulesetPreset);
                     Game.Main.CreateMatch(ruleset);
                     Game.Main.LoadScene("Match", playTransition: true, 3f);
                 }

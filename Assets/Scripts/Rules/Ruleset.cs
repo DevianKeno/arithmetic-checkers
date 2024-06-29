@@ -161,8 +161,8 @@ namespace Aritche.Rules
             {
                 Preset = RulesetPreset.ClassicRandom,
                 PieceValueType = PieceValueType.Integers,
-                PieceMapType = PieceMapType.RandomSymmetrical,
-                SymbolMapType = SymbolMapType.RandomSymmetrical,
+                PieceMapType = PieceMapType.Random,
+                SymbolMapType = SymbolMapType.Random,
             };
 
             ruleset.AddRule(0, "AllowCapture", true);

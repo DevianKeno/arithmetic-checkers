@@ -5,8 +5,8 @@ namespace Aritche.Rules
     /// </summary>
     public enum PieceMapType {
         Standard,
-        RandomSymmetrical,
         Random,
+        TrueRandom,
         Custom,
     }
 }

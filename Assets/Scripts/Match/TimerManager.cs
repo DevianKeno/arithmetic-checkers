@@ -57,14 +57,14 @@ namespace Aritche
 
             if (Ruleset.GetValue<bool>("EnableGlobalTimer"))
             {
-                globalTimer.SetTime(Ruleset.GetValue<float>("GlobalTimerSeconds"));
+                globalTimer.SetTime(Ruleset.GetValue<float>("GlobalTimeSeconds"));
                 globalTimer.SetFormat(TimerFormat.MM_SS);
                 globalTimer.Begin();
             }
             
             if (Ruleset.GetValue<bool>("EnableTurnTimer"))
             {
-                var turnTime = Ruleset.GetValue<float>("TurnTimerSeconds");
+                var turnTime = Ruleset.GetValue<float>("TurnTimeSeconds");
                 
                 blueTimer.SetTime(turnTime);
                 blueTimer.SetFormat(TimerFormat.SS);

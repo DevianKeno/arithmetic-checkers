@@ -2285,7 +2285,7 @@ RectTransform:
   - {fileID: 765402023}
   - {fileID: 469752371}
   - {fileID: 92121682}
-  - {fileID: 1881399381}
+  - {fileID: 852523141}
   m_Father: {fileID: 520711698}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -5153,7 +5153,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 173997820}
-  - {fileID: 852523141}
+  - {fileID: 1881399381}
   m_Father: {fileID: 1696962171}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -5174,7 +5174,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsTransitioning>k__BackingField: 0
-  <CurrentFrame>k__BackingField: {fileID: 852523142}
+  <CurrentFrame>k__BackingField: {fileID: 1881399382}
   Frames:
   - {fileID: 92121683}
   - {fileID: 1881399382}
@@ -5183,7 +5183,7 @@ MonoBehaviour:
   - {fileID: 765402024}
   TweenType: 18
   inactive: {fileID: 173997819}
-  switchTo: 2
+  switchTo: 1
 --- !u!1 &525346168
 GameObject:
   m_ObjectHideFlags: 0
@@ -7814,7 +7814,7 @@ RectTransform:
   - {fileID: 252303995}
   - {fileID: 1040278092}
   - {fileID: 1578310598}
-  m_Father: {fileID: 520711698}
+  m_Father: {fileID: 173997820}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -7848,6 +7848,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4978a5e34bce1349a55cd31853b09ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Ruleset:
+    _preset: 0
+    _pieceValueType: 0
+    _pieceMapType: 0
+    _symbolMapType: 0
   symbolMapEntry: {fileID: 1632403990}
   chipValuesEntry: {fileID: 1053999503}
   chipMapEntry: {fileID: 672572067}
@@ -10085,25 +10090,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '<color=white>Preset: <color=#24415E>Custom
-
-    <color=white>Symbol map:
-    <color=#24415E>Standard
-
-    <color=white>Piece values: <color=#24415E>Integers
-
-    <color=white>Piece
-    map: <color=#24415E>Standard
-
-    <color=white>Global time: <color=#24415E>1200
-    s
-
-    <color=white>Turn time: <color=#24415E>60 s
-
-    <color=white>Mandatory
-    captures: <color=#24415E>Yes
-
-'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0440a1a8057b0ff498802e048baa9ed9, type: 2}
   m_sharedMaterial: {fileID: 1213038441974500425, guid: 0440a1a8057b0ff498802e048baa9ed9, type: 2}
@@ -10218,7 +10205,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7610968386318097158, guid: 8b374f5abc5646d41ab741f3592f92e2, type: 3}
       propertyPath: m_Name
-      value: Create (Button)
+      value: Create custom (Button)
       objectReference: {fileID: 0}
     - target: {fileID: 7610968386318097160, guid: 8b374f5abc5646d41ab741f3592f92e2, type: 3}
       propertyPath: m_Spacing
@@ -10374,6 +10361,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7610968387121975239, guid: 8b374f5abc5646d41ab741f3592f92e2, type: 3}
   m_PrefabInstance: {fileID: 1040278091}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1040278096 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7610968386318097163, guid: 8b374f5abc5646d41ab741f3592f92e2, type: 3}
+  m_PrefabInstance: {fileID: 1040278091}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d80807a58673cd941a601e267d1524a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1042341894
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18227,7 +18225,7 @@ RectTransform:
   - {fileID: 1272107713}
   - {fileID: 1932917319}
   - {fileID: 30051796}
-  m_Father: {fileID: 173997820}
+  m_Father: {fileID: 520711698}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -18265,8 +18263,9 @@ MonoBehaviour:
   lobbyPermissionLevel: 0
   customMatchHandler: {fileID: 852523143}
   firstFrameController: {fileID: 520711699}
+  rulesetInfoTMP: {fileID: 1023441545}
   createLobbyBtn: {fileID: 2091667923}
-  createCustomBtn: {fileID: 0}
+  createCustomBtn: {fileID: 1040278096}
   rulePresetBtnGrp: {fileID: 1780531100}
 --- !u!1 &1885318530
 GameObject:

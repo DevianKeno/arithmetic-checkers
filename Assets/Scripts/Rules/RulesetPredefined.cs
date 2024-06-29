@@ -104,5 +104,125 @@ namespace Aritche.Rules
 
             Game.Console.LogDebug("Initialized rulesets");
         }
+        
+        /// <summary>
+        /// Create a ruleset given a ruleset type.
+        /// </summary>
+        /// <returns> A ruleset object. </returns>
+        public static Ruleset CreateFromPreset(RulesetPreset preset)
+        {
+            return preset switch
+            {
+                RulesetPreset.Classic => CreateClassic(),
+                RulesetPreset.ClassicRandom => CreateClassicRandom(),
+                RulesetPreset.Speed => CreateSpeed(),
+                RulesetPreset.Custom => CreateCustom(),
+                _ => null,
+            };
+        }
+
+        public static Ruleset CreateClassic()
+        {
+            Ruleset ruleset = new()
+            {
+                Preset = RulesetPreset.Classic,
+                PieceValueType = PieceValueType.Integers,
+                PieceMapType = PieceMapType.Standard,
+                SymbolMapType = SymbolMapType.Standard,
+            };
+
+            ruleset.AddRule(0, "AllowCapture", true);
+            ruleset.AddRule(1, "AllowMandatoryCapture", true);
+            ruleset.AddRule(2, "AllowChainCapture", true);
+            ruleset.AddRule(3, "AllowPromotion", true);
+            ruleset.AddRule(4, "EnableTouchMove", false);
+            ruleset.AddRule(5, "EnableScoring", true);
+            ruleset.AddRule(6, "EnableTimer", true);
+            ruleset.AddRule(7, "EnableGlobalTimer", true);
+            ruleset.AddRule(8, "EnableTurnTimer", true);
+            ruleset.AddRule(9, "GlobalTimeSeconds", 1200f);
+            ruleset.AddRule(10, "TurnTimeSeconds", 60f);
+            ruleset.AddRule(11, "FirstTurn", Side.Blue);
+            ruleset.AddRule(12, "PlayersType", RulesetPlayersType.Solo);
+            ruleset.AddRule(13, "AI", "Xena");
+            ruleset.AddRule(14, "EnableCheats", false);
+
+            ruleset.SymbolMap = SymbolMapStandard;
+            ruleset.PieceMap = PieceMapStandard;
+
+            return ruleset;
+        }
+        
+        public static Ruleset CreateClassicRandom()
+        {
+            Ruleset ruleset = new()
+            {
+                Preset = RulesetPreset.ClassicRandom,
+                PieceValueType = PieceValueType.Integers,
+                PieceMapType = PieceMapType.Random,
+                SymbolMapType = SymbolMapType.Random,
+            };
+
+            ruleset.AddRule(0, "AllowCapture", true);
+            ruleset.AddRule(1, "AllowMandatoryCapture", true);
+            ruleset.AddRule(2, "AllowChainCapture", true);
+            ruleset.AddRule(3, "AllowPromotion", true);
+            ruleset.AddRule(4, "EnableTouchMove", false);
+            ruleset.AddRule(5, "EnableScoring", true);
+            ruleset.AddRule(6, "EnableTimer", true);
+            ruleset.AddRule(7, "EnableGlobalTimer", true);
+            ruleset.AddRule(8, "EnableTurnTimer", true);
+            ruleset.AddRule(9, "GlobalTimeSeconds", 1200f);
+            ruleset.AddRule(10, "TurnTimeSeconds", 60f);
+            ruleset.AddRule(11, "FirstTurn", Side.Blue);
+            ruleset.AddRule(12, "PlayersType", RulesetPlayersType.Solo);
+            ruleset.AddRule(13, "AI", "Xena");
+            ruleset.AddRule(14, "EnableCheats", false);
+
+            ruleset.SymbolMap = RandomizeOperationsSymmetrical(SymbolMapStandard);
+            ruleset.PieceMap = RandomizePiecesSymmetrical(PieceMapStandard);
+
+            return ruleset;
+        }
+
+        public static Ruleset CreateSpeed()
+        {
+            Ruleset ruleset = new()
+            {
+                Preset = RulesetPreset.Speed,
+                PieceValueType = PieceValueType.Integers,
+                PieceMapType = PieceMapType.Standard,
+                SymbolMapType = SymbolMapType.Standard,
+            };
+
+            ruleset.AddRule(0, "AllowCapture", true);
+            ruleset.AddRule(1, "AllowMandatoryCapture", true);
+            ruleset.AddRule(2, "AllowChainCapture", true);
+            ruleset.AddRule(3, "AllowPromotion", true);
+            ruleset.AddRule(4, "EnableTouchMove", false);
+            ruleset.AddRule(5, "EnableScoring", true);
+            ruleset.AddRule(6, "EnableTimer", true);
+            ruleset.AddRule(7, "EnableGlobalTimer", true);
+            ruleset.AddRule(8, "EnableTurnTimer", true);
+            ruleset.AddRule(9, "GlobalTimeSeconds", 300f);
+            ruleset.AddRule(10, "TurnTimeSeconds", 15f);
+            ruleset.AddRule(11, "FirstTurn", Side.Blue);
+            ruleset.AddRule(12, "PlayersType", RulesetPlayersType.Solo);
+            ruleset.AddRule(13, "AI", "Xena");
+            ruleset.AddRule(14, "EnableCheats", false);
+
+            ruleset.SymbolMap = SymbolMapStandard;
+            ruleset.PieceMap = PieceMapStandard;
+
+            return ruleset;
+        }
+
+        public static Ruleset CreateCustom()
+        {
+            Ruleset ruleset = CreateClassic();
+            ruleset.Preset = RulesetPreset.Custom;
+
+            return ruleset;
+        }
     }
 }

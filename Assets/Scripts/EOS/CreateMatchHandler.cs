@@ -2,6 +2,7 @@ using System;
 
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
@@ -17,14 +18,13 @@ namespace Aritche.EOS
         public uint MaxPlayers = 2;
         public LobbyPermissionLevel lobbyPermissionLevel;
 
-        bool isCustom;
         Ruleset ruleset;
-        RulesetPreset selectedRulesetPreset;
         Window creatingLobbyWindow;
         [SerializeField] CustomMatchHandler customMatchHandler;
 
         [Header("UI Elements")]
         [SerializeField] FrameController firstFrameController;
+        [SerializeField] TextMeshProUGUI rulesetInfoTMP;
         [SerializeField] UI.Button createLobbyBtn;
         [SerializeField] UI.Button createCustomBtn;
         
@@ -40,13 +40,30 @@ namespace Aritche.EOS
         void Start()
         {
             createLobbyBtn.interactable = true;
-            ruleset = new();
+            createCustomBtn.interactable = true;
+            CreateRulesetAndListen(Ruleset.CreateFromPreset(RulesetPreset.Classic));
 
             /// UnityToggles execute events twice, when setting it to true and to false
             /// I want to execute an event only when true, and still use it in the inspector
             /// This is my third option on implementing this
             /// I can definitely make my own UI elements but I have no time right now
             InitializeRulesetPresetButtons();
+        }
+
+        /// <summary>
+        /// Create ruleset and listen for updates.
+        /// </summary>
+        public void CreateRulesetAndListen(Ruleset value)
+        {
+            ruleset = value;
+            customMatchHandler.Ruleset = value;
+            rulesetInfoTMP.text = ruleset.ToRulesetInfoDisplay();
+            ruleset.OnUpdate += OnRulesetUpdate;
+        }
+
+        void OnRulesetUpdate(Ruleset ruleset)
+        {
+            rulesetInfoTMP.text = ruleset.ToRulesetInfoDisplay();
         }
 
         void InitializeRulesetPresetButtons()
@@ -59,9 +76,8 @@ namespace Aritche.EOS
                     if (value)
                     {
                         var preset = (RulesetPreset) btnIndex;
-                        ruleset = Ruleset.CreateFromPreset(preset);
-                        customMatchHandler.SetFromPreset(preset);
-                        isCustom = false;
+                        CreateRulesetAndListen(Ruleset.CreateFromPreset(preset));
+                        customMatchHandler.OverrideFromPreset(preset); /// Override selected button on the Custom screen
                         Debug.Log($"Set current match ruleset to {preset}");
                     }
                 });
@@ -72,52 +88,14 @@ namespace Aritche.EOS
             {
                 if (value)
                 {
-                    ruleset = Ruleset.CreateFromPreset(RulesetPreset.Custom);
-                    // customMatchHandler.SetFromPreset(RulesetPreset.Custom);
-                    isCustom = true;
                     firstFrameController.SwitchToFrame("Custom");
                     Debug.Log($"Set current match ruleset to {RulesetPreset.Custom}");
                 }
             });
         }
 
-        // public void SetSelectedRulesetPreset(string value)
-        // {
-        //     selectedRulesetPreset = value switch
-        //     {
-        //         "classic" => RulesetPreset.Classic,
-        //         "random" => RulesetPreset.ClassicRandom,
-        //         "speed" => RulesetPreset.Speed,
-        //         "100" => RulesetPreset.HundredPercent,
-        //         "custom" => RulesetPreset.Custom,
-        //     };
-
-        //     if (value != "custom")
-        //     {
-        //         var preset = value switch
-        //         {
-        //             "classic" => RulesetPreset.Classic,
-        //             "random" => RulesetPreset.ClassicRandom,
-        //             "speed" => RulesetPreset.Speed,
-        //             "100" => RulesetPreset.HundredPercent
-        //         };
-
-        //         ruleset = Ruleset.CreateFromPreset(preset);
-        //     }
-        //     else
-        //     {
-        //         ruleset = new();
-        //     }
-        //     Debug.Log($"Set current match ruleset to {RulesetPreset.Classic}");
-        // }
-
         public Lobby CreateLobbyProperties()
         {
-            if (selectedRulesetPreset == RulesetPreset.Custom)
-            {
-                ruleset = customMatchHandler.GetCachedCustomRuleset();
-            }
-
             if (ruleset == null)
             {
                 Game.Console.Log("Error creating lobby, no ruleset specified.");
@@ -174,6 +152,9 @@ namespace Aritche.EOS
 
         public void CreateLobby()
         {
+            createLobbyBtn.interactable = false;
+            createCustomBtn.interactable = false;
+
             if (Game.Main.IsOnline) /// Network
             {
                 var loginStatus = Game.EOS.GetEOSAuthInterface().GetLoginStatus(Game.EOS.GetLocalUserId());
@@ -204,17 +185,7 @@ namespace Aritche.EOS
             }
             else
             {
-                createLobbyBtn.interactable = false;
-
-                if (isCustom)
-                {
-                    Game.Main.CreateMatch(customMatchHandler.GetCachedCustomRuleset());
-                }
-                else
-                {
-                    Game.Main.CreateMatch(ruleset);
-                }
-
+                Game.Main.CreateMatch(ruleset);
                 Game.Main.LoadScene("Match", playTransition: true, 3f);
             }
         }

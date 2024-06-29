@@ -1,25 +1,63 @@
 using System;
 using System.Collections.Generic;
-using Epic.OnlineServices.Presence;
+
+using UnityEngine;
 
 namespace Aritche.Rules
-{        
+{
     /// <summary>
     /// Serves as a holder for the rules that define a match.
     /// </summary>
     [Serializable]
     public partial class Ruleset
     {
-        public RulesetPreset Preset { get; set; }
-        public PieceValueType PieceValueType { get; set; }
-        public PieceMapType PieceMapType { get; set; }
-        public SymbolMapType SymbolMapType { get; set; }
+        [SerializeField] RulesetPreset _preset;
+        public RulesetPreset Preset
+        {
+            get => _preset;
+            set
+            {
+                _preset = value;
+                OnUpdate?.Invoke(this);
+            }
+        }
+        [SerializeField] PieceValueType _pieceValueType;
+        public PieceValueType PieceValueType
+        {
+            get => _pieceValueType;
+            set
+            {
+                SetPieceValueType(value);
+                OnUpdate?.Invoke(this);
+            }
+        }
+        [SerializeField] PieceMapType _pieceMapType;
+        public PieceMapType PieceMapType
+        {
+            get => _pieceMapType;
+            set
+            {
+                SetPieceMapType(value);
+                OnUpdate?.Invoke(this);
+            }
+        }
+        [SerializeField] SymbolMapType _symbolMapType;
+        public SymbolMapType SymbolMapType
+        {
+            get => _symbolMapType;
+            set
+            {
+                SetSymbolMapType(value);
+                OnUpdate?.Invoke(this);
+            }
+        }
         /// <summary>
         /// The individual rules this ruleset holds.
         /// </summary>
         public Dictionary<string, object> Rules = new();
         public Dictionary<(int, int), Operation> SymbolMap = new();
         public Dictionary<(int, int), PieceData> PieceMap = new();
+        public event Action<Ruleset> OnUpdate;
                 
         /// <summary>
         /// Initializing function. This runs when the game is first being loaded.
@@ -108,130 +146,112 @@ namespace Aritche.Rules
 
         #region Public methods
 
+        string BoolToYesNo(bool value)
+        {
+            return value ? "Yes" : "No";
+        }
+
+        string GetBoolAsString(string name)
+        {
+            return BoolToYesNo(GetValue<bool>(name));
+        }
+
         public string ToRulesetInfoDisplay()
         {
-            string info = "Symbol map: ";
-            return info;
+            //<color=white>Preset: <color=#24415E>{Preset.ToSpacedString()}
+            return @$"<color=white>Symbol map: <color=#24415E>{SymbolMapType.ToSpacedString()}
+<color=white>Chip values: <color=#24415E>{PieceValueType.ToSpacedString()}
+<color=white>Chip map: <color=#24415E>{PieceMapType.ToSpacedString()}
+<color=white>Global timer: <color=#24415E>{GetBoolAsString("EnableGlobalTimer")}
+  <color=white>Global time: <color=#24415E>{GetValue<float>("GlobalTimeSeconds")} s
+<color=white>Turn timer: <color=#24415E>{GetBoolAsString("EnableTurnTimer")}
+  <color=white>Turn time: <color=#24415E>{GetValue<float>("TurnTimeSeconds")} s
+<color=white>Mandatory capture: <color=#24415E>{GetBoolAsString("AllowMandatoryCapture")}
+<color=white>Chain capture: <color=#24415E>{GetBoolAsString("AllowChainCapture")}
+<color=white>Promotion: <color=#24415E>{GetBoolAsString("AllowPromotion")}
+";
         }
 
-        /// <summary>
-        /// Create a ruleset given a ruleset type.
-        /// </summary>
-        /// <returns> A ruleset object. </returns>
-        public static Ruleset CreateFromPreset(RulesetPreset preset)
+        public void SetSymbolMapType(SymbolMapType value)
         {
-            return preset switch
+            _symbolMapType = value;
+
+            if (value == SymbolMapType.Standard)
             {
-                RulesetPreset.Classic => CreateClassic(),
-                RulesetPreset.ClassicRandom => CreateClassicRandom(),
-                RulesetPreset.Speed => CreateSpeed(),
-                RulesetPreset.Custom => CreateCustom(),
-                _ => null,
-            };
-        }
-
-        public static Ruleset CreateClassic()
-        {
-            Ruleset ruleset = new()
+                SymbolMap = SymbolMapStandard;
+            }
+            else if (value == SymbolMapType.Random)
             {
-                Preset = RulesetPreset.Classic,
-                PieceValueType = PieceValueType.Integers,
-                PieceMapType = PieceMapType.Standard,
-                SymbolMapType = SymbolMapType.Standard,
-            };
-
-            ruleset.AddRule(0, "AllowCapture", true);
-            ruleset.AddRule(1, "AllowMandatoryCapture", true);
-            ruleset.AddRule(2, "AllowChainCapture", true);
-            ruleset.AddRule(3, "AllowPromotion", true);
-            ruleset.AddRule(4, "EnableTouchMove", false);
-            ruleset.AddRule(5, "EnableScoring", true);
-            ruleset.AddRule(6, "EnableTimer", true);
-            ruleset.AddRule(7, "EnableGlobalTimer", true);
-            ruleset.AddRule(8, "EnableTurnTimer", true);
-            ruleset.AddRule(9, "GlobalTimerSeconds", 1200f);
-            ruleset.AddRule(10, "TurnTimerSeconds", 60f);
-            ruleset.AddRule(11, "FirstTurn", Side.Blue);
-            ruleset.AddRule(12, "PlayersType", RulesetPlayersType.Solo);
-            ruleset.AddRule(13, "AI", "Xena");
-            ruleset.AddRule(14, "EnableCheats", false);
-
-            ruleset.SymbolMap = SymbolMapStandard;
-            ruleset.PieceMap = PieceMapStandard;
-
-            return ruleset;
+                SymbolMap = RandomizeOperationsSymmetrical(SymbolMapStandard);
+            }
+            else if (value == SymbolMapType.TrueRandom)
+            {
+                /// Unimplemented
+            }
+            else if (value == SymbolMapType.Custom)
+            {
+                /// Unimplemented
+            }
         }
         
-        public static Ruleset CreateClassicRandom()
+        public void SetPieceValueType(PieceValueType value)
         {
-            Ruleset ruleset = new()
+            _pieceValueType = value;
+
+            if (value == PieceValueType.Naturals)
             {
-                Preset = RulesetPreset.ClassicRandom,
-                PieceValueType = PieceValueType.Integers,
-                PieceMapType = PieceMapType.Random,
-                SymbolMapType = SymbolMapType.Random,
-            };
-
-            ruleset.AddRule(0, "AllowCapture", true);
-            ruleset.AddRule(1, "AllowMandatoryCapture", true);
-            ruleset.AddRule(2, "AllowChainCapture", true);
-            ruleset.AddRule(3, "AllowPromotion", true);
-            ruleset.AddRule(4, "EnableTouchMove", false);
-            ruleset.AddRule(5, "EnableScoring", true);
-            ruleset.AddRule(6, "EnableTimer", true);
-            ruleset.AddRule(7, "EnableGlobalTimer", true);
-            ruleset.AddRule(8, "EnableTurnTimer", true);
-            ruleset.AddRule(9, "GlobalTimerSeconds", 1200f);
-            ruleset.AddRule(10, "TurnTimerSeconds", 60f);
-            ruleset.AddRule(11, "FirstTurn", Side.Blue);
-            ruleset.AddRule(12, "PlayersType", RulesetPlayersType.Solo);
-            ruleset.AddRule(13, "AI", "Xena");
-            ruleset.AddRule(14, "EnableCheats", false);
-
-            ruleset.SymbolMap = RandomizeOperationsSymmetrical(SymbolMapStandard);
-            ruleset.PieceMap = RandomizePiecesSymmetrical(PieceMapStandard);
-
-            return ruleset;
+                /// Unimplemented
+            }
+            else if (value == PieceValueType.Integers)
+            {
+                /// Unimplemented
+            }
+            else if (value == PieceValueType.Fractions)
+            {
+                /// Unimplemented
+            }
+            else if (value == PieceValueType.Radicals)
+            {
+                /// Unimplemented
+            }
+            else if (value == PieceValueType.Polynomials)
+            {
+                /// Unimplemented
+            }
+            else if (value == PieceValueType.Binary)
+            {
+                /// Unimplemented
+            }
+            else if (value == PieceValueType.Octal)
+            {
+                /// Unimplemented
+            }
+            else if (value == PieceValueType.Hexadecimal)
+            {
+                /// Unimplemented
+            }
         }
 
-        public static Ruleset CreateSpeed()
+        public void SetPieceMapType(PieceMapType value)
         {
-            Ruleset ruleset = new()
+            _pieceMapType = value;
+
+            if (value == PieceMapType.Standard)
             {
-                Preset = RulesetPreset.Speed,
-                PieceValueType = PieceValueType.Integers,
-                PieceMapType = PieceMapType.Standard,
-                SymbolMapType = SymbolMapType.Standard,
-            };
-
-            ruleset.AddRule(0, "AllowCapture", true);
-            ruleset.AddRule(1, "AllowMandatoryCapture", true);
-            ruleset.AddRule(2, "AllowChainCapture", true);
-            ruleset.AddRule(3, "AllowPromotion", true);
-            ruleset.AddRule(4, "EnableTouchMove", false);
-            ruleset.AddRule(5, "EnableScoring", true);
-            ruleset.AddRule(6, "EnableTimer", true);
-            ruleset.AddRule(7, "EnableGlobalTimer", true);
-            ruleset.AddRule(8, "EnableTurnTimer", true);
-            ruleset.AddRule(9, "GlobalTimerSeconds", 300f);
-            ruleset.AddRule(10, "TurnTimerSeconds", 15f);
-            ruleset.AddRule(11, "FirstTurn", Side.Blue);
-            ruleset.AddRule(12, "PlayersType", RulesetPlayersType.Solo);
-            ruleset.AddRule(13, "AI", "Xena");
-            ruleset.AddRule(14, "EnableCheats", false);
-
-            ruleset.SymbolMap = SymbolMapStandard;
-            ruleset.PieceMap = PieceMapStandard;
-
-            return ruleset;
-        }
-
-        public static Ruleset CreateCustom()
-        {
-            Ruleset ruleset = CreateClassic();
-            ruleset.Preset = RulesetPreset.Custom;
-
-            return ruleset;
+                PieceMap = PieceMapStandard;
+            }
+            else if (value == PieceMapType.Random)
+            {
+                PieceMap = RandomizePiecesSymmetrical(PieceMapStandard);
+            }
+            else if (value == PieceMapType.TrueRandom)
+            {
+                /// Unimplemented
+            }
+            else if (value == PieceMapType.Custom)
+            {
+                /// Unimplemented
+            }
         }
 
         public void AddRule<T>(int id, string name, T value)
@@ -272,12 +292,13 @@ namespace Aritche.Rules
             return rule.Value;
         }
 
-        public void SetRule<T>(string rulename, T value)
+        public void SetValue<T>(string rulename, T value)
         {
             if (TryGetRule(rulename, out Rule<T> rule))
             {
                 rule.SetValue(value);
                 Rules[rulename] = rule;
+                OnUpdate?.Invoke(this);
             }
         }
 

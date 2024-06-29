@@ -356,7 +356,7 @@ namespace Aritche.Systems
         void Command_Sandbox(List<string> args)
         {
             var ruleset = Ruleset.CreateFromPreset(RulesetPreset.Classic);
-            ruleset.SetRule("EnableCheats", true);
+            ruleset.SetValue("EnableCheats", true);
             Game.Main.CreateMatch(ruleset);
             Game.Main.LoadScene("Match", playTransition: true);
         }

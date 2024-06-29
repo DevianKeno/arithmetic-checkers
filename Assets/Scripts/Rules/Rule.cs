@@ -1,5 +1,5 @@
 namespace Aritche.Rules
-{
+{    
     /// <summary>
     /// Represents an individual rule, along with its value type.
     /// </summary>

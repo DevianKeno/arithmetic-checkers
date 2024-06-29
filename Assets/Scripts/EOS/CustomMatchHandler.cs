@@ -10,7 +10,7 @@ namespace Aritche
 {
     public class CustomMatchHandler : MonoBehaviour
     {
-        Ruleset ruleset;
+        public Ruleset Ruleset;
 
         [Header("Rule Entries")]
         [SerializeField] CustomMatchRuleEntry symbolMapEntry;
@@ -19,7 +19,6 @@ namespace Aritche
 
         void Start()
         {
-            ruleset = new();
             InitializeEvents();
         }
 
@@ -27,24 +26,24 @@ namespace Aritche
         {
             symbolMapEntry.OnInteractElement += (Selectable s, int index) =>
             {
-                ruleset.SymbolMapType = (SymbolMapType) index;
+                Ruleset.SymbolMapType = (SymbolMapType) index;
                 Debug.Log($"Ruleset updated. Symbol Map Type: {(SymbolMapType) index}");
             };
 
             chipValuesEntry.OnInteractElement += (Selectable s, int index) =>
             {
-                ruleset.PieceValueType = (PieceValueType) index;
+                Ruleset.PieceValueType = (PieceValueType) index;
                 Debug.Log($"Ruleset updated. Piece Value Type: {(PieceValueType) index}");
             };
 
             chipMapEntry.OnInteractElement += (Selectable s, int index) =>
             {
-                ruleset.PieceMapType = (PieceMapType) index;
+                Ruleset.PieceMapType = (PieceMapType) index;
                 Debug.Log($"Ruleset updated. Piece Map Type: {(PieceMapType) index}");
             };
         }
 
-        public void SetFromPreset(RulesetPreset preset)
+        public void OverrideFromPreset(RulesetPreset preset)
         {
             if (preset == RulesetPreset.Classic)
             {
@@ -72,35 +71,35 @@ namespace Aritche
         {
             if (overwrite)
             {
-                ruleset = new();
+                Ruleset = new();
             }
             else
             {
-                ruleset ??= new();
+                Ruleset ??= new();
             }
         }
 
         public void SetPieceValuesType(int value)
         {
-            ruleset.PieceValueType = (PieceValueType) value;
+            Ruleset.PieceValueType = (PieceValueType) value;
             Debug.Log($"[Ruleset]: Set Piece values to {(PieceValueType) value}");
         }
 
         public void SetPieceMapType(int value)
         {
-            ruleset.PieceMapType = (PieceMapType) value;
+            Ruleset.PieceMapType = (PieceMapType) value;
             Debug.Log($"[Ruleset]: Set Piece map to {(PieceMapType) value}");
         }
 
         public void SetSymbolMapType(int value)
         {
-            ruleset.SymbolMapType = (SymbolMapType) value;
+            Ruleset.SymbolMapType = (SymbolMapType) value;
             Debug.Log($"[Ruleset]: Set Symbol map to {(SymbolMapType) value}");
         }
 
         public Ruleset GetCachedCustomRuleset()
         {
-            return ruleset;
+            return Ruleset;
         }
 
         void SetButtonsClassicPreset()

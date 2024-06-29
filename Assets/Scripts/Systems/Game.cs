@@ -190,9 +190,10 @@ namespace Aritche
             HasRuleset = true;
         }
 
-        public void SetRuleset(Ruleset ruleset)
+        void ClearRuleset()
         {
-            CacheRuleset(ruleset);
+            Ruleset = null;
+            HasRuleset = false;
         }
 
         /// <summary>
@@ -268,6 +269,14 @@ namespace Aritche
                 Game.Console.Log($"Unable to start match. You're not in a match!");
                 Debug.LogError($"Unable to start match. You're not in a match!");
             }
+        }
+
+        internal void EndMatch()
+        {
+            ClearRuleset();
+            Match.EndMatch();
+            Match = null;
+            HasMatch = false;
         }
 
         public void SetNickname(Side side, string value)

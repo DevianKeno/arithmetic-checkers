@@ -229,6 +229,14 @@ namespace Aritche.Systems
             postmatchWindow.Show();
         }
 
+        public void EndMatch()
+        {
+            /// Everything here is handled poorly
+            ConcludeMatch();
+
+            Ruleset = null;
+        }
+
         public Player GetPlayerFromSide(Side side)
         {
             if (side == Side.Blue)

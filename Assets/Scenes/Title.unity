@@ -1454,7 +1454,7 @@ RectTransform:
   - {fileID: 1409818438}
   - {fileID: 1885318531}
   - {fileID: 20548812}
-  m_Father: {fileID: 173997820}
+  m_Father: {fileID: 520711698}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2284,8 +2284,8 @@ RectTransform:
   m_Children:
   - {fileID: 765402023}
   - {fileID: 469752371}
-  - {fileID: 92121682}
   - {fileID: 852523141}
+  - {fileID: 1881399381}
   m_Father: {fileID: 520711698}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -5153,7 +5153,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 173997820}
-  - {fileID: 1881399381}
+  - {fileID: 92121682}
   m_Father: {fileID: 1696962171}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -5174,7 +5174,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsTransitioning>k__BackingField: 0
-  <CurrentFrame>k__BackingField: {fileID: 1881399382}
+  <CurrentFrame>k__BackingField: {fileID: 92121683}
   Frames:
   - {fileID: 92121683}
   - {fileID: 1881399382}
@@ -5183,7 +5183,7 @@ MonoBehaviour:
   - {fileID: 765402024}
   TweenType: 18
   inactive: {fileID: 173997819}
-  switchTo: 1
+  switchTo: 0
 --- !u!1 &525346168
 GameObject:
   m_ObjectHideFlags: 0
@@ -9945,7 +9945,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 780215983}
-  - {fileID: 1938174022}
+  - {fileID: 1696962171}
   m_Father: {fileID: 1366567576}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -13368,7 +13368,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 993322318}
-  - {fileID: 1696962171}
+  - {fileID: 1938174022}
   m_Father: {fileID: 1109477810}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -13389,14 +13389,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsTransitioning>k__BackingField: 0
-  <CurrentFrame>k__BackingField: {fileID: 1696962174}
+  <CurrentFrame>k__BackingField: {fileID: 1938174023}
   Frames:
   - {fileID: 1938174023}
   - {fileID: 1696962174}
   - {fileID: 780215982}
   TweenType: 18
   inactive: {fileID: 993322317}
-  switchTo: 1
+  switchTo: 0
 --- !u!1 &1379761324
 GameObject:
   m_ObjectHideFlags: 0
@@ -16850,7 +16850,7 @@ RectTransform:
   - {fileID: 305057214}
   - {fileID: 885406622}
   - {fileID: 520711698}
-  m_Father: {fileID: 1366567576}
+  m_Father: {fileID: 993322318}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -18225,7 +18225,7 @@ RectTransform:
   - {fileID: 1272107713}
   - {fileID: 1932917319}
   - {fileID: 30051796}
-  m_Father: {fileID: 520711698}
+  m_Father: {fileID: 173997820}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -19065,7 +19065,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1938174022
 RectTransform:
   m_ObjectHideFlags: 0
@@ -19080,7 +19080,7 @@ RectTransform:
   m_Children:
   - {fileID: 574611441}
   - {fileID: 357143686}
-  m_Father: {fileID: 993322318}
+  m_Father: {fileID: 1366567576}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}

@@ -187,7 +187,10 @@ namespace Aritche.Players
             {
                 Deselect();
                 IsPaused = !IsPaused;
-                Game.Main.Match.Pause(this);
+                if (Game.Main.HasMatch)
+                {
+                    Game.Main.Match.Pause(this);
+                }
             }
         }
 

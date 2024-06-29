@@ -55,7 +55,7 @@ namespace Aritche.UI
         void OnForfeitClick()
         {
             Destroy();
-            Game.Main.LoadScene("Title");
+            Game.Main.EndMatch();
         }
     }
 }

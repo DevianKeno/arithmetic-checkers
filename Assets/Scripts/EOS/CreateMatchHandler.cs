@@ -17,6 +17,7 @@ namespace Aritche.EOS
         public uint MaxPlayers = 2;
         public LobbyPermissionLevel lobbyPermissionLevel;
 
+        bool isCustom;
         Ruleset ruleset;
         RulesetPreset selectedRulesetPreset;
         Window creatingLobbyWindow;
@@ -25,6 +26,7 @@ namespace Aritche.EOS
         [Header("UI Elements")]
         [SerializeField] FrameController firstFrameController;
         [SerializeField] UI.Button createLobbyBtn;
+        [SerializeField] UI.Button createCustomBtn;
         
         [Header("Button Groups")]
         [SerializeField] ToggleGroup rulePresetBtnGrp;
@@ -32,6 +34,7 @@ namespace Aritche.EOS
         void Awake()
         {
             createLobbyBtn.onClick.AddListener(CreateLobby);
+            createCustomBtn.onClick.AddListener(CreateLobby);
         }
 
         void Start()
@@ -48,7 +51,7 @@ namespace Aritche.EOS
 
         void InitializeRulesetPresetButtons()
         {
-            for (int i = 0; i < rulePresetBtnGrp.transform.childCount; i++)
+            for (int i = 0; i < rulePresetBtnGrp.transform.childCount - 1; i++)
             {
                 int btnIndex = i;
                 rulePresetBtnGrp.transform.GetChild(i).GetComponent<UnityEngine.UI.Toggle>().onValueChanged.AddListener((value) =>
@@ -58,6 +61,7 @@ namespace Aritche.EOS
                         var preset = (RulesetPreset) btnIndex;
                         ruleset = Ruleset.CreateFromPreset(preset);
                         customMatchHandler.SetFromPreset(preset);
+                        isCustom = false;
                         Debug.Log($"Set current match ruleset to {preset}");
                     }
                 });
@@ -68,7 +72,11 @@ namespace Aritche.EOS
             {
                 if (value)
                 {
+                    ruleset = Ruleset.CreateFromPreset(RulesetPreset.Custom);
+                    // customMatchHandler.SetFromPreset(RulesetPreset.Custom);
+                    isCustom = true;
                     firstFrameController.SwitchToFrame("Custom");
+                    Debug.Log($"Set current match ruleset to {RulesetPreset.Custom}");
                 }
             });
         }
@@ -197,7 +205,16 @@ namespace Aritche.EOS
             else
             {
                 createLobbyBtn.interactable = false;
-                Game.Main.CreateMatch(ruleset);
+
+                if (isCustom)
+                {
+                    Game.Main.CreateMatch(customMatchHandler.GetCachedCustomRuleset());
+                }
+                else
+                {
+                    Game.Main.CreateMatch(ruleset);
+                }
+
                 Game.Main.LoadScene("Match", playTransition: true, 3f);
             }
         }

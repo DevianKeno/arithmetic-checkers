@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Epic.OnlineServices.Presence;
 
 namespace Aritche.Rules
 {        
@@ -106,6 +107,12 @@ namespace Aritche.Rules
         }
 
         #region Public methods
+
+        public string ToRulesetInfoDisplay()
+        {
+            string info = "Symbol map: ";
+            return info;
+        }
 
         /// <summary>
         /// Create a ruleset given a ruleset type.

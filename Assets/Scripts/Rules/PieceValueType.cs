@@ -6,7 +6,7 @@ namespace Aritche.Rules
     public enum PieceValueType {
         Naturals,
         Integers,
-        Fractions,
+        Rationals,
         Radicals,
         Polynomials,
         Binary,

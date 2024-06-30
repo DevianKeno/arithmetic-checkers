@@ -91,6 +91,10 @@ namespace Aritche.Rules
             {
                 int j = random.Next(i + 1);
                 (operations[j], operations[i]) = (operations[i], operations[j]);
+            }
+
+            for (int i = 0; i < coordinates.Count; i++)
+            {
                 symbolMap[coordinates[i]] = operations[i];
             }
             

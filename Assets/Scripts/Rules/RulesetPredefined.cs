@@ -227,7 +227,7 @@ namespace Aritche.Rules
         {
             {PieceValueType.Naturals, PiecesNaturals},
             {PieceValueType.Integers, PiecesIntegers},
-            {PieceValueType.Fractions, PiecesFractions},
+            {PieceValueType.Rationals, PiecesRationals},
             {PieceValueType.Radicals, PiecesRadicals},
             {PieceValueType.Polynomials, PiecesPolynomials},
             {PieceValueType.Binary, PiecesBinary},
@@ -245,22 +245,19 @@ namespace Aritche.Rules
             "0", "-1", "2", "-3", "4", "-5", "6", "-7", "8", "-9", "10", "-11",
         };
 
-        public static List<string> PiecesFractions => new()
+        public static List<string> PiecesRationals => new()
         {
-            /// Does not reflect
-            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
+            "0", "-1/10", "2/10", "-3/10", "4/10", "-5/10", "6/10", "-7/10", "8/10", "-9/10", "10/10", "-11/10",
         };
 
         public static List<string> PiecesRadicals => new()
         {
-            /// Does not reflect
-            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
+            "-49√8", "4√18", "144√8", "-25√18", "16√32", "100√2", "-√8", "64√2", "-81√32", "-9√2", "36√32", "-121√18",
         };
 
         public static List<string> PiecesPolynomials => new()
         {
-            /// Does not reflect
-            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
+            "-21xy²", "6x", "78xy²", "-15x", "10y", "66x²y", "-xy²", "36x²y", "-45y", "-3x²y", "28y", "-55x",
         };
         
         public static List<string> PiecesBinary => new()
@@ -270,12 +267,13 @@ namespace Aritche.Rules
 
         public static List<string> PiecesHexadecimal => new()
         {
+            /// literally basic lmao change?
             "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B",
         };
 
         public static List<string> PiecesOctal => new()
         {
-            /// Does not reflect
+            /// Does not reflect /// kinda stuipd ngl
             "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
         };
 

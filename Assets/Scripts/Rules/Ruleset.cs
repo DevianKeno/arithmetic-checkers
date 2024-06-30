@@ -77,13 +77,13 @@ namespace Aritche.Rules
             return @$"<color=white>Symbol map: <color=#24415E>{SymbolMapType.ToSpacedString()}
 <color=white>Chip values: <color=#24415E>{PieceValueType.ToSpacedString()}
 <color=white>Chip map: <color=#24415E>{PieceMapType.ToSpacedString()}
+<color=white>Mandatory capture: <color=#24415E>{GetBoolAsString("AllowMandatoryCapture")}
+<color=white>Chain capture: <color=#24415E>{GetBoolAsString("AllowChainCapture")}
+<color=white>Promotion: <color=#24415E>{GetBoolAsString("AllowPromotion")}
 <color=white>Global timer: <color=#24415E>{GetBoolAsString("EnableGlobalTimer")}
   <color=white>Global time: <color=#24415E>{GetValue<float>("GlobalTimeSeconds")} s
 <color=white>Turn timer: <color=#24415E>{GetBoolAsString("EnableTurnTimer")}
   <color=white>Turn time: <color=#24415E>{GetValue<float>("TurnTimeSeconds")} s
-<color=white>Mandatory capture: <color=#24415E>{GetBoolAsString("AllowMandatoryCapture")}
-<color=white>Chain capture: <color=#24415E>{GetBoolAsString("AllowChainCapture")}
-<color=white>Promotion: <color=#24415E>{GetBoolAsString("AllowPromotion")}
 ";
         }
 

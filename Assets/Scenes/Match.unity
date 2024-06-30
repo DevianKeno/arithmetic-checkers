@@ -3089,10 +3089,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -3157,8 +3157,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51698ad0a9ec80a4bb13d7f4f7dd24b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TransitionOptions:
+    Tween: 10
+    AnimationSpeed: 1.5
+    Delay: 0.25
+    Multiplier: 1.2
   TooltipOffset: {x: 0.2, y: 0.3}
   dim: {fileID: 0}
+  transitionCanvas: {fileID: 0}
   Prefabs: []
 --- !u!1 &1422791580
 GameObject:
@@ -5011,7 +5017,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <Ruleset>k__BackingField:
-    Type: 0
+    _preset: 0
+    _pieceValueType: 0
+    _pieceMapType: 0
+    _symbolMapType: 0
   BluePlayer: {fileID: 0}
   OrangePlayer: {fileID: 0}
   Spectators: []
@@ -5128,7 +5137,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Match>k__BackingField: {fileID: 0}
   <Ruleset>k__BackingField:
-    Type: 0
+    _preset: 0
+    _pieceValueType: 0
+    _pieceMapType: 0
+    _symbolMapType: 0
   blueScoreTMP: {fileID: 828713181}
   orangeScoreTMP: {fileID: 1422791582}
 --- !u!4 &8322154929276836882

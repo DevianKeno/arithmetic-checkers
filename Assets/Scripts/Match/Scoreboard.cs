@@ -57,8 +57,8 @@ namespace Aritche
         {
             float score;
             char operation;
-            float x = float.Parse(move.CapturingPiece.Value);
-            float y = float.Parse(move.CapturedPiece.Value);
+            float x = float.Parse(move.CapturingPiece.ValueAsString);
+            float y = float.Parse(move.CapturedPiece.ValueAsString);
 
             (score, operation) = move.Destination.Operation switch
             {
@@ -69,7 +69,7 @@ namespace Aritche
                 _ => throw new NotImplementedException(),
             };
 
-            Game.Console.Log($"[ACTION]: {move.CapturingPiece.Value} {operation} {move.CapturedPiece.Value} = {score}");
+            Game.Console.Log($"[ACTION]: {move.CapturingPiece.ValueAsString} {operation} {move.CapturedPiece.ValueAsString} = {score}");
 
             move.SetScoreValue(score);
             AddScore(move.Player, score);

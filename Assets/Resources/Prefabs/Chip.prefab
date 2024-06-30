@@ -78,7 +78,7 @@ SpriteRenderer:
   m_SortingLayer: 5
   m_SortingOrder: -1
   m_Sprite: {fileID: 21300000, guid: 871845a5272759d4396036d6ba71ee05, type: 3}
-  m_Color: {r: 0.5686275, g: 0.19215688, b: 0.11764707, a: 1}
+  m_Color: {r: 0.5686275, g: 0.19215687, b: 0.11764706, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -116,7 +116,7 @@ RectTransform:
   m_GameObject: {fileID: 5039526601960364370}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.95225, y: 0.95225006, z: 0.95225}
+  m_LocalScale: {x: 2.75, y: 2.75, z: 2.75}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 8243484262200967707}
@@ -194,12 +194,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44b7cb6a9b13a3a44b23ac51f72ac621, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _cell: {fileID: 0}
   Owner: {fileID: 0}
   CanCapture: 0
   HasCaptured: 0
   Forward: 0
-  Color: {r: 0, g: 0, b: 0, a: 0}
-  Shadow: {r: 0, g: 0, b: 0, a: 0}
+  Color: {r: 0.9529412, g: 0.4392157, b: 0.28235295, a: 1}
+  ShadowColor: {r: 0.5686275, g: 0.19215687, b: 0.11764706, a: 1}
   Sprites:
   - {fileID: 21300000, guid: abedf3bb648bfc34a94f6535be18171d, type: 3}
   - {fileID: 21300000, guid: b1643ad483c5594479ca0d9555bf2865, type: 3}
@@ -384,7 +385,7 @@ SpriteRenderer:
   m_SortingLayer: 5
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: abedf3bb648bfc34a94f6535be18171d, type: 3}
-  m_Color: {r: 0.9568628, g: 0.43921572, b: 0.2784314, a: 1}
+  m_Color: {r: 0.9529412, g: 0.4392157, b: 0.28235295, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -503,8 +504,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4284374622
-  m_fontColor: {r: 0.3679245, g: 0.3679245, b: 0.3679245, a: 1}
+    rgba: 4280168849
+  m_fontColor: {r: 0.5686275, g: 0.19215687, b: 0.11764706, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

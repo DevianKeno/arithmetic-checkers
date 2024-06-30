@@ -5,6 +5,7 @@ using UnityEngine;
 using TMPro;
 using Aritche.UI;
 using Aritche.Players;
+using Aritche.Rules;
 
 namespace Aritche
 {
@@ -13,18 +14,27 @@ namespace Aritche
     /// </summary>
     public class PieceValue
     {
+        public PieceValueType ValueType { get; set; }
+        [SerializeField] string value;
+        public string AsString => value;
 
+        public PieceValue(string value)
+        {
+            this.value = value;
+        }
     }
 
-    public struct PieceData
+    public class PieceData
     {
-        public string Value;
-        public Side Side;
-        public bool IsKing;
+        public PieceValueType ValueType { get; set; }
+        public int ValueIndex { get; set; }
+        public Side Side { get; set; }
+        public bool IsKing { get; set; }
 
-        public PieceData(string value, Side side, bool isKing)
+        public PieceData(PieceValueType valueType, int valueIndex, Side side, bool isKing)
         {
-            Value = value;
+            ValueType = valueType;
+            ValueIndex = valueIndex;
             Side = side;
             IsKing = isKing;
         }
@@ -32,21 +42,17 @@ namespace Aritche
 
     public class Piece : MonoBehaviour
     {
-        Cell cell;
-        public Cell Cell => cell;
-        public int Col => Cell.Col;
-        public int Row => Cell.Row;
-        public Vector2Int Coordinates
-        {
-            get
-            {
-                return new(Col, Row);
-            }
-        }
-        public PieceValue ValueConvertible;
-        public string Value { get; private set; }
+        [SerializeField] Cell _cell;
+        public Cell Cell => _cell;
+        public int Col => _cell.Col;
+        public int Row => _cell.Row;
+        public Vector2Int Coordinates => new(_cell.Col, _cell.Row);
+        public PieceData Data { get; private set; }
+        public PieceValue Value { get; private set; }
+        public string ValueAsString => Value.AsString;
         public Side Side { get; private set; }
         public bool IsKing { get; private set; }
+
         /// <summary>
         /// The player owner of this piece.
         /// </summary>
@@ -70,7 +76,7 @@ namespace Aritche
         /// <summary>
         /// Piece shadow color. (Not implemented)
         /// </summary>
-        public Color Shadow;
+        public Color ShadowColor;
         /// <summary>
         /// Sprite placeholder for custom sprites. (Not implemented)
         /// </summary>
@@ -79,23 +85,10 @@ namespace Aritche
         [SerializeField] TextMeshPro text;
         [SerializeField] SpriteRenderer overlayTop;
         [SerializeField] SpriteRenderer overlayShadow;
-        private static GameObject prefab;
-
-        public Piece(string value, Side side, bool isKing)
-        {
-            Value = value;
-            Side = side;
-            IsKing = isKing;
-        }
-
-        void Awake()
-        {
-            prefab = Resources.Load<GameObject>("Prefabs/Chip");
-        }
-        
+                
         void Start()
         {
-            text.text = Value;
+            text.text = ValueAsString;
 
             if (IsKing)
             {
@@ -105,21 +98,16 @@ namespace Aritche
                 overlayTop.sprite = Sprites[0];
             }
         }
+
+        void OnValidate()
+        {
+            if (Application.isPlaying) return;
+
+            overlayTop.color = Color;
+            overlayShadow.color = ShadowColor;
+            text.color = ShadowColor;
+        }
         
-        public static Piece Create(Cell cell)
-        {
-            Piece newPiece = Instantiate(prefab).GetComponent<Piece>();
-            newPiece.SetCell(cell);
-            return newPiece;
-        }
-
-        public static Piece Create(Piece piece, int sortingLayer = 5)
-        {
-            Piece newPiece = Instantiate(piece.gameObject, piece.transform.parent).GetComponent<Piece>();
-            // newPiece.GetComponent<SpriteRenderer>().sortingLayerID = sortingLayer;
-            return newPiece;
-        }
-
         /// <summary>
         /// Drags the piece along the cursor.
         /// </summary>
@@ -133,10 +121,24 @@ namespace Aritche
             transform.position = Camera.main.ScreenToWorldPoint(target);
         }
 
+        public void SetData(PieceData data)
+        {
+            Data = data;
+            Value = new(Ruleset.GetValueFromTypeAndIndex(data.ValueType, data.ValueIndex));
+            SetSide(data.Side);
+            SetKing(data.IsKing);
+            Refresh();
+        }
+
+        void Refresh()
+        {
+            text.text = ValueAsString;
+        }
+
         /// <summary>
         /// Sets the position of this piece back to its cell.
         /// </summary>
-        public void ResetPosition()
+        public void ResetPositionToCell()
         {
             transform.position = Cell.transform.position;
         }
@@ -147,14 +149,11 @@ namespace Aritche
         /// <param name="setPosition"> Move the piece to its cell. </param>
         public void SetCell(Cell cell, bool setPosition = true)
         {
-            this.cell = cell;            
-            if (setPosition) transform.position = cell.transform.position;
-        }
-
-        public void SetValue(string value)
-        {
-            Value = value;
-            text.SetText(value);
+            this._cell = cell;            
+            if (setPosition)
+            {
+                transform.position = cell.transform.position;
+            }
         }
 
         public void SetSide(Side value)

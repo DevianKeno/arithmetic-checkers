@@ -55,110 +55,25 @@ namespace Aritche.Rules
         /// The individual rules this ruleset holds.
         /// </summary>
         public Dictionary<string, object> Rules = new();
-        public Dictionary<(int, int), Operation> SymbolMap = new();
-        public Dictionary<(int, int), PieceData> PieceMap = new();
+        public Dictionary<(int, int), Operation> SymbolMap { get; set; }
+        public Dictionary<(int, int), PieceData> PieceMap { get; set; }
         public event Action<Ruleset> OnUpdate;
-                
-        /// <summary>
-        /// Initializing function. This runs when the game is first being loaded.
-        /// </summary>
-        public static void Init()
-        {
-            CreatePredefined();
-        }
-
-        static Dictionary<(int, int), Operation> RandomizeOperationsSymmetrical(Dictionary<(int, int), Operation> basis)
-        {
-            var random = new System.Random();
-            var symbolMap = new Dictionary<(int, int), Operation>();
-            
-            var operations = new List<Operation>(basis.Values);
-            var coordinates = new List<(int, int)>(basis.Keys);
-            
-            /// Shuffle
-            for (int i = operations.Count - 1; i > 0; i--)
-            {
-                int j = random.Next(i + 1);
-                (operations[j], operations[i]) = (operations[i], operations[j]);
-            }
-            
-            for (int i = 0; i < coordinates.Count / 2; i++)
-            {
-                symbolMap[coordinates[i]] = operations[i];
-                var rotatedCoordinate = (7 - coordinates[i].Item1, 7 - coordinates[i].Item2);
-                symbolMap[rotatedCoordinate] = operations[i];
-            }
-
-            return symbolMap;
-        }
-
-        static Dictionary<(int, int), PieceData> RandomizePiecesSymmetrical(Dictionary<(int, int), PieceData> basis)
-        {
-            var random = new System.Random();
-            var pieceMap = new Dictionary<(int, int), PieceData>();
-
-            var bluePieces = new List<PieceData>();
-            var orangePieces = new List<PieceData>();
-
-            foreach (var kvp in basis)
-            {
-                if (kvp.Value.Side == Side.Blue)
-                    bluePieces.Add(kvp.Value);
-                else if (kvp.Value.Side == Side.Orange)
-                    orangePieces.Add(kvp.Value);
-            }
-
-            ShuffleList(random, bluePieces);
-            ShuffleList(random, orangePieces);
-
-            int blueIndex = 0;
-            int orangeIndex = 0;
-
-            foreach (var kvp in basis)
-            {
-                if (kvp.Value.Side == Side.Blue)
-                {
-                    pieceMap[kvp.Key] = bluePieces[blueIndex];
-                    // pieceMap[(7 - kvp.Key.Item1, 7 - kvp.Key.Item2)] = bluePieces[blueIndex];
-                    blueIndex++;
-                }
-                else if (kvp.Value.Side == Side.Orange)
-                {
-                    pieceMap[kvp.Key] = orangePieces[orangeIndex];
-                    // pieceMap[(7 - kvp.Key.Item1, 7 - kvp.Key.Item2)] = orangePieces[orangeIndex];
-                    orangeIndex++;
-                }
-            }
-
-            return pieceMap;
-        }
-
-        static void ShuffleList<T>(System.Random random, List<T> list)
-        {
-            for (int i = list.Count - 1; i > 0; i--)
-            {
-                int j = random.Next(i + 1);
-                T temp = list[i];
-                list[i] = list[j];
-                list[j] = temp;
-            }
-        }
 
         #region Public methods
 
-        string BoolToYesNo(bool value)
+        string BoolAsYesNo(bool value)
         {
             return value ? "Yes" : "No";
         }
 
         string GetBoolAsString(string name)
         {
-            return BoolToYesNo(GetValue<bool>(name));
+            return BoolAsYesNo(GetValue<bool>(name));
         }
 
         public string ToRulesetInfoDisplay()
         {
-            //<color=white>Preset: <color=#24415E>{Preset.ToSpacedString()}
+            // <color=white>Preset: <color=#24415E>{Preset.ToSpacedString()}
             return @$"<color=white>Symbol map: <color=#24415E>{SymbolMapType.ToSpacedString()}
 <color=white>Chip values: <color=#24415E>{PieceValueType.ToSpacedString()}
 <color=white>Chip map: <color=#24415E>{PieceMapType.ToSpacedString()}
@@ -187,6 +102,7 @@ namespace Aritche.Rules
             else if (value == SymbolMapType.TrueRandom)
             {
                 /// Unimplemented
+                // SymbolMap = RandomizeOperations(SymbolMapStandard);
             }
             else if (value == SymbolMapType.Custom)
             {
@@ -197,39 +113,13 @@ namespace Aritche.Rules
         public void SetPieceValueType(PieceValueType value)
         {
             _pieceValueType = value;
+            var map = PieceMapStandard;
 
-            if (value == PieceValueType.Naturals)
+            foreach (PieceData data in map.Values)
             {
-                /// Unimplemented
+                data.ValueType = value;
             }
-            else if (value == PieceValueType.Integers)
-            {
-                /// Unimplemented
-            }
-            else if (value == PieceValueType.Fractions)
-            {
-                /// Unimplemented
-            }
-            else if (value == PieceValueType.Radicals)
-            {
-                /// Unimplemented
-            }
-            else if (value == PieceValueType.Polynomials)
-            {
-                /// Unimplemented
-            }
-            else if (value == PieceValueType.Binary)
-            {
-                /// Unimplemented
-            }
-            else if (value == PieceValueType.Octal)
-            {
-                /// Unimplemented
-            }
-            else if (value == PieceValueType.Hexadecimal)
-            {
-                /// Unimplemented
-            }
+            PieceMap = map;
         }
 
         public void SetPieceMapType(PieceMapType value)
@@ -246,7 +136,7 @@ namespace Aritche.Rules
             }
             else if (value == PieceMapType.TrueRandom)
             {
-                /// Unimplemented
+                PieceMap = RandomizePieces(PieceMapStandard);
             }
             else if (value == PieceMapType.Custom)
             {

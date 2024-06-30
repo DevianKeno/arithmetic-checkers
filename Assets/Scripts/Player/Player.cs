@@ -433,7 +433,7 @@ namespace Aritche.Players
         /// </summary>
         public void ReleaseHeldPiece()
         {
-            HeldPiece?.ResetPosition();       
+            HeldPiece?.ResetPositionToCell();       
             HeldPiece = null;
         }
 

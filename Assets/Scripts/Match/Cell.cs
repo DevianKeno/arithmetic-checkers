@@ -105,9 +105,9 @@ namespace Aritche
             if (piece == null) return;
             
             Piece = piece;
-            Piece.SetCell(this);
+            Piece.SetCell(this, setPosition: true);
             HasPiece = true;
-            IsValidMove = false;
+            IsValidMove = false; /// Refresh
         }
 
         public void RemovePiece()

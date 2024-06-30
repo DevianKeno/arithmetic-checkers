@@ -93,11 +93,6 @@ namespace Aritche
         {
             IsAlive = true;
             InitializeManagers();
-            
-            // Initialize components that needs to be initialized at run-time 
-            Ruleset.Init();
-            // Themes.Init();
-
             InitializeEvents();
             
             HasRuleset = false;

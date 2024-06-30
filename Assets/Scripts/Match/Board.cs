@@ -164,35 +164,40 @@ namespace Aritche
         {
             foreach (var entry in Ruleset.PieceMap)
             {
-                Vector2Int coords = new(entry.Key.Item1, entry.Key.Item2);
+                Cell cell = GetCellFromRow(entry.Key.Item1, entry.Key.Item2);    
                 PieceData pieceData = entry.Value;
-                Cell cell = GetCell(coords);    
 
-                Piece newPiece = Instantiate(piecePrefab, pieceGroup.transform);
-                newPiece.name = $"Piece ({pieceData.Value}) {pieceData.Side}";
-
-                /// Transform piece position
-                newPiece.transform.localScale = new (Constants.PieceScale, Constants.PieceScale);
-                newPiece.transform.position = cell.transform.position;
-
-                /// Initialize piece values
-                newPiece.SetCell(cell);
-                newPiece.SetValue(pieceData.Value);
-                newPiece.SetSide(pieceData.Side);
-                newPiece.SetKing(pieceData.IsKing);
+                var newPiece = CreatePiece(pieceData);
                 cell.SetPiece(newPiece);
-                _pieces.Add(newPiece);
+
                 if (pieceData.Side == Side.Blue)
                 {
                     BluePieces.Add(newPiece);
-                } else if (pieceData.Side == Side.Orange)
+                }
+                else if (pieceData.Side == Side.Orange)
                 {
                     OrangePieces.Add(newPiece);
                 }
+
+                _pieces.Add(newPiece);
             }
         }
 
+        Piece InstantiatePiecePrefab()
+        {
+            var go = Instantiate(piecePrefab, pieceGroup.transform);
+            return go.GetComponent<Piece>();
+        }
+
         #endregion
+
+
+        public Piece CreatePiece(PieceData data)
+        {
+            var newPiece = InstantiatePiecePrefab();
+            newPiece.SetData(data);
+            return newPiece;
+        }
 
         public void BeginMatch()
         {
@@ -386,7 +391,7 @@ namespace Aritche
             OnPieceMove?.Invoke(this, move);
             Piece movedPiece = move.Piece;
             Game.Events.PieceMove(move);
-            Game.Console.Log($"[ACTION]: Moved {movedPiece.Value}: ({move.Origin.Col}, {move.Origin.Row}) -> ({move.Destination.Col}, {move.Destination.Row})");
+            Game.Console.Log($"[ACTION]: Moved {movedPiece.ValueAsString}: ({move.Origin.Col}, {move.Origin.Row}) -> ({move.Destination.Col}, {move.Destination.Row})");
             AnimateMove(move);
 
             if (!move.HasCapture)
@@ -755,17 +760,6 @@ namespace Aritche
             };
         }
 
-        public Piece AddPiece(int col, int row, Side side, string value, bool isKing)
-        {
-            var data = new PieceData
-            {
-                Side = side,
-                Value = value,
-                IsKing = isKing
-            };
-            return AddPiece(GetCellFromRow(col, row), data);
-        }
-
         public Piece AddPiece(int col, int row, PieceData pieceData)
         {
             return AddPiece(GetCellFromRow(col, row), pieceData);
@@ -775,22 +769,11 @@ namespace Aritche
         {
             if (cell.HasPiece)
             {
-                Game.Console.Log("Can't add a piece to an existing piece.");
+                Game.Console.Log("Can't add piece to a cell that already has one.");
                 return null;
             }
 
-            Piece newPiece = Instantiate(piecePrefab, pieceGroup.transform);
-            newPiece.name = $"Piece ({pieceData.Value}) {pieceData.Side}";
-
-            /// Transform piece position
-            newPiece.transform.localScale = new (Constants.PieceScale, Constants.PieceScale);
-            newPiece.transform.position = cell.transform.position;
-
-            /// Initialize piece values
-            newPiece.SetCell(cell);
-            newPiece.SetValue(pieceData.Value);
-            newPiece.SetSide(pieceData.Side);
-            newPiece.SetKing(pieceData.IsKing);
+            Piece newPiece = CreatePiece(pieceData);
             cell.SetPiece(newPiece);
 
             return newPiece;
@@ -819,6 +802,12 @@ namespace Aritche
 
         public Cell GetCell(Vector2Int coords)
         {
+            if (coords.x < 0 || coords.x > 8 || coords.y < 0 || coords.y > 8)
+            {
+                Game.Console.Log("Invalid col row given.");
+                throw new ArgumentOutOfRangeException();
+            }
+
             if (_cellCoordinates.ContainsKey(coords))
             {
                 return _cellCoordinates[coords];
@@ -828,6 +817,12 @@ namespace Aritche
 
         public Cell GetCellFromRow(int col, int row)
         {
+            if (col < 0 || col > 8 || row < 0 || row > 8)
+            {
+                Game.Console.Log("Invalid col row given.");
+                throw new ArgumentOutOfRangeException();
+            }
+
             var coords = new Vector2Int(col, row);
             if (_cellCoordinates.ContainsKey(coords))
             {

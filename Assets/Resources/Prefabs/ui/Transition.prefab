@@ -126,8 +126,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Tween: 10
-  AnimationSpeed: 0.75
-  Delay: 0.25
+  AnimationSpeed: 0.5
+  Delay: 0.1
   Multiplier: 1.2
   Source: {x: -1692.169, y: -1650.831}
   Middle: {x: 0, y: 0}

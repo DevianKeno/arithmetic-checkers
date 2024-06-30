@@ -1,8 +1,6 @@
-using System.Collections.Generic;
-
 namespace Aritche
 {
-    public enum Side {Blue, Orange, Spectator}
+    public enum Side { Blue, Orange, Spectator }
 
     public class Constants
     {

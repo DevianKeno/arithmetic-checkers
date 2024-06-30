@@ -89,7 +89,7 @@ namespace Aritche.Systems
                 .AddCallback(Command_Name));
 
             RegisterCommand(Command.Create(
-                "piece <add|remove> <col> <row> [value] [side] [king]",
+                "piece <add|remove> <col> <row> [valueType] [valueIndex] [side] [king?]",
                 "Piece actions. (Cheats only)")
                 .AddCallback(Command_Piece));
 
@@ -335,19 +335,19 @@ namespace Aritche.Systems
 
             if (args[1] == "add")
             {
-                var data = new PieceData
-                {
-                    Value = args[4].ToString(),
-                    Side = args[5] == "blue" ? Side.Blue : Side.Orange,
-                    IsKing = bool.Parse(args[6])
-                };
+                var data = new PieceData(
+                    valueType: PieceValueType.Integers, /// listen to command heyy
+                    valueIndex: int.Parse(args[4]),
+                    side: args[5] == "blue" ? Side.Blue : Side.Orange,
+                    isKing: bool.Parse(args[6])
+                );
                 Match.Board.AddPiece(col, row, data);
-
-            } else if (args[1] == "remove")
+            }
+            else if (args[1] == "remove")
             {
                 Match.Board.RemovePiece(col, row);
-
-            } else if (args[1] == "get")
+            }
+            else if (args[1] == "get")
             {
                 Log(Match);
             }

@@ -393,16 +393,8 @@ namespace Aritche
         /// </summary>
         void AnimateMove(MovePerformInfo move)
         {
-            move.Perform();
-
-            if (Game.Main.Settings.EnableAnimations)
-            {
-                LeanTween.move(move.Destination.Piece.gameObject, move.Destination.transform.position, 0.5f).setEaseOutExpo();
-            }
-            // else
-            // {
-            //     move.destinationCell.Piece.transform.position = move.destinationCell.transform.position;
-            // }
+            move.MovePieces();
+            move.CapturingPiece.ResetPositionToCell(animate: Game.Main.Settings.EnableAnimations);
         }
 
         /// <summary>
@@ -472,7 +464,8 @@ namespace Aritche
                 if (Game.Main.Settings.EnableAnimations)
                 {
                     LeanTween.move(child, targetPosition, 0.5f).setEaseOutExpo();
-                } else
+                }
+                else
                 {
                     child.transform.position = targetPosition;
                 }
@@ -500,6 +493,8 @@ namespace Aritche
 
                     if (cellToCheck.HasPiece)
                     {
+                        if (piece.IsAlly(cellToCheck.Piece)) continue;
+                        
                         moves.AddRange(GetPieceMoves(cellToCheck.Piece, MoveType.Capture));
                     }
                 }
@@ -518,7 +513,8 @@ namespace Aritche
             if (piece.Side == Side.Blue)
             {
                 if (piece.Row == 7) piece.Promote();
-            } else
+            }
+            else
             {
                 if (piece.Row == 0) piece.Promote();
             }

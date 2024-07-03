@@ -6,6 +6,7 @@ using TMPro;
 using Aritche.UI;
 using Aritche.Players;
 using Aritche.Rules;
+using System;
 
 namespace Aritche
 {
@@ -150,22 +151,42 @@ namespace Aritche
         /// <summary>
         /// Sets the position of this piece back to its cell.
         /// </summary>
-        public void ResetPositionToCell()
+        public void ResetPositionToCell(bool animate = false)
         {
-            transform.position = Cell.transform.position;
+            if (animate)
+            {
+                LeanTween.move(gameObject, Cell.transform.position, 0.5f)
+                .setEase(LeanTweenType.easeOutExpo);
+            }
+            else
+            {
+                transform.position = Cell.transform.position;
+            }
         }
 
         /// <summary>
-        /// Set this piece's "home cell".
+        /// Set this piece's "home" cell.
         /// </summary>
         /// <param name="setPosition"> Move the piece to its cell. </param>
         public void SetCell(Cell cell, bool setPosition = true)
         {
+            if (cell.HasPiece) return;
+            
             this.cell = cell;            
             if (setPosition)
             {
                 transform.position = cell.transform.position;
             }
+        }
+
+        public bool IsAlly(Piece other)
+        {
+            return Side == other.Side;
+        }
+
+        public bool IsEnemy(Piece other)
+        {
+            return Side != other.Side;
         }
 
         public void SetSide(Side value)

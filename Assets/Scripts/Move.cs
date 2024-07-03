@@ -63,10 +63,9 @@ namespace Aritche
             MoveType = MoveType.Capture;
         }
 
-        public void Perform()
+        public void MovePieces()
         {
-            Destination.SetPiece(Origin.Piece);
-            Origin.ClearPiece();
+            Origin.SwapPieces(Destination);
         }
 
         public bool IsPerformedBy(Player player)

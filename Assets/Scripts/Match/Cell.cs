@@ -29,10 +29,26 @@ namespace Aritche
             }
         }
         public Operation Operation { get; private set; }
+        [SerializeField] Piece piece;
         /// <summary>
         /// The piece in this cell.
         /// </summary>
-        public Piece Piece { get; private set; }
+        public Piece Piece
+        {
+            get
+            {
+                return piece;
+            }
+            set
+            {
+                piece = value;
+                if (piece != null)
+                {
+                    /// Update the piece's "home" cell
+                    piece.SetCell(this, setPosition: false);
+                }
+            }
+        }
         public bool HasPiece
         {
             get
@@ -91,6 +107,11 @@ namespace Aritche
             
             Piece = piece;
             Piece.SetCell(this, setPosition: true);
+        }
+
+        public void SwapPieces(Cell other)
+        {
+            (other.Piece, Piece) = (Piece, other.Piece);
         }
 
         public void RemovePiece()

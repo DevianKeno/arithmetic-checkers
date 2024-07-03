@@ -1,72 +1,75 @@
+using System;
 using Aritche.Players;
 
 namespace Aritche
 {
-    public enum MoveType {All, Normal, Capture}
+    public enum MoveType { All, Move, Capture }
 
     /// <summary>
     /// Represents a move made by a player.
     /// </summary>
-    public class Move
+    public class MovePerformInfo
     {
         /// <summary>
         /// The player that performed this move.
         /// </summary>
-        public Player Player;
+        public Player Player { get; set; }
+        public MoveType MoveType { get; set; }
+        public Cell Origin { get; set; }
+        public Cell Destination { get; set; }
         /// <summary>
-        /// The player that performed this move.
+        /// The piece that moved. 
         /// </summary>
-        public Player Performer => Player;
-        public Cell Origin, From;
-        public Cell Destination, To;
+        public Piece CapturingPiece { get; set; }
         /// <summary>
-        /// The piece that this move belongs to. 
+        /// The piece that will be captured.
+        /// Will be null if none.
         /// </summary>
-        public Piece Piece { get; private set; }
-        public Piece CapturingPiece = null;
-        public Piece CapturedPiece = null;
-        public bool HasCapture = false;
-        public float Score = 0;
-        public MoveType type;
+        public Piece CapturedPiece { get; set; }
+        public bool HasCapture { get; set; }
+        /// <summary>
+        /// The score that wield yield the player.
+        /// </summary>
+        public float Score { get; set; }
 
-        public Move(Piece moved, Cell origin, Cell destination)
+        public MovePerformInfo(Cell origin, Cell destination)
         {
-
-        }
-
-        public Move(Cell origin, Cell destination)
-        {
-            /// Set the piece that this move belongs to
-            Piece = origin.Piece;
-            /// Set the capturing piece. This member is essentially same as "Piece"
+            /// Set the capturing piece. The piece that this move belongs to
             CapturingPiece = origin.Piece;
             /// Set the player who performed this move
-            Player = Piece.Owner;
+            Player = CapturingPiece.Owner;
 
-            /// Assign contructor arguments to members
-            Origin = origin; From = Origin;
-            Destination = destination; To = Destination;
+            /// Assign cells
+            Origin = origin;
+            Destination = destination;
 
-            /// Mark this cell as a valid move
-            Destination.IsValidMove = true;
-
-            type = MoveType.Normal;
+            MoveType = MoveType.Move;
         }
         
-        public Move(Cell origin, Cell destination, Piece toCapture)
+        public MovePerformInfo(Cell origin, Cell destination, Piece toCapture)
         {
-            Piece = origin.Piece;
-            Origin = origin; From = Origin;
-            Destination = destination; To = Destination;
-            Destination.IsValidMove = true;
+            /// Set the capturing piece. The piece that this move belongs to
             CapturingPiece = origin.Piece;
+            /// Set the player who performed this move
             Player = CapturingPiece.Owner;
+
+            /// Assign cells
+            Origin = origin;
+            Destination = destination;
+
             CapturedPiece = toCapture;
             HasCapture = true;
-            type = MoveType.Capture;
+
+            MoveType = MoveType.Capture;
         }
 
-        public bool PerformedBy(Player player)
+        public void Perform()
+        {
+            Destination.SetPiece(Origin.Piece);
+            Origin.ClearPiece();
+        }
+
+        public bool IsPerformedBy(Player player)
         {
             return Player == player;
         }

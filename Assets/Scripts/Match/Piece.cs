@@ -1,8 +1,8 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 using TMPro;
+
 using Aritche.UI;
 using Aritche.Players;
 using Aritche.Rules;
@@ -42,41 +42,53 @@ namespace Aritche
 
     public class Piece : MonoBehaviour
     {
-        [SerializeField] Cell _cell;
-        public Cell Cell => _cell;
-        public int Col => _cell.Col;
-        public int Row => _cell.Row;
-        public Vector2Int Coordinates => new(_cell.Col, _cell.Row);
+        [SerializeField] Cell cell;
+        public Cell Cell => cell;
+        public int Col => cell.Col;
+        public int Row => cell.Row;
+        public Vector2Int Coordinates => new(cell.Col, cell.Row);
         public PieceData Data { get; private set; }
         public PieceValue Value { get; private set; }
         public string ValueAsString => Value.AsString;
         public Side Side { get; private set; }
         public bool IsKing { get; private set; }
-
         /// <summary>
         /// The player owner of this piece.
         /// </summary>
-        public Player Owner;
+        public Player Owner { get; private set; }
         /// <summary>
         /// Whether if the piece has a possible capture or not.
         /// </summary>
-        public bool CanCapture = false;
+        public bool CanCapture { get; set; }
         /// <summary>
         /// Whether the piece had captured a piece on its previous turn. 
         /// </summary>
-        public bool HasCaptured = false;
+        public bool HasCaptured { get; set; }
         /// <summary>
-        /// Represents the forward value of the piece. 1 (up) for bottom pieces, 0 (down) for top pieces.
+        /// Represents the forward value of the piece. 1 (up) for bottom pieces, -1 (down) for top pieces.
         /// </summary>
-        public int Forward = 0;
+        int _forward = 0;
+        public int Forward => _forward;
         /// <summary>
-        /// Piece top color (ring). (Not implemented)
+        /// Piece top color (ring).
         /// </summary>
-        public Color Color;
+        public Color Color
+        {
+            get
+            {
+                return overlayTop.color;
+            }
+        }
         /// <summary>
-        /// Piece shadow color. (Not implemented)
+        /// Piece shadow color.
         /// </summary>
-        public Color ShadowColor;
+        public Color ShadowColor
+        {
+            get
+            {
+                return overlayShadow.color;
+            }
+        }
         /// <summary>
         /// Sprite placeholder for custom sprites. (Not implemented)
         /// </summary>
@@ -149,7 +161,7 @@ namespace Aritche
         /// <param name="setPosition"> Move the piece to its cell. </param>
         public void SetCell(Cell cell, bool setPosition = true)
         {
-            this._cell = cell;            
+            this.cell = cell;            
             if (setPosition)
             {
                 transform.position = cell.transform.position;
@@ -161,11 +173,11 @@ namespace Aritche
             Side = value;
             if (value == Side.Blue)
             {
-                Forward = 1;
+                _forward = 1;
                 SetColor(Colors.RichCerulean, Colors.darkJungleBlue);
             } else if (value == Side.Orange)
             {
-                Forward = -1;
+                _forward = -1;
                 SetColor(Colors.PersimmonOrange, Colors.burntUmber);
             }
         }
@@ -180,6 +192,12 @@ namespace Aritche
         public void SetOwner(Player player)
         {
             Owner = player;
+        }
+
+        public void FinishActions()
+        {
+            CanCapture = false;
+            HasCaptured = false;
         }
 
         public void SetKing(bool value)
@@ -218,7 +236,7 @@ namespace Aritche
 
         public void Remove()
         {
-            /// This is bad handling
+            /// This is bad handling (I think)
             Destroy(gameObject);
         }
     }

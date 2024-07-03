@@ -20,4 +20,4 @@ MonoBehaviour:
   EnableAnimations: 1
   AnimationFactor: 0.5
   AllowPieceDragging: 1
-  PieceGrabDelay: 0.05
+  PieceGrabDelay: 0.1

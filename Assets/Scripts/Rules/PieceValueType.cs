@@ -10,7 +10,7 @@ namespace Aritche.Rules
         Radicals,
         Polynomials,
         Binary,
-        Octal,
+        // Octal,
         Hexadecimal
     }
 }

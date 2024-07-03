@@ -231,7 +231,7 @@ namespace Aritche.Rules
             {PieceValueType.Radicals, PiecesRadicals},
             {PieceValueType.Polynomials, PiecesPolynomials},
             {PieceValueType.Binary, PiecesBinary},
-            {PieceValueType.Octal, PiecesOctal},
+            // {PieceValueType.Octal, PiecesOctal},
             {PieceValueType.Hexadecimal, PiecesHexadecimal},
         };
 

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4744187605502103584}
   - component: {fileID: 4563758582511472073}
   m_Layer: 0
-  m_Name: Box Indicator Prefab
+  m_Name: Box Indicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27,11 +27,10 @@ RectTransform:
   m_GameObject: {fileID: 4744187605502103598}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.875, y: 0.875, z: 0.875}
+  m_LocalScale: {x: 0.125, y: 0.125, z: 0.125}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -79,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: -1196916169
   m_SortingLayer: 4
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3e6aa9ea4a661e7489f5a39204859c74, type: 3}
   m_Color: {r: 1, g: 0.9470248, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -102,9 +101,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11ef63c8a71c8ad4185f671eba77589b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  color: {r: 0, g: 0, b: 0, a: 0}
-  sprite: {fileID: 0}
+  FlashColor: {r: 1, g: 1, b: 1, a: 1}
   ForceDisplay: 0
-  c_rect: {fileID: 0}
-  c_sprite: {fileID: 0}
-  c_spriteRenderer: {fileID: 0}
+  rect: {fileID: 0}
+  spriteRenderer: {fileID: 0}

@@ -38,7 +38,7 @@ namespace Aritche.Systems
         public event Action<Player, Piece> OnPlayerSelectPiece;
         public event Action<Player, Piece> OnPlayerHoldPiece;
         public event Action<Player, Cell> OnPlayerSelectMovecell;
-        public event Action<Player, Move> OnPlayerSelectMove;
+        public event Action<Player, MovePerformInfo> OnPlayerSelectMove;
 
         #endregion
 
@@ -68,13 +68,13 @@ namespace Aritche.Systems
         public event Action<Piece> OnPieceSelected;
         public event Action<Piece> OnPieceDeselect;
         public event Action<Piece> OnPieceWait;
-        public event Action<Move> OnPieceMove;
+        public event Action<MovePerformInfo> OnPieceMove;
         public event Action<Piece> OnPieceDone;
-        public event Action<Move> OnPieceCapture;
-        public event Action<List<Move>> OnBoardUpdateValidMoves;
-        public event Action<List<Move>> OnBoardUpdateCaptureables;
+        public event Action<MovePerformInfo> OnPieceCapture;
+        public event Action<List<MovePerformInfo>> OnBoardUpdateValidMoves;
+        public event Action<List<MovePerformInfo>> OnBoardUpdateCaptureables;
         public event Action<Cellmap<Cell>> OnBoardUpdateCellmap;
-        public event Action<MoveType> OnMoveTypeRequest;
+        // public event Action<MoveType> OnMoveTypeRequest;
         public event Action<bool> OnRequireCapture;
         public event Action OnRefresh;
         public event Action<Side> OnTurnChanged;
@@ -196,7 +196,7 @@ namespace Aritche.Systems
         /// </summary>
         /// <param name="actor"></param>
         /// <param name="piece"></param>
-        public void PlayerSelectMove(Player player, Move move)
+        public void PlayerSelectMove(Player player, MovePerformInfo move)
         {
             OnPlayerSelectMove?.Invoke(player, move);
         }
@@ -323,7 +323,7 @@ namespace Aritche.Systems
         /// <summary>
         /// Fired when a piece is moved.
         /// </summary>
-        public void PieceMove(Move move)
+        public void PieceMove(MovePerformInfo move)
         {
             OnPieceMove?.Invoke(move);
         }
@@ -339,12 +339,12 @@ namespace Aritche.Systems
         /// <summary>
         /// Fired when the Board updates all its valid moves.
         /// </summary>
-        public void BoardUpdateValidMoves(List<Move> moves)
+        public void BoardUpdateValidMoves(List<MovePerformInfo> moves)
         {
             OnBoardUpdateValidMoves?.Invoke(moves);
         }
 
-        public void BoardUpdateCaptureables(List<Move> moves)
+        public void BoardUpdateCaptureables(List<MovePerformInfo> moves)
         {
             OnBoardUpdateCaptureables?.Invoke(moves);
         }
@@ -356,12 +356,12 @@ namespace Aritche.Systems
             OnBoardUpdateCellmap?.Invoke(cellmap);
         }
         
-        public void MoveTypeRequest(MoveType moveType)
-        {
-            OnMoveTypeRequest?.Invoke(moveType);
-        }
+        // public void MoveTypeRequest(MoveType moveType)
+        // {
+        //     OnMoveTypeRequest?.Invoke(moveType);
+        // }
 
-        public void PieceCapture(Move move)
+        public void PieceCapture(MovePerformInfo move)
         {
             OnPieceCapture?.Invoke(move);
         }
@@ -369,10 +369,10 @@ namespace Aritche.Systems
         /// <summary>
         /// Fired when the Board requests for a turn that has a mandatory capture.
         /// </summary>
-        public void RequireCapture(bool value)
-        {
-            OnRequireCapture?.Invoke(value);
-        }
+        // public void RequireCapture(bool value)
+        // {
+        //     OnRequireCapture?.Invoke(value);
+        // }
 
         public void Refresh()
         {

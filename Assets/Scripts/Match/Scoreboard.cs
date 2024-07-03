@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 
 using UnityEngine;
 using TMPro;
@@ -18,8 +16,7 @@ namespace Aritche
 
     public class ScoreboardConclusion
     {
-        public string Reason { get; set; }
-        public MatchConclusion MatchConclusion  { get; set; }
+        public string Message { get; set; }
         public Player Winner { get; set; }
     }
 
@@ -42,9 +39,9 @@ namespace Aritche
             
         }
 
-        internal void OnPieceCaptureCallback(object sender, Move e)
+        internal void OnMovePerformed(MovePerformInfo moveInfo)
         {
-            ComputeScoreByMove(e);
+            ComputeScore(moveInfo);
         }
 
         public void RefreshUI()
@@ -53,26 +50,28 @@ namespace Aritche
             orangeScoreTMP.text = Match.OrangePlayer.fScore.ToString();
         }
 
-        public void ComputeScoreByMove(Move move)
+        public void ComputeScore(MovePerformInfo moveInfo)
         {
             float score;
             char operation;
-            float x = float.Parse(move.CapturingPiece.ValueAsString);
-            float y = float.Parse(move.CapturedPiece.ValueAsString);
+            float x = 0f;
+            if (float.TryParse(moveInfo.CapturingPiece.ValueAsString, out x));
+            float y = 0f;            
+            if (float.TryParse(moveInfo.CapturedPiece.ValueAsString, out y));
 
-            (score, operation) = move.Destination.Operation switch
+            (score, operation) = moveInfo.Destination.Operation switch
             {
                 Operation.Addition => (x + y, '+'),
                 Operation.Subtraction => (x - y, '-'),
                 Operation.Multiplication => (x * y, '×'),
                 Operation.Division => (x / y, '÷'),
-                _ => throw new NotImplementedException(),
+                _ => throw new ArgumentOutOfRangeException(),
             };
 
-            Game.Console.Log($"[ACTION]: {move.CapturingPiece.ValueAsString} {operation} {move.CapturedPiece.ValueAsString} = {score}");
+            Game.Console.Log($"[ACTION]: {moveInfo.CapturingPiece.ValueAsString} {operation} {moveInfo.CapturedPiece.ValueAsString} = {score}");
 
-            move.SetScoreValue(score);
-            AddScore(move.Player, score);
+            moveInfo.SetScoreValue(score);
+            AddScore(moveInfo.Player, score);
             RefreshUI();
         }
 
@@ -102,19 +101,20 @@ namespace Aritche
                 return default;
             }
             
-            conclusion.MatchConclusion = MatchConclusion.Victory;
             if (Match.BluePlayer.fScore > Match.OrangePlayer.fScore)
             {
+                conclusion.Message = $"Winning score";
                 conclusion.Winner = Match.BluePlayer;
             }
             else if (Match.BluePlayer.fScore < Match.OrangePlayer.fScore)
             {
-                conclusion.Winner =  Match.OrangePlayer;
+                conclusion.Message = $"Winning score";
+                conclusion.Winner = Match.OrangePlayer;
             }
             else if (Match.BluePlayer.fScore == Match.OrangePlayer.fScore)
             {
-                conclusion.Winner =  Match.OrangePlayer;
-                conclusion.MatchConclusion = MatchConclusion.Draw;
+                conclusion.Message = $"Scores are equal";
+                conclusion.Winner = null;
             }
 
             return conclusion;

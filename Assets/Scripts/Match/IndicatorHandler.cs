@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -8,135 +9,116 @@ using Aritche.UI;
 
 namespace Aritche
 {
-    public enum IndicatorType {Circle, Box}
+    public enum IndicatorShape { Circle, Box }
+    public enum IndicatedCell { Origin, Destination }
+    public enum IndicatorType { Move, Capture }
 
     public class IndicatorHandler : MonoBehaviour
     {
-        public Ruleset Ruleset { get; private set; }
         public List<Indicator> MoveIndicators = new();
         public List<Indicator> CaptureIndicators = new();
 
         [Header("Prefabs")]
         [SerializeField] GameObject _circleIndicatorPrefab;
         [SerializeField] GameObject _boxIndicatorPrefab;
-
-        void OnEnable()
+        
+        public List<Indicator> CreateIndicators(List<MovePerformInfo> moves, IndicatedCell indicated, IndicatorType type, IndicatorShape shape, Color color)
         {
-            Game.Events.OnRulesetDistribute += ReceiveRuleset;
-            Game.Events.OnDeselect += ClearMoveIndicators;
-            Game.Events.OnPieceCapture += ClearCaptureIndicators;
-            Game.Events.OnPieceDone += ClearMoveIndicators;
-            Game.Events.OnBoardUpdateValidMoves += IndicateValidMoves;
-            Game.Events.OnBoardUpdateCaptureables += IndicateCapturingPieces;
-        }
-        void OnDisable()
-        {
-            Game.Events.OnRulesetDistribute -= ReceiveRuleset;
-            Game.Events.OnDeselect -= ClearMoveIndicators;
-            Game.Events.OnPieceCapture -= ClearCaptureIndicators;
-            Game.Events.OnPieceDone -= ClearMoveIndicators;
-            Game.Events.OnBoardUpdateValidMoves -= IndicateValidMoves;
-            Game.Events.OnBoardUpdateCaptureables -= IndicateCapturingPieces;
-        }
+            var indicators = new List<Indicator>();
 
-        public void ReceiveRuleset(Ruleset rules)
-        {
-            if (Game.Main.Settings.EnableDebugMode) Game.Console.Log("[Debug: Indicators]: Received ruleset");
-            
-            Ruleset = rules;
-            Init();
-        }
-
-        public void Init()
-        {
-
-        }
-
-        public void IndicateValidMoves(List<Move> moves)
-        {
-            foreach (Move move in moves)
+            foreach (MovePerformInfo move in moves)
             {
-                MoveIndicators.Add(CreateIndicator(IndicatorType.Circle, move.Destination, new Color(1, 0.92f, 0.016f, 1f)));
-            }
-        }
-
-        public void IndicateCapturingPieces(List<Move> moves)
-        {
-            if (Ruleset.GetValue<bool>("AllowMandatoryCapture"))
-            {
-                foreach (var move in moves)
+                var cell = indicated switch
                 {
-                    CaptureIndicators.Add(CreateIndicator(IndicatorType.Box, move.Origin, Colors.Lime));
-                }
+                    IndicatedCell.Origin => move.Origin,
+                    IndicatedCell.Destination => move.Destination,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+                var indicator = CreateIndicator(cell: cell, type: type, shape: shape, color: color);
+                indicators.Add(indicator);
+            }
+            return indicators;
+        }
+
+        public void CreateMoveIndicators(List<MovePerformInfo> moves, IndicatorShape shape, Color color)
+        {
+            MoveIndicators = CreateIndicators(
+                moves: moves,
+                indicated: IndicatedCell.Destination,
+                type: IndicatorType.Move,
+                shape: shape,
+                color: color
+            );
+        }
+
+        public void CreateCaptureIndicators(List<MovePerformInfo> moves, IndicatorShape shape, Color color)
+        {
+            CaptureIndicators = CreateIndicators(
+                moves: moves,
+                indicated: IndicatedCell.Origin,
+                type: IndicatorType.Capture,
+                shape: shape,
+                color: color
+            );
+        }
+
+        /// <summary>
+        /// Makes the capture indicators flash.
+        /// </summary>
+        public void HighlightCaptures()
+        {
+            foreach (Indicator indicator in CaptureIndicators)
+            {
+                indicator.Flash();
             }
         }
         
         public void ClearMoveIndicators()
         {
-            foreach (Indicator i in MoveIndicators)
+            foreach (Transform child in transform)
             {
-                Destroy(i.gameObject);
+                if (child.TryGetComponent<Indicator>(out var indicator))
+                {
+                    if (indicator.Type == IndicatorType.Move)
+                    {
+                        indicator.Destroy();
+                    }
+                }
             }
             MoveIndicators.Clear();
         }
         
-        public void ClearMoveIndicators(Piece piece)
-        {
-            ClearMoveIndicators();
-        }
-        
         public void ClearCaptureIndicators()
         {
-            foreach (Indicator i in CaptureIndicators)
+            foreach (Transform child in transform)
             {
-                Destroy(i.gameObject);
+                if (child.TryGetComponent<Indicator>(out var indicator))
+                {
+                    if (indicator.Type == IndicatorType.Capture)
+                    {
+                        indicator.Destroy();
+                    }
+                }
             }
             CaptureIndicators.Clear();
         }
-        
-        public void ClearCaptureIndicators(Move move)
-        {
-            ClearCaptureIndicators();
-        }
 
-        public Indicator CreateIndicator(IndicatorType indicatorType, Cell cell, Color color)
+        public Indicator CreateIndicator(Cell cell, IndicatorType type, IndicatorShape shape, Color color)
         {
-            return indicatorType switch
+            var prefab = shape switch
             {
-                IndicatorType.Circle => CreateIndicatorCircle(cell, color),
-                IndicatorType.Box => CreateIndicatorBox(cell, color),
-                _ => null,
+                IndicatorShape.Circle => _circleIndicatorPrefab,
+                IndicatorShape.Box => _boxIndicatorPrefab,
             };
-        }
 
-        Indicator CreateIndicatorCircle(Cell cell, Color color)
-        {
-            var newIndicator = Instantiate(_circleIndicatorPrefab, cell.transform.position, Quaternion.identity);
-            Indicator c_indicator = newIndicator.GetComponent<Indicator>();
-            SpriteRenderer c_spriteRenderer = newIndicator.GetComponent<SpriteRenderer>();
+            var go = Instantiate(prefab, transform);
+            go.name = $"Indicator ({shape})";
 
-            newIndicator.name = $"Indicator Circle";
-            newIndicator.transform.SetParent(transform);
-            newIndicator.transform.position = cell.transform.position;
-            (c_indicator.Col, c_indicator.Row) = (cell.Col, cell.Row);
-            c_spriteRenderer.color = color;
-            newIndicator.SetActive(true);
-            return c_indicator;
-        }
-
-        Indicator CreateIndicatorBox(Cell cell, Color color)
-        {
-            var newIndicator = Instantiate(_boxIndicatorPrefab, cell.transform.position, Quaternion.identity);
-            Indicator c_indicator = newIndicator.GetComponent<Indicator>();
-            SpriteRenderer c_spriteRenderer = newIndicator.GetComponent<SpriteRenderer>();
-
-            newIndicator.name = $"Indicator Box";
-            newIndicator.transform.SetParent(transform);
-            newIndicator.transform.position = cell.transform.position;
-            (c_indicator.Col, c_indicator.Row) = (cell.Col, cell.Row);
-            c_spriteRenderer.color = color;
-            newIndicator.SetActive(true);
-            return c_indicator;
+            Indicator indicator = go.GetComponent<Indicator>();
+            indicator.MoveToCell(cell);
+            indicator.Color = color;
+            indicator.Type = type;
+            return indicator;
         }
     }
 }

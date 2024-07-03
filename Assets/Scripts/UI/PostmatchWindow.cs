@@ -50,14 +50,14 @@ namespace Aritche.UI
 
         void OnRematch()
         {
+            Game.Main.Match.EndMatch();
             Destroy();
-            Game.Main.LoadScene("Title", playTransition: true);
         }
 
         void OnTitle()
         {
+            Game.Main.Match.EndMatch();
             Destroy();
-            Game.Main.LoadScene("Title", playTransition: true);
         }
 
         public override void OnShow()

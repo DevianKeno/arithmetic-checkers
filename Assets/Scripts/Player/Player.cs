@@ -11,8 +11,8 @@ namespace Aritche.Players
 {
     public class Player : Actor
     {
-        [field: Header("Information")]
-        public Side Side { get; private set; }
+        [SerializeField] Side _side;
+        public Side Side => _side;
         /// <summary>
         /// The player's current alive pieces.
         /// </summary>
@@ -39,7 +39,6 @@ namespace Aritche.Players
         /// Whether if the player is an AI.
         /// </summary>
         public bool IsAI { get; private set; }
-        
         public Cell SelectedCell { get; private set; }
         /// <summary>
         /// The player's currently selected piece.
@@ -47,7 +46,7 @@ namespace Aritche.Players
         public Piece SelectedPiece { get; private set; }
         public Piece HeldPiece { get; private set; }
         /// <summary>
-        /// The piece this player had moved previously.
+        /// The piece this player had previously moved in this same turn.
         /// </summary>
         public Piece MovedPiece { get; private set; }
         /// <summary>
@@ -57,20 +56,21 @@ namespace Aritche.Players
         /// <summary>
         /// The player's turn count.
         /// </summary>
-        public int TurnNumber = 0;
+        public int TurnCount = 0;
         /// <summary>
         /// Whether if it's this player's turn or not.
         /// </summary>
-        public bool IsMyTurn { get; private set; }
+        // public bool IsMyTurn { get; private set; }
         public bool IsPaused { get; private set; }
 
-        [SerializeField] private float MouseHoldTime = 0f;
+        [SerializeField] float mouseHoldTime = 0f;
+
 
         #region Events
         public event EventHandler<PointerEventData.InputButton> OnClick;
         public event EventHandler<Cell> OnCellSelect;
-        public event EventHandler<Cell> OnCellDeselect;
         public event EventHandler<Piece> OnPieceSelect;
+        public event EventHandler OnCellDeselect;
 
         #endregion
 
@@ -86,33 +86,11 @@ namespace Aritche.Players
             DetectRaycast();
         }
 
-        void OnEnable()
-        {
-            Game.Events.OnTurnChanged += OnTurnChanged;
-            // Game.Events.OnLobbyStart += InitOnline;
-            Game.Events.OnPieceDone += Deselect;
-        }
-
-        void OnDisable()
-        {
-            // Game.Events.OnPieceMove -= IMadeAMove;
-            Game.Events.OnTurnChanged -= OnTurnChanged;
-            // Game.Events.OnLobbyStart -= InitOnline;
-            Game.Events.OnPieceDone -= Deselect;
-        }
-
-        // public void InitOnline(Lobby lobby)
-        // {
-        //     // Game.Events.OnPieceMove += IMadeAMove;
-        // }
-
         internal void Initialize()
         {
-            // Name = Game.Main.Nickname;
             name = $"{Game.Main.Nickname} (Player)";
             Score = new();
             InitializeInputs();
-            Game.Events.PlayerCreate(this);
         }
 
         void InitializeInputs()
@@ -139,12 +117,8 @@ namespace Aritche.Players
         void HandleLeftClick(InputAction.CallbackContext c)
         {
             if (IsPaused) return;
-            /// Check if there's a piece currently selected and if the player is not holding the mouse button
-            /// This is to avoid selecting the moved piece again after selecting a cell via left click
-            if (SelectedPiece != null && !IsHoldingMouse) return;
-
+            
             CastRay();
-            Game.Events.PlayerLeftClick(this);
             OnClick?.Invoke(this, PointerEventData.InputButton.Left);
         }
 
@@ -158,7 +132,6 @@ namespace Aritche.Players
             if (IsPaused) return;
 
             CastRay();
-            Game.Events.PlayerRightClick(this);   
             OnClick?.Invoke(this, PointerEventData.InputButton.Right);
         }
 
@@ -181,20 +154,34 @@ namespace Aritche.Players
 
         void HandlePause(InputAction.CallbackContext c)
         {
+            if (!Game.Main.HasMatch) return;
+
             /// When on online matches, these should be handled differently
             /// As they will now be "requesting" pauses or just pause on their own
-            if (IsMyTurn)
-            {
-                Deselect();
-                IsPaused = !IsPaused;
-                if (Game.Main.HasMatch)
-                {
-                    Game.Main.Match.Pause(this);
-                }
-            }
+            Deselect();
+            IsPaused = !IsPaused;
+            Game.Main.Match.Pause(this);
         }
 
         #region Public
+
+        public void RemoveFromPieces(Piece piece)
+        {
+            var capturedPiece = Pieces.Find((Piece p) =>
+            {
+                return p == piece;
+            });
+            if (capturedPiece != null)
+            {
+                capturedPiece.Remove();
+            }
+        }
+
+        public void SetData(PlayerData data)
+        {
+            SetName(data.Name);
+            SetSide(data.Side);
+        }
 
         public string SetName(string value)
         {
@@ -210,7 +197,7 @@ namespace Aritche.Players
 
         public void SetSide(Side value)
         {
-            Side = value;
+            _side = value;
         }
 
         public void SetScore(float value)
@@ -218,23 +205,7 @@ namespace Aritche.Players
             fScore = value;
         }
 
-        /// <summary>
-        /// Whenever the board calls for a turn change, listen if it's this player's turn.
-        /// </summary>
-        public void OnTurnChanged(Side side)
-        {
-            if (Side == side)
-            {
-                AllowControls = true;
-                IsMyTurn = true;
-            } else
-            {
-                AllowControls = false;
-                IsMyTurn = false;
-            }
-        }
-
-        public void SetPieceOwnership(List<Piece> pieces)
+        public void AssignPieceOwnership(List<Piece> pieces)
         {
             foreach (Piece piece in pieces)
             {
@@ -254,17 +225,18 @@ namespace Aritche.Players
             {
                 if (!Game.Main.Settings.AllowPieceDragging) return;
 
-                MouseHoldTime += 1 * Time.deltaTime;
-                if (MouseHoldTime >= Game.Main.Settings.PieceGrabDelay)
+                mouseHoldTime += 1 * Time.deltaTime;
+                if (mouseHoldTime >= Game.Main.Settings.PieceGrabDelay)
                 {
-                    MouseHoldTime = Game.Main.Settings.PieceGrabDelay; /// Inhibit value to max hold time
+                    mouseHoldTime = Game.Main.Settings.PieceGrabDelay; /// Inhibit value to max hold time
                     IsHoldingMouse = true;
 
                     /// If there's a piece already held, move it along the cursor
                     if (HeldPiece != null)
                     {
                         HeldPiece.ToCursor();
-                    } else /// "hold" the selected piece first 
+                    }
+                    else /// "hold" the selected piece first 
                     {
                         HeldPiece = SelectedPiece;
                     }
@@ -274,13 +246,13 @@ namespace Aritche.Players
             /// Left click release
             if (Mouse.current.leftButton.wasReleasedThisFrame)
             {
-                MouseHoldTime = 0f;
+                mouseHoldTime = 0f;
                 CastRay();
 
                 if (IsHoldingMouse)
                 {
                     IsHoldingMouse = false;
-                    Game.Events.PlayerRelease(this);
+                    ReleaseHeldPiece();
                 }
             }
         }
@@ -290,25 +262,21 @@ namespace Aritche.Players
         /// </summary>
         void CastRay()
         {
-            /// If network is online (an instance of a client is active)
-            /// only allow control of owned player object
-            // if (IsClient && !IsOwner) return;
             if (!AllowControls) return;
 
             hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);  
-            if (Hit.collider == null) return;
+            if (hit.collider == null) return;
 
-            if (Hit.collider.CompareTag("Cell"))
+            if (hit.collider.CompareTag("Cell"))
             {
-                if (Hit.collider.gameObject.TryGetComponent(out Cell cell))
+                if (hit.collider.gameObject.TryGetComponent(out Cell cell))
                 {
                     SelectCell(cell);
                 }
-
-            } else if (Hit.collider.CompareTag("Background"))
+            }
+            else if (hit.collider.CompareTag("Background"))
             {
-                Debug.Log("Clicked background");
-                Game.Events.CellDeselect(SelectedCell);
+                Deselect();
             }
         }
 
@@ -318,22 +286,24 @@ namespace Aritche.Players
         public void SelectCell(Cell cell)
         {
             SelectedCell = cell;
-            OnCellSelect?.Invoke(this, cell);
 
             if (SelectedCell.HasPiece)
             {
                 SelectPiece(SelectedCell.Piece);
-            
-            } else /// empty cell
+            }
+            else /// empty cell
             {
-                if (SelectedCell.IsValidMove)
+                if (cell.IsValidMove && SelectedPiece != null)
                 {
-                    SelectMovecell(SelectedCell);
-                } else
+                    MovedPiece = SelectedPiece;
+                }
+                else
                 {
                     Deselect();
                 }
             }
+
+            OnCellSelect?.Invoke(this, SelectedCell);
         }
 
         /// <summary>
@@ -341,25 +311,24 @@ namespace Aritche.Players
         /// </summary>
         public void SelectPiece(Piece piece)
         {
-            if (piece == null) return;
-
             if (!IsMyPiece(piece))
             {
                 Deselect();
                 return;
             }
 
+            /// 
             if (SelectedPiece != null)
             {
                 if (SelectedPiece == piece)
                 {
                     ReleaseHeldPiece();
-                    return;
-                } else
+                }
+                else
                 {
                     Deselect();
-                    return;
                 }
+                return;
             }
 
             if (MovedPiece != null)
@@ -367,47 +336,30 @@ namespace Aritche.Players
                 if (piece != MovedPiece)
                 {
                     Deselect();
-                    return;
                 }
-            } else
+                return;
+            }
+            else
             {
                 SelectedPiece = piece;
-                Game.Events.PlayerSelectPiece(this, SelectedPiece);
+                // Game.Audio.PlaySound("select");
                 OnPieceSelect?.Invoke(this, SelectedPiece);
-
-                Game.Audio.PlaySound("select");
                 return;
             }
         }
-
-        /// <summary>
-        /// A movecell is a basically a cell, but is marked as a valid move.
-        /// </summary>
-        /// <param name="cell"></param>
-        public void SelectMovecell(Cell cell = null)
+        
+        public void FinishTurn()
         {
-            if (SelectedPiece == null) return;
-            if (!OwnsSelectedPiece(SelectedPiece)) return;
-
-            if (cell != null) SelectedCell = cell;
-
-            if (IsMyTurn) /// it's a normal move
-            {
-                Game.Events.PlayerSelectMovecell(this, SelectedCell);
-                Game.Audio.PlaySound("move");
-                return;
-
-            } else /// it's a premove
-            {
-                /// Premove logic
-                return;
-            }
+            SelectedCell = null;
+            SelectedPiece = null;
+            MovedPiece = null;
+            Deselect();
         }
 
         /// <summary>
         /// Check if this player owns the piece it has currently selected.
         /// </summary>
-        public bool OwnsSelectedPiece(Piece piece)
+        public bool OwnsSelectedPiece()
         {
             if (SelectedPiece == null) return false;
             if (SelectedPiece.Side == Side) return true;
@@ -419,13 +371,8 @@ namespace Aritche.Players
         /// </summary>
         public bool IsMyPiece(Piece piece)
         {
-            if (piece.Side == Side)
-            {
-                return true;
-            } else
-            {
-                return false;
-            }
+            if (piece == null) return false;
+            return piece.Side == Side;
         }
 
         /// <summary>
@@ -439,16 +386,12 @@ namespace Aritche.Players
 
         public void Deselect()
         {
+            if (SelectedCell != null)
+            {
+                OnCellDeselect?.Invoke(this, null);
+            }
             SelectedPiece = null;
             ReleaseHeldPiece();
-
-            Game.Events.Deselect();
-            Game.Events.PlayerDeselect(this);
-        }
-
-        public void Deselect(Piece piece)
-        {
-            Deselect();
         }
 
         public void ToggleControls(bool value)

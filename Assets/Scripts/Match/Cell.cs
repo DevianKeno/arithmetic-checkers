@@ -1,9 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Aritche.UI;
 using System;
+using System.Collections.Generic;
+
+using UnityEngine;
 using UnityEngine.EventSystems;
+
+using Aritche.UI;
 
 namespace Aritche
 {
@@ -12,11 +13,11 @@ namespace Aritche
     [Serializable]
     public struct CellData
     {
-        public Vector2 Coordinates;
-        public Operation Operation;
+        public Vector2 Coordinates { get; set; }
+        public Operation Operation { get; set; }
     }
 
-    public class Cell : MonoBehaviour, IPointerDownHandler
+    public class Cell : MonoBehaviour
     {
         public int Col { get; private set; }
         public int Row { get; private set; }
@@ -24,7 +25,7 @@ namespace Aritche
         {
             get
             {
-                return new(Col, Row);
+                return new (Col, Row);
             }
         }
         public Operation Operation { get; private set; }
@@ -32,8 +33,16 @@ namespace Aritche
         /// The piece in this cell.
         /// </summary>
         public Piece Piece { get; private set; }
-        public bool HasPiece { get; private set; }
-        public bool IsValidMove { get; set; }
+        public bool HasPiece
+        {
+            get
+            {
+                return Piece != null;
+            }
+        }
+        public bool IsValidMove { get; internal set;}
+
+        public event EventHandler<PointerEventData> OnClick;
 
         public List<Sprite> Sprites;
         static GameObject prefab;
@@ -47,27 +56,12 @@ namespace Aritche
             spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
-        void Start()
-        {
-            Game.Events.OnDeselect += Reset;
-        }
-
-        public void Reset()
-        {
-            IsValidMove = false;
-        }
-
         public static Cell Create(int col, int row)
         {
             Cell cell = Instantiate(prefab).GetComponent<Cell>();
             cell.SetColRow(col, row);
 
             return cell;
-        }
-
-        public void Refresh()
-        {
-            IsValidMove = false;
         }
 
         public void SetOperation(Operation value)
@@ -91,23 +85,12 @@ namespace Aritche
             Row = rowValue;
         }
 
-        public Piece GetPiece()
-        {
-            if(Piece != null)
-            {
-                return Piece;
-            }
-            return null;
-        }
-
         public void SetPiece(Piece piece)
         {
             if (piece == null) return;
             
             Piece = piece;
             Piece.SetCell(this, setPosition: true);
-            HasPiece = true;
-            IsValidMove = false; /// Refresh
         }
 
         public void RemovePiece()
@@ -122,12 +105,11 @@ namespace Aritche
         public void ClearPiece()
         {
             Piece = null;
-            HasPiece = false;
         }
 
         public void OnPointerDown(PointerEventData e)
         {
-            Game.Events.CellClick(this, e);
+            OnClick?.Invoke(this, e);
         }
     }
 }

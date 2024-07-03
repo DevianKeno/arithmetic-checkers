@@ -156,15 +156,13 @@ namespace Aritche.Rules
 
         public bool TryGetRule<T>(string rulename, out Rule<T> rule)
         {
+            rule = default;
             if (Rules.ContainsKey(rulename))
             {
                 rule = (Rule<T>) Rules[rulename];
                 return true;
-            } else
-            {                
-                rule = default;
-                return false;
             }
+            return false;
         }
 
         public object GetRule(string rulename)
@@ -180,6 +178,17 @@ namespace Aritche.Rules
         {
             var rule = (Rule<T>) GetRule(rulename);
             return rule.Value;
+        }
+
+        public bool TryGetValue<T>(string rulename, out T value)
+        {
+            value = default;
+            if (Rules.ContainsKey(rulename))
+            {
+                value = ((Rule<T>) Rules[rulename]).Value;
+                return true;
+            }
+            return false;
         }
 
         public void SetValue<T>(string rulename, T value)

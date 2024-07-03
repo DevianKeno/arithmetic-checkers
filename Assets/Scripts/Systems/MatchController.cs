@@ -29,6 +29,11 @@ namespace Aritche.Systems
         public Player BluePlayer;
         public Player OrangePlayer;
         public List<Player> Spectators = new();
+        public int TurnNumber = -1;
+        [SerializeField] Side turnOf;
+        public Side TurnOf => turnOf;
+        bool _changeTurnOnFinish = false;
+        public bool _turnRequiresCapture = false;
 
         [SerializeField] Board board;
         public Board Board => board;
@@ -36,10 +41,20 @@ namespace Aritche.Systems
         public Scoreboard Scoreboard => scoreboard;
         [SerializeField] TimerManager timerManager;
         public TimerManager TimerManager => timerManager;
+        [SerializeField] Selector selector;
+        [SerializeField] IndicatorHandler indicators;
         [SerializeField] Cheats cheats;
         public Cheats Cheats => cheats;
 
         PauseMenu pauseMenu;
+        PrematchWindow prematchWindow;
+        PostmatchWindow postmatchWindow;
+
+        #region Match events
+
+        public event EventHandler<Side> OnTurnChanged;
+
+        #endregion
 
         [Header("UI Elements")]
         [SerializeField] TextMeshProUGUI rulesetText;
@@ -134,34 +149,49 @@ namespace Aritche.Systems
 
         void InitializeEvents()
         {
-            board.OnPieceMove += OnPieceMoveCallback;
-            board.OnPieceCapture += OnPieceCaptureCallback;
-            board.OnTurnChange += OnTurnChangedCallback;
+            CaptureBoardEvents();
+
+            OnTurnChanged += OnTurnChangedCallback;
+        }
+
+        void CaptureBoardEvents()
+        {
+            board.OnMovePerform += OnMovePerform;
+            board.OnUpdateValidMoves += OnUpdateValidMoves;
+            board.OnUpdateCaptureMoves += OnUpdateCaptureables;
         }
 
         void SetupLocalMatch()
         {
-            BluePlayer = CreatePlayer(Side.Blue);
-            BluePlayer.SetPieceOwnership(board.BluePieces);
-            BluePlayer.ToggleControls(true);
+            prematchWindow = Game.UI.Create<PrematchWindow>("prematch_window");
+            prematchWindow.OnStart += InitializePlayers;
+        }
 
-            OrangePlayer = CreatePlayer(Side.Orange);
-            OrangePlayer.SetPieceOwnership(board.OrangePieces);
-            OrangePlayer.ToggleControls(true);
-
-            var prematchWindow = Game.UI.Create<PrematchWindow>("prematch_window");
-            prematchWindow.OnStart += () =>
+        void InitializePlayers()
+        {
+            var blueName = prematchWindow.blueNameField.text;
+            BluePlayer = InstantiatePlayerPrefab(new()
             {
-                var blueName = prematchWindow.blueNameField.text;
-                BluePlayer.Name = blueName;
-                bluePlayerDisplay.DisplayName = blueName;
-                bluePlayerDisplay.SetSomebody();
+                Name = blueName,
+                Side = Side.Blue
+            });
+            BluePlayer.AssignPieceOwnership(board.BluePieces);
 
-                var orangeName = prematchWindow.orangeNameField.text;
-                BluePlayer.Name = orangeName;
-                orangePlayerDisplay.DisplayName = orangeName;
-                orangePlayerDisplay.SetSomebody();
-            };
+            bluePlayerDisplay.DisplayName = blueName;
+            bluePlayerDisplay.SetSomebody();
+            BluePlayer.ToggleControls(false);
+            
+            var orangeName = prematchWindow.orangeNameField.text;
+            OrangePlayer = InstantiatePlayerPrefab(new()
+            {
+                Name = orangeName,
+                Side = Side.Orange
+            });
+            OrangePlayer.AssignPieceOwnership(board.OrangePieces);
+
+            orangePlayerDisplay.DisplayName = orangeName;
+            orangePlayerDisplay.SetSomebody();
+            OrangePlayer.ToggleControls(false);
         }
 
         void SetupOnlineMatch()
@@ -172,34 +202,123 @@ namespace Aritche.Systems
 
         #region Callback listeners
 
-        void OnPieceMoveCallback(object sender, Move e)
+        void CapturePlayerEvents(Player player)
+        {
+            player.OnCellSelect += OnPlayerCellSelect;
+            player.OnCellDeselect += OnPlayerCellDeselect;
+            player.OnPieceSelect += OnPlayerPieceSelect;
+        }
+
+        void OnMovePerform(object sender, MovePerformInfo moveInfo)
+        {
+            board.ClearValidMoves();
+            selector.Hide();
+            indicators.ClearMoveIndicators();
+            indicators.ClearCaptureIndicators();
+
+            _changeTurnOnFinish = true;
+
+            if (moveInfo.MoveType == MoveType.Move)
+            {
+                HandleMove(moveInfo);
+            }
+            else if (moveInfo.MoveType == MoveType.Capture)
+            {
+                HandleCapture(moveInfo);
+            }
+
+            if (Ruleset.GetValue<bool>("AllowMandatoryCapture"))
+            {
+                if (board.CheckIfCaptureable(moveInfo.CapturingPiece, out var moves, setAsValid: true))
+                {
+                    _turnRequiresCapture = true;
+                }
+                else
+                {
+                    _turnRequiresCapture = false;
+                }
+            }
+
+            moveInfo.Player.FinishTurn();
+            if (_changeTurnOnFinish)
+            {
+                ChangeTurns();
+            }
+        }
+
+        void HandleMove(MovePerformInfo moveInfo)
         {
             
         }
 
-        void OnPieceCaptureCallback(object sender, Move e)
+        void HandleCapture(MovePerformInfo moveInfo)
         {
-            var capturedPieceOwner = GetPlayerFromSide(e.CapturedPiece.Owner.Side);
+            scoreboard.OnMovePerformed(moveInfo); /// Handle score
+            CheckForLossCondition(moveInfo);
+            
+            if (Ruleset.GetValue<bool>("AllowChainCapture")) /// Check for chain captures
+            {
+                board.GetPieceMoves(moveInfo.CapturingPiece, MoveType.Capture);
+                if (moveInfo.CapturingPiece.CanCapture)
+                {
+                    _changeTurnOnFinish = false;
+                }
+            }
+        }
 
-            var result = capturedPieceOwner.Pieces.Find((Piece piece) =>
+        void OnPlayerCellSelect(object sender, Cell cell)
+        {
+            var player = sender as Player;
+            if (!IsTurnOf(player)) return;
+            
+            if (cell.HasPiece)
             {
-                return piece == e.CapturedPiece;
-            });
-            if (result != null)
+                selector.SelectCell(cell);
+            }
+            else
             {
-                capturedPieceOwner.Pieces.Remove(result);
+                selector.Hide();
+            }
+            
+            board.SelectCell(cell, player);
+        }
+
+        void OnPlayerCellDeselect(object sender, EventArgs e)
+        {
+            var player = sender as Player;
+            if (!IsTurnOf(player)) return;
+            
+            board.ClearValidMoves();
+            selector.Hide();
+            indicators.ClearMoveIndicators();
+        }
+
+        void OnPlayerPieceSelect(object sender, Piece piece)
+        {
+            if (_turnRequiresCapture && !piece.CanCapture)
+            {
+                indicators.HighlightCaptures();
+                return;
             }
 
-            if (capturedPieceOwner.Pieces.Count <= 0)
-            {
-                BluePlayer.ToggleControls(false);
-                OrangePlayer.ToggleControls(false);
+            board.SelectPiece(piece, _turnRequiresCapture);
+        }
 
-                /// Handled not pretty
-                Invoke(nameof(ConcludeMatch), 1f);
-            }
+        void OnUpdateValidMoves(object sender, List<MovePerformInfo> moves)
+        {
+            indicators.ClearMoveIndicators();
+            indicators.CreateMoveIndicators(
+                moves: moves,
+                shape: IndicatorShape.Circle,
+                color: new(1, 0.92f, 0.016f, 1f)); /// yellow
+        }
 
-            scoreboard.OnPieceCaptureCallback(sender, e);
+        void OnUpdateCaptureables(object sender, List<MovePerformInfo> moves)
+        {
+            indicators.CreateCaptureIndicators(
+                moves: moves,
+                shape: IndicatorShape.Box,
+                color: Colors.Lime);
         }
 
         void OnTurnChangedCallback(object sender, Side e)
@@ -210,31 +329,108 @@ namespace Aritche.Systems
         #endregion
 
 
+        public void ResetTurns()
+        {
+            ChangeTurnTo(Ruleset.GetValue<Side>("FirstTurn"));
+            TurnNumber = 0;
+        }
+        
+        public void ChangeTurns()
+        {
+            if (turnOf == Side.Blue)
+            {
+                turnOf = Side.Orange;
+                OrangePlayer.ToggleControls(true);
+                BluePlayer.ToggleControls(false);
+            }
+            else if (turnOf == Side.Orange)
+            {
+                turnOf = Side.Blue;
+                OrangePlayer.ToggleControls(false);
+                BluePlayer.ToggleControls(true);
+            }
+
+            TurnNumber++;
+            OnTurnChanged?.Invoke(this, turnOf);
+        }
+
+        public void ChangeTurnTo(Side side)
+        {
+            turnOf = side;
+            if (turnOf == Side.Blue)
+            {
+                OrangePlayer.ToggleControls(false);
+                BluePlayer.ToggleControls(true);
+            }
+            else if (turnOf == Side.Orange)
+            {
+                OrangePlayer.ToggleControls(true);
+                BluePlayer.ToggleControls(false);
+            }
+
+            TurnNumber++;
+            OnTurnChanged?.Invoke(this, turnOf);
+        }
+
+
         #region Public methods
 
-        public void ConcludeMatch()
+        public bool IsTurnOf(Player player)
         {
+            return turnOf == player.Side;
+        }
+
+        public void CheckForLossCondition(MovePerformInfo move)
+        {
+            if (move.CapturedPiece.Owner.Pieces.Count <= 0)
+            {
+                /// No more pieces
+                BluePlayer.ToggleControls(false);
+                OrangePlayer.ToggleControls(false);
+                /// Handled not pretty
+                Invoke(nameof(ConcludeMatch), 1f);
+            }
+        }
+
+        public MatchConclusion ConcludeMatch()
+        {
+            BluePlayer.AllowControls = false;
+            OrangePlayer.AllowControls = false;
+            timerManager.PauseAll();
+
             var postmatchWindow = Game.UI.Create<PostmatchWindow>("postmatch_window");
             postmatchWindow.Match = this;
-            var conclusion = scoreboard.GetConclusion();
+            MatchConclusion matchConclusion;
+            var scoreConclusion = scoreboard.GetConclusion();
 
-            if (conclusion.MatchConclusion == MatchConclusion.Victory)
+            if (scoreConclusion.Winner != null)
             {
-                postmatchWindow.SetWinningSide(conclusion.Winner.Side);
+                matchConclusion = MatchConclusion.Victory;
+                postmatchWindow.SetWinningSide(scoreConclusion.Winner.Side);
             }
-            else if (conclusion.MatchConclusion == MatchConclusion.Draw)
+            else
             {
+                matchConclusion = MatchConclusion.Draw;
                 postmatchWindow.SetDraw();
             }
+            
             postmatchWindow.Show();
+            return matchConclusion;
         }
 
         public void EndMatch()
         {
-            /// Everything here is handled poorly
-            ConcludeMatch();
-
-            Ruleset = null;
+            // Destroy(board.gameObject);
+            // Destroy(BluePlayer.gameObject);
+            // Destroy(OrangePlayer.gameObject);
+            // Ruleset = null;
+            // IsPlaying = false;
+            // IsPaused = false;
+            
+            Game.Main.LoadScene("Title", playTransition: true, 0f, () =>
+            {
+                
+            });
         }
 
         public Player GetPlayerFromSide(Side side)
@@ -260,6 +456,7 @@ namespace Aritche.Systems
             {
                 IsPaused = true;
                 pauseMenu = Game.UI.Create<PauseMenu>("pause_menu");
+                pauseMenu.Player = requestor;
 
                 if (requestor.Side == Side.Blue)
                 {
@@ -285,16 +482,17 @@ namespace Aritche.Systems
 
         #endregion
 
-
-        Player CreatePlayer(Side side)
+        Player InstantiatePlayerPrefab(PlayerData data)
         {
             var go = Instantiate(playerPrefab);
-            go.name = $"{side} Player";
+            go.name = $"{data.Side} Player";
             
             Player newPlayer = go.GetComponent<Player>();
-            newPlayer.SetSide(side);
+            newPlayer.SetData(data);
             newPlayer.SetPlaying(true);
+            CapturePlayerEvents(newPlayer);
             Game.Events.PlayerCreate(newPlayer);
+
             return newPlayer;
         }
         
@@ -322,6 +520,8 @@ namespace Aritche.Systems
             }
             board.BeginMatch();
             timerManager.BeginMatch();
+            BluePlayer.ToggleControls(true);
+            OrangePlayer.ToggleControls(true);
             IsPlaying = true;
         }
 

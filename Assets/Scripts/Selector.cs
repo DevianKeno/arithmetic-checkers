@@ -1,13 +1,26 @@
 using UnityEngine;
 using Aritche.UI;
 using Aritche.Players;
+using System;
+using Aritche.Systems;
 
 namespace Aritche
 {
     public class Selector : MonoBehaviour
     {
-        public int Col, Row;
-        public Color Color = Colors.SkyBlue;
+        public MatchController Match;
+        public Color Color
+        {
+            get
+            {
+                return spriteRenderer.color;
+            }
+            set
+            {
+                spriteRenderer.color = value;
+            }
+        }
+
         RectTransform rect;
         SpriteRenderer spriteRenderer;
         
@@ -19,25 +32,40 @@ namespace Aritche
         
         void Start()
         {
-            Game.Events.OnPlayerSelectPiece += Move;
-            Game.Events.OnPieceCapture += Hide;
-            Game.Events.OnPieceDone += Hide;
-            Game.Events.OnDeselect += Hide;
-        }
-        
-        void OnDisable()
-        {
-            Game.Events.OnPlayerSelectPiece -= Move;
-            Game.Events.OnDeselect -= Hide;
-            Game.Events.OnPieceCapture += Hide;
-            Game.Events.OnPieceDone -= Hide;
-            Game.Events.OnDeselect -= Hide;
+            Game.Events.OnPlayerCreate += OnPlayerCreate;
+            Hide();
         }
 
-        public void Move(Player player, Piece piece)
+        void OnDisable()
+        {
+            Game.Events.OnPlayerCreate -= OnPlayerCreate;
+        }
+
+        void OnPlayerCreate(Player player)
+        {
+            if (player == null) return;
+
+            player.OnCellSelect += OnPlayerCellSelect;
+            player.OnCellDeselect += OnPlayerCellDeselect;
+        }
+
+        void OnPlayerCellSelect(object sender, Cell cell)
+        {
+            SelectCell(cell);
+        }
+
+        void OnPlayerCellDeselect(object sender, EventArgs e)
+        {
+            Hide();
+        }
+
+
+        #region Public methods
+
+        public void SelectCell(Cell cell)
         {
             Show();
-            transform.position = piece.Cell.transform.position;
+            transform.position = cell.transform.position;
         }
         
         public void Show()
@@ -50,13 +78,6 @@ namespace Aritche
             gameObject.SetActive(false);
         }
 
-        public void Hide(Piece piece)
-        {
-            Hide();
-        }
-        public void Hide(Move move)
-        {
-            Hide();
-        }
+        #endregion
     }
 }

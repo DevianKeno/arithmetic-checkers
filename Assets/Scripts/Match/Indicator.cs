@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Aritche
@@ -9,16 +6,38 @@ namespace Aritche
     {
         public int Col;
         public int Row;
-        public Color Color;
-        public Sprite Sprite;
+        public IndicatorType Type { get; set; }
+        public Color Color
+        {
+            get
+            {
+                return spriteRenderer.color;
+            }
+            set
+            {
+                spriteRenderer.color = value;
+            }
+        }
+        public Color FlashColor = Color.white;
+        public Sprite Sprite
+        {
+            get
+            {
+                return spriteRenderer.sprite;
+            }
+            set
+            {
+                spriteRenderer.sprite = value;
+            }
+        }
         public bool ForceDisplay = false;
-        public RectTransform rectTransform;
-        public SpriteRenderer spriteRenderer;
+
+        [SerializeField] RectTransform rect;
+        [SerializeField] SpriteRenderer spriteRenderer;
 
         void Awake()
         {
-            Sprite = GetComponent<Sprite>();
-            rectTransform = GetComponent<RectTransform>();
+            rect = GetComponent<RectTransform>();
             spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
@@ -32,21 +51,25 @@ namespace Aritche
             gameObject.SetActive(false);
         }
 
-        public void Move(Cell cell, bool show = false)
+        public void MoveToCell(Cell cell)
         {
-            if (show) gameObject.SetActive(true);
-            (Col, Row) = (cell.Col, cell.Row);
             transform.position = cell.transform.position;
+            Col = cell.Col;
+            Row = cell.Row;
+            gameObject.SetActive(true);
         }
 
-        public void Delete()
+        public void Flash()
         {
-            Destroy(this);
+            Color oldColor = Color;
+            Color = FlashColor;
+            LeanTween.color(gameObject, oldColor, 1f)
+            .setEase(LeanTweenType.easeOutCubic);
         }
 
-        public void SetColor(Color value)
+        public void Destroy()
         {
-            spriteRenderer.color = value;
+            Destroy(gameObject);
         }
     }
 }

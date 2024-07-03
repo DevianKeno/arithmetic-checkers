@@ -19,25 +19,22 @@ namespace Aritche
         Ruleset Ruleset { get; set; }
         public Themes Theme;
 
-        List<Cell> _cells = new();
-        Dictionary<Vector2, Cell> _cellCoordinates = new();
-        List<Piece> _pieces = new();
         public List<Piece> BluePieces = new();
         public List<Piece> OrangePieces = new();
 
-        [SerializeField] Cell selectedCell = null;
-        public Piece SelectedPiece = null;
-        public Piece MovedPiece = null;
-        public List<Move> ValidMoves = new();
-        public MoveType MovesToGet = MoveType.All;
-        public bool TurnRequiresCapture = false;
+        List<Cell> _cells = new();
+        List<Piece> _pieces = new();
+        List<MovePerformInfo> _validMoves = new();
+        Dictionary<Vector2, Cell> _cellCoordinates = new();
         public bool IsFlipped { get; private set; }
-        public int TurnNumber = -1;
-        public Side TurnOf;
 
-        public event EventHandler<Side> OnTurnChange;
-        public event EventHandler<Move> OnPieceMove;
-        public event EventHandler<Move> OnPieceCapture;
+        #region Events
+        public event EventHandler<MovePerformInfo> OnMovePerform;
+        public event EventHandler<List<MovePerformInfo>> OnUpdateMoves;
+        public event EventHandler<List<MovePerformInfo>> OnUpdateValidMoves;
+        public event EventHandler<List<MovePerformInfo>> OnUpdateCaptureMoves;
+
+        #endregion
 
         bool SymbolVisible;
         bool PieceVisible;
@@ -59,38 +56,13 @@ namespace Aritche
 
         void Awake()
         {
-            rectTransform = GetComponent<RectTransform>();
+            
+
             Theme = transform.Find("Theme").GetComponent<Themes>();
+
+            
         }
 
-        void Start()
-        {
-
-        }
-
-        void OnEnable()
-        {
-            Game.Events.OnMatchBegin += BeginMatch;
-            Game.Events.OnPlayerSelectPiece += SelectPiece;
-            Game.Events.OnPlayerSelectMovecell += SelectMovecell;
-            Game.Events.OnDeselect += ClearValidMoves;
-            Game.Events.OnMoveTypeRequest += UpdateMoveType;
-            Game.Events.OnRequireCapture += UpdateRequireCaptureState;
-            // Game.Events.OnPieceDone += CheckForKing;
-            Game.Events.OnBoardFlip += Flip;
-        }
-
-        void OnDisable()
-        {
-            Game.Events.OnMatchBegin -= BeginMatch;
-            Game.Events.OnPlayerSelectPiece -= SelectPiece;
-            Game.Events.OnPlayerSelectMovecell -= SelectMovecell;
-            Game.Events.OnDeselect -= ClearValidMoves;
-            Game.Events.OnMoveTypeRequest -= UpdateMoveType;
-            Game.Events.OnRequireCapture -= UpdateRequireCaptureState;
-            // Game.Events.OnPieceDone -= CheckForKing;
-            Game.Events.OnBoardFlip -= Flip;
-        }
 
         #region Initializing methods
         
@@ -183,6 +155,12 @@ namespace Aritche
             }
         }
 
+        Cell InstantiateCellPrefab()
+        {
+            var go = Instantiate(cellPrefab, cellGroup.transform);
+            return go.GetComponent<Cell>();
+        }
+
         Piece InstantiatePiecePrefab()
         {
             var go = Instantiate(piecePrefab, pieceGroup.transform);
@@ -201,39 +179,11 @@ namespace Aritche
 
         public void BeginMatch()
         {
-            Reset();
+            // Reset();
             ToggleSymbolVisibility(true);
             TogglePieceVisibility(true);
         }
 
-        public void Reset()
-        {
-            TurnNumber = 0;
-            ChangeTurnTo(Ruleset.GetValue<Side>("FirstTurn"));
-        }
-
-        public void ChangeTurns()
-        {
-            if (TurnOf == Side.Blue)
-            {
-                TurnOf = Side.Orange;
-            } else if (TurnOf == Side.Orange)
-            {
-                TurnOf = Side.Blue;
-            }
-            TurnNumber++;
-            ClearValidMoves();
-            OnTurnChange?.Invoke(this, TurnOf);
-            Game.Events.TurnChanged(TurnOf);
-        }
-
-        public void ChangeTurnTo(Side side)
-        {
-            TurnOf = side;
-            TurnNumber++;
-            ClearValidMoves();
-            Game.Events.TurnChanged(side);
-        }
 
         #region Board visibility methods
         /// <summary>
@@ -254,7 +204,8 @@ namespace Aritche
                 {
                     c.transform.Rotate(0f, 0f, -180f);
                 }
-            } else
+            }
+            else
             {
                 Game.Console.Log("Flipping board");
                 cellGroup.transform.Rotate(0f, 0f, 180f);
@@ -311,122 +262,121 @@ namespace Aritche
         }
         
         #endregion
-        
-        public void ClearValidMoves()
+
+        /// <summary>
+        /// 
+        /// </summary>
+        internal void UpdateValidMoves(List<MovePerformInfo> moves)
         {
-            foreach (var move in ValidMoves)
+            _validMoves = moves;
+            foreach (var move in _validMoves)
+            {
+                move.Destination.IsValidMove = true;
+            }
+        }
+
+        /// <summary>
+        /// Clears out all cached valid moves.
+        /// </summary>
+        internal void ClearValidMoves()
+        {
+            foreach (var move in _validMoves)
             {
                 move.Destination.IsValidMove = false;
             }
-            ValidMoves.Clear();
-        }
-
-        /// <summary>
-        /// Determines the move type to get.
-        /// </summary>
-        public void UpdateMoveType(MoveType moveType)
-        {
-            MovesToGet = moveType;
-        }
-
-        public void UpdateRequireCaptureState(bool value)
-        {
-            TurnRequiresCapture = value;
+            _validMoves.Clear();
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="player"></param>
-        /// <param name="piece"></param>
-        public void SelectPiece(Player player, Piece piece)
+        public void SelectPiece(Piece piece, bool isCapture = false)
         {        
-            if (!TurnRequiresCapture)
+            if (isCapture)
             {
-                ValidMoves = GetPieceMoves(piece);
-            } else
-            {
-                if (!piece.CanCapture) return;
+                /// I don't know why I'm checking this honestly I just thought about it
+                /// It's important though
+                if (!piece.CanCapture && !piece.HasCaptured) return;
                 
-                ValidMoves = GetPieceMoves(piece, MoveType.Capture);
-            }
-            
-            Game.Events.BoardUpdateValidMoves(ValidMoves);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="cell"></param>
-        public void SelectMovecell(Player player, Cell cell)
-        {
-            if (player.Side != TurnOf) return;
-            if (ValidMoves.Count == 0) return;
-
-            foreach (Move move in ValidMoves)
-            {
-                if (cell != move.Destination) continue;
-
-                if (cell == move.Destination)
+                var moves = GetPieceMoves(piece, MoveType.Capture);
+                if (moves.Count > 0)
                 {
-                    SelectMove(player, move);
-                    break;
+                    UpdateValidMoves(moves);
+                    OnUpdateCaptureMoves?.Invoke(this, _validMoves);
+                }
+                else
+                {
+                    DonePiece(piece);
                 }
             }
+            else
+            {
+                var moves = GetPieceMoves(piece);
+                UpdateValidMoves(moves);
+            }
+            
+            OnUpdateValidMoves?.Invoke(this, _validMoves);
         }
 
-        public void SelectMove(Player player, Move move)
+        /// <summary>
+        /// 
+        /// </summary>
+        public void SelectCell(Cell cell, Player player)
         {
-            move.SetPlayer(player);
-            PerformMove(move);
+            if (IsCellInValidMoves(cell, out var move))
+            {
+                PerformMove(move);
+            }
+        }
+
+        bool IsCellInValidMoves(Cell cell, out MovePerformInfo info)
+        {
+            info = null;
+            foreach (MovePerformInfo move in _validMoves)
+            {
+                if (cell == move.Destination)
+                {
+                    info = move;
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
         /// Perform a piece move given a Move object.
         /// </summary>
-        public void PerformMove(Move move)
+        public void PerformMove(MovePerformInfo move)
         {
-            ClearValidMoves();
-            OnPieceMove?.Invoke(this, move);
-            Piece movedPiece = move.Piece;
-            Game.Events.PieceMove(move);
-            Game.Console.Log($"[ACTION]: Moved {movedPiece.ValueAsString}: ({move.Origin.Col}, {move.Origin.Row}) -> ({move.Destination.Col}, {move.Destination.Row})");
             AnimateMove(move);
+            Game.Audio.PlaySound("move");
 
-            if (!move.HasCapture)
+            if (move.HasCapture)
             {
-                DonePiece(movedPiece);
-            } else
-            {
-                CapturePiece(move);
+                PerformCapture(move);
             }
+            else
+            {
+                DonePiece(move.CapturingPiece);
+            }
+            OnMovePerform?.Invoke(this, move);
+            Game.Console.Log($"[ACTION]: Moved {move.CapturingPiece.ValueAsString}: ({move.Origin.Col}, {move.Origin.Row}) -> ({move.Destination.Col}, {move.Destination.Row})");
         }
         
         /// <summary>
         /// Perform a piece capture given a move.
         /// </summary>
-        public void CapturePiece(Move move)
+        public void PerformCapture(MovePerformInfo move)
         {
-            OnPieceCapture?.Invoke(this, move);
-            Game.Events.PieceCapture(move);
             Game.Audio.PlaySound("capture");
-            Debug.Log($"[ACTION]: {move.CapturingPiece} captured {move.CapturedPiece}");
             AnimateCapture(move);
 
-            if (Ruleset.GetValue<bool>("AllowChainCapture"))
-            {            
-                /// Check for chain captures
-                ValidMoves = GetPieceMoves(move.Piece, MoveType.Capture);
-
-                if (ValidMoves.Count != 0) /// Has succeeding capture
-                {
-                    Game.Events.BoardUpdateCaptureables(ValidMoves);
-                    Game.Events.RequireCapture(true);
-                    return;
-                }
-            }
-            DonePiece(move.Piece);
+            GetCellFromPiece(move.CapturedPiece).ClearPiece();
+            move.Player.CapturedPieces.Add(move.CapturedPiece);
+            move.CapturingPiece.HasCaptured = true;
+            move.CapturedPiece.Owner.RemoveFromPieces(move.CapturedPiece);
+            
+            Game.Console.Log($"[ACTION]: {move.CapturingPiece} captured {move.CapturedPiece}");
         }
 
         /// <summary>
@@ -434,33 +384,16 @@ namespace Aritche
         /// </summary>
         public void DonePiece(Piece piece)
         {
-            ValidMoves = CheckIfCaptureable(piece);
-
-            if (ValidMoves.Count == 0) /// Piece is NOT captureable
-            {
-                Game.Events.RequireCapture(false);
-                ClearValidMoves();
-            } else /// Piece is captureable
-            {
-                Game.Events.BoardUpdateCaptureables(ValidMoves);
-                Game.Events.RequireCapture(true);
-            }
-
+            piece.FinishActions();
             CheckForKing(piece);
-            ChangeTurns();
-            
-            Game.Events.PieceDone(piece);
         }
 
         /// <summary>
         /// Animates the moved piece in the scene.
         /// </summary>
-        void AnimateMove(Move move)
+        void AnimateMove(MovePerformInfo move)
         {
-            move.Destination.SetPiece(move.Origin.Piece);
-            move.Origin.ClearPiece();
-
-            // (move.originCell.Piece, move.destinationCell.Piece) = (move.destinationCell.Piece, move.originCell.Piece);
+            move.Perform();
 
             if (Game.Main.Settings.EnableAnimations)
             {
@@ -475,17 +408,18 @@ namespace Aritche
         /// <summary>
         /// Animates the capture.
         /// </summary>
-        void AnimateCapture(Move move)
+        void AnimateCapture(MovePerformInfo move)
         {
+            /// TODO: Checks on the MovePerformInfo class if it contains null values
             Piece capturedPiece = move.CapturedPiece;
-            RectTransform rect = capturedPiece.GetComponent<RectTransform>();
+            RectTransform pieceRect = capturedPiece.GetComponent<RectTransform>();
 
             if (capturedPiece.Side == Side.Blue) /// Blue player captured
             {
                 capturedPiece.gameObject.transform.SetParent(graveyardT.transform);
-                rect.anchorMin = new Vector2(1f, 0.5f);
-                rect.anchorMax = new Vector2(1f, 1f);
-                rect.localScale = new Vector2(1.5f, 1.5f);
+                pieceRect.anchorMin = new (1f, 0.5f);
+                pieceRect.anchorMax = new (1f, 1f);
+                pieceRect.localScale = new (1.5f, 1.5f);
 
                 if (Game.Main.Settings.EnableAnimations)
                 {
@@ -493,33 +427,33 @@ namespace Aritche
                     {
                         MoveGraveyardChildren(graveyardT);
                     }
-                    LeanTween.move(capturedPiece.gameObject, graveyardT.transform.position, 0.5f).setEaseOutExpo();
+
+                    LeanTween.move(capturedPiece.gameObject, graveyardT.transform.position, 0.5f)
+                    .setEase(LeanTweenType.easeOutExpo);
                 }
-            } else /// Orange player captured
+            }
+            else if (capturedPiece.Side == Side.Orange)
             {
                 capturedPiece.gameObject.transform.SetParent(graveyardB.transform);
-                rect.anchorMin = new Vector2(0.5f, 0f);
-                rect.anchorMax = new Vector2(0.5f, 0f);                
-                rect.localScale = new Vector2(1.5f, 1.5f);
+                pieceRect.anchorMin = new (0.5f, 0f);
+                pieceRect.anchorMax = new (0.5f, 0f);                
+                pieceRect.localScale = new (1.5f, 1.5f);
 
                 if (graveyardB.transform.childCount > 0)
                 {
                     MoveGraveyardChildren(graveyardB);
                 }
+
                 if (Game.Main.Settings.EnableAnimations)
                 {
-                    LeanTween.move(capturedPiece.gameObject, graveyardB.transform.position, 0.5f).setEaseOutExpo();
-                } else
+                    LeanTween.move(capturedPiece.gameObject, graveyardB.transform.position, 0.5f)
+                    .setEase(LeanTweenType.easeOutExpo);
+                }
+                else
                 {
                     capturedPiece.gameObject.transform.position = graveyardB.transform.position;
                 }
             }
-
-            // move.Player.CapturedPieces.Add(capturedPiece);
-            GetCellFromPiece(capturedPiece).ClearPiece();
-            move.Player.CapturedPieces.Add(move.CapturedPiece);
-            move.CapturingPiece.HasCaptured = true;
-            move.CapturingPiece.CanCapture = false;
         }
 
         void MoveGraveyardChildren(GameObject graveyard)
@@ -550,9 +484,9 @@ namespace Aritche
         /// This checks the 4 surrounding diagonal cells (SE, SW, NE, NW).
         /// </summary>
         /// <returns> All moves with captures. </returns>
-        public List<Move> CheckIfCaptureable(Piece piece)
+        public bool CheckIfCaptureable(Piece piece, out List<MovePerformInfo> moves, bool setAsValid = false)
         {
-            List<Move> moves = new();
+            moves = new();
 
             for (int col = piece.Col - 1 ;  col < piece.Col + 2 ; col += 2)
             {
@@ -570,7 +504,13 @@ namespace Aritche
                     }
                 }
             }
-            return moves;
+
+            if (moves.Count > 0 && setAsValid)
+            {
+                UpdateValidMoves(moves);
+                OnUpdateCaptureMoves?.Invoke(this, moves);
+            }
+            return moves.Count > 0;
         }
 
         public void CheckForKing(Piece piece)
@@ -587,40 +527,9 @@ namespace Aritche
         /// <summary>
         /// Returns the valid moves of the piece.
         /// </summary>
-        public List<Move> GetPieceMoves(Piece piece)
+        public List<MovePerformInfo> GetPieceMoves(Piece piece, MoveType moveType = default)
         {
-            List<Move> moves = new();
-            int up = 1;
-            int down = -1;
-            int above = piece.Row + 1;
-            int below = piece.Row - 1;
-
-            if (piece.Side == Side.Blue)
-            {
-                /// Forward check
-                moves.AddRange(CheckLeft(piece, above, up, MovesToGet));
-                moves.AddRange(CheckRight(piece, above, up, MovesToGet));
-                /// Backward check
-                moves.AddRange(CheckLeft(piece, below, down, MovesToGet));
-                moves.AddRange(CheckRight(piece, below, down, MovesToGet));
-            } else if (piece.Side == Side.Orange)
-            {
-                /// Forward check
-                moves.AddRange(CheckLeft(piece, below, down, MovesToGet));
-                moves.AddRange(CheckRight(piece, below, down, MovesToGet));
-                /// Backward check
-                moves.AddRange(CheckLeft(piece, above, up, MovesToGet));
-                moves.AddRange(CheckRight(piece, above, up, MovesToGet));
-            }
-            return moves;
-        }
-
-        /// <summary>
-        /// Returns the valid moves of the piece.
-        /// </summary>
-        public List<Move> GetPieceMoves(Piece piece, MoveType moveType = default)
-        {
-            List<Move> moves = new();
+            List<MovePerformInfo> moves = new();
             int up = 1;
             int down = -1;
             int above = piece.Row + 1;
@@ -643,50 +552,57 @@ namespace Aritche
                 moves.AddRange(CheckLeft(piece, above, up, moveType));
                 moves.AddRange(CheckRight(piece, above, up, moveType));
             }
+
+            piece.CanCapture = moves.Count > 0;
             return moves;
         }
 
         /// <summary>
         /// 
         /// </summary>
-        List<Move> CheckLeft(Piece piece, int startingRow, int yDirection, MoveType moveType)
+        List<MovePerformInfo> CheckLeft(Piece piece, int startingRow, int yDirection, MoveType moveType)
         {
-            List<Move> moves = new();
-            List<Move> captureMoves = new();
+            List<MovePerformInfo> moves = new();
+            List<MovePerformInfo> captureMoves = new();
             Cell cellToCapture = null;
             int nextEnemyPiece = 0;
             int left = piece.Col - 1;
 
             for (int row = startingRow ; row < MaxRows ; row += yDirection)
             {
-                if (left < 0 || left > 7) break;    ///
+                if (left < 0 || left > 7) break;    /// Out of bounds
                 if (row < 0 || row > 7) break;      /// Out of bounds
                 if (nextEnemyPiece > 1) break;      /// Two successive enemy pieces
 
                 Cell cellToCheck = GetCellFromRow(left, row);
 
-                if (cellToCheck.Piece == null) /// Next cell is empty cell
+                if (!cellToCheck.HasPiece) /// Next cell is empty cell
                 {
-                    if (cellToCapture != null)  /// There's a captureable cell
+                    if (cellToCapture != null) /// There's a captureable cell
                     {
-                        piece.CanCapture = true;
-                        captureMoves.Add(new Move(GetCellFromRow(piece.Col, piece.Row), cellToCheck, cellToCapture.Piece));
+                        var newMove = new MovePerformInfo(GetCellFromRow(piece.Col, piece.Row), cellToCheck, cellToCapture.Piece);
+                        captureMoves.Add(newMove);
                         if (piece.IsKing) moves.Clear();
-                    } else
+                    }
+                    else
                     {
                         if (piece.Forward != yDirection)
                         {
                             if (!piece.IsKing) break;
                         }
-                        moves.Add(new Move(GetCellFromRow(piece.Col, piece.Row), cellToCheck));
+
+                        var newMove = new MovePerformInfo(GetCellFromRow(piece.Col, piece.Row), cellToCheck);
+                        moves.Add(newMove);
                     }
 
                     if (!piece.IsKing) break;
 
-                } else if (cellToCheck.Piece.Side == piece.Side) /// Next cell has allied piece
+                }
+                else if (cellToCheck.Piece.Side == piece.Side) /// Next cell has allied piece
                 {
                     break;
-                } else /// Next cell has enemy piece
+                }
+                else /// Next cell has enemy piece
                 {
                     nextEnemyPiece += 1;
                     cellToCapture = cellToCheck;
@@ -697,7 +613,7 @@ namespace Aritche
             return moveType switch
             {
                 MoveType.All => moves.Concat(captureMoves).ToList(),
-                MoveType.Normal => moves,
+                MoveType.Move => moves,
                 MoveType.Capture => captureMoves,
                 _ => null,
             };
@@ -706,44 +622,53 @@ namespace Aritche
         /// <summary>
         /// 
         /// </summary>
-        List<Move> CheckRight(Piece piece, int startingRow, int yDirection, MoveType moveType)
+        List<MovePerformInfo> CheckRight(Piece piece, int startingRow, int yDirection, MoveType moveType)
         {
-            List<Move> moves = new();
-            List<Move> captureMoves = new();
+            List<MovePerformInfo> moves = new();
+            List<MovePerformInfo> captureMoves = new();
             int nextEnemyPiece = 0;
             Cell cellToCapture = null;
             int right = piece.Col + 1;
 
             for (int row = startingRow; row < MaxRows ; row += yDirection)
             {
-                if (right < 0 || right > 7) break;      ///
+                if (right < 0 || right > 7) break;      /// Out of bounds
                 if (row < 0 || row > 7) break;          /// Out of bounds
                 if (nextEnemyPiece > 1) break;          /// Two successive enemy pieces
 
                 Cell cellToCheck = GetCellFromRow(right, row);
 
-                if (cellToCheck.Piece == null)  /// Next cell is empty cell
+                if (!cellToCheck.HasPiece) /// Next cell is empty cell
                 {
-                    if (cellToCapture != null)  /// There's a captureable cell
+                    /// There's a piece waiting to be captured
+                    /// This is a captureable cell (?)
+                    if (cellToCapture != null)  
                     {
-                        piece.CanCapture = true;
-                        captureMoves.Add(new Move(GetCellFromRow(piece.Col, piece.Row), cellToCheck, cellToCapture.Piece));
+                        var newMove = new MovePerformInfo(GetCellFromRow(piece.Col, piece.Row), cellToCheck, cellToCapture.Piece);
+                        captureMoves.Add(newMove);
                         if (piece.IsKing) moves.Clear();
-                    } else
+                    }
+                    else
                     {
                         if (piece.Forward != yDirection)
                         {
+                            /// Now checking reverse direction (backward moves)
+                            /// Only king pieces are allowed to move freely backwards
                             if (!piece.IsKing) break;
                         }
-                        moves.Add(new Move(GetCellFromRow(piece.Col, piece.Row), cellToCheck));
+
+                        var newMove = new MovePerformInfo(GetCellFromRow(piece.Col, piece.Row), cellToCheck);
+                        moves.Add(newMove);
                     }
 
                     if (!piece.IsKing) break;
 
-                } else if (cellToCheck.Piece.Side == piece.Side)    /// Next cell has allied piece
+                }
+                else if (cellToCheck.Piece.Side == piece.Side)    /// Next cell has allied piece
                 {
                     break;
-                } else  /// Next cell has enemy piece
+                }
+                else  /// Next cell has enemy piece
                 {
                     nextEnemyPiece += 1;
                     cellToCapture = cellToCheck;
@@ -754,7 +679,7 @@ namespace Aritche
             return moveType switch
             {
                 MoveType.All => moves.Concat(captureMoves).ToList(),
-                MoveType.Normal => moves,
+                MoveType.Move => moves,
                 MoveType.Capture => captureMoves,
                 _ => null,
             };
@@ -790,15 +715,15 @@ namespace Aritche
             cell.ClearPiece();
         }
 
-        public void CapturePiece(int col, int row)
-        {
-            //
-        }
+        // public void CapturePiece(int col, int row)
+        // {
+        //     //
+        // }
 
-        public void CapturePiece(Cell cell)
-        {
-            // return cell.RemovePiece();
-        }
+        // public void CapturePiece(Cell cell)
+        // {
+        //     // return cell.RemovePiece();
+        // }
 
         public Cell GetCell(Vector2Int coords)
         {

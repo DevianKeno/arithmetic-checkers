@@ -194,13 +194,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44b7cb6a9b13a3a44b23ac51f72ac621, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cell: {fileID: 0}
-  Owner: {fileID: 0}
-  CanCapture: 0
-  HasCaptured: 0
-  Forward: 0
-  Color: {r: 0.9529412, g: 0.4392157, b: 0.28235295, a: 1}
-  ShadowColor: {r: 0.5686275, g: 0.19215687, b: 0.11764706, a: 1}
+  cell: {fileID: 0}
   Sprites:
   - {fileID: 21300000, guid: abedf3bb648bfc34a94f6535be18171d, type: 3}
   - {fileID: 21300000, guid: b1643ad483c5594479ca0d9555bf2865, type: 3}

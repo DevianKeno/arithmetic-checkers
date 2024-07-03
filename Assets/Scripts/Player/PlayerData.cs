@@ -9,6 +9,7 @@ namespace Aritche
     public struct PlayerData
     {
         // public Image ProfileImage;
-        public string Name;
+        public string Name { get; set; }
+        public Side Side { get; set; }
     }
 }

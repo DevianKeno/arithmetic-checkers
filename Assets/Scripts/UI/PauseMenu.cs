@@ -1,14 +1,15 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.UI;
+
+using Aritche.Players;
 
 namespace Aritche.UI
 {
     public class PauseMenu : Window
     {
+        public Player Player;
         public Color BorderColor
         {
             get
@@ -55,7 +56,8 @@ namespace Aritche.UI
         void OnForfeitClick()
         {
             Destroy();
-            Game.Main.EndMatch();
+            Game.Console.Log($"{Player.Side} Player forfeited.");
+            Game.Main.Match.ConcludeMatch();
         }
     }
 }

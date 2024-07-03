@@ -169,9 +169,7 @@ namespace Aritche
         /// </summary>
         /// <param name="setPosition"> Move the piece to its cell. </param>
         public void SetCell(Cell cell, bool setPosition = true)
-        {
-            if (cell.HasPiece) return;
-            
+        {            
             this.cell = cell;            
             if (setPosition)
             {
@@ -258,7 +256,7 @@ namespace Aritche
         public void Remove()
         {
             /// This is bad handling (I think)
-            Destroy(gameObject);
+            // Destroy(gameObject);
         }
     }
 }

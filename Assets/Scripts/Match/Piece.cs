@@ -53,6 +53,7 @@ namespace Aritche
         public string ValueAsString => Value.AsString;
         public Side Side { get; private set; }
         public bool IsKing { get; private set; }
+        public bool IsPawn => !IsKing;
         /// <summary>
         /// The player owner of this piece.
         /// </summary>
@@ -177,12 +178,12 @@ namespace Aritche
             }
         }
 
-        public bool IsAlly(Piece other)
+        public bool IsAllyOf(Piece other)
         {
             return Side == other.Side;
         }
 
-        public bool IsEnemy(Piece other)
+        public bool IsEnemyOf(Piece other)
         {
             return Side != other.Side;
         }
@@ -217,6 +218,26 @@ namespace Aritche
         {
             CanCapture = false;
             HasCaptured = false;
+        }
+
+        /// <summary>
+        /// Check if this piece is captureable in the given moves.
+        /// </summary>
+        public bool IsCapturedInMoves(List<MovePerformInfo> movesToCheck, out List<MovePerformInfo> captureMoves)
+        {
+            captureMoves = new();
+
+            foreach (MovePerformInfo move in movesToCheck)
+            {
+                if (!move.HasCapture) continue;
+
+                if (move.CapturedPiece == this)
+                {
+                    captureMoves.Add(move);
+                }
+            }
+
+            return captureMoves.Count > 0;
         }
 
         public void SetKing(bool value)

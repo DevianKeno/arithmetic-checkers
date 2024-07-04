@@ -1,11 +1,10 @@
-using UnityEngine;
 using System;
+
+using UnityEngine;
+using UnityEngine.EventSystems;
+
 using Aritche.UI;
 using Aritche.Players;
-using UnityEngine.InputSystem.Controls;
-using UnityEngine.InputSystem;
-using UnityEngine.EventSystems;
-using System.Text.RegularExpressions;
 
 namespace Aritche.Systems
 {
@@ -13,8 +12,10 @@ namespace Aritche.Systems
     {
         bool _isEnabled;
         public bool EnableDebug = true;
-        Player _player;
-        Cell _selectedCell;
+
+        [SerializeField] Player player;
+        Cell _selectedCell => player.SelectedCell;
+
         ChoiceWindow choiceWindow;
         MatchController match;
 
@@ -25,51 +26,51 @@ namespace Aritche.Systems
             choiceWindow = Game.UI.Create<ChoiceWindow>("choice_window");
             choiceWindow.Hide();
 
-            // Game.Events.OnPlayerCreate += (Player p) =>
-            // {
-            //     p.OnClick += PlayerClickCallback;
-            // };
-            // Game.Events.OnDeselect += DeselectCallback;
-            Game.Events.OnCellClick += CellClickCallback;
+            Game.Events.OnPlayerCreate += OnPlayerCreate;
         }
 
-        void CellClickCallback(Cell cell, PointerEventData e)
+        void OnPlayerCreate(Player player)
         {
-            if (e.button == PointerEventData.InputButton.Left)
-            {
-                choiceWindow.Hide();
-            }
-            else if (e.button == PointerEventData.InputButton.Right)
-            {
-                _selectedCell = cell;
-                DisplayPieceActions();
-            }
+            /// Capture player events
+            player.OnClick += OnPlayerClick;
+            player.OnCellDeselect += OnCellDeselect;
         }
 
-        public void PlayerClickCallback(object sender, PointerEventData.InputButton button)
+        void OnCellDeselect(object sender, EventArgs e)
         {
-            _player = sender as Player;
-            if (_player == null) return;
-            // if (!player.IsOwner) return;
-            if (!_player.IsModerator) return;
+            HideWindow();
+        }
 
-
-            if (button == PointerEventData.InputButton.Right)
+        public void OnPlayerClick(object sender, PointerEventData.InputButton button)
+        {
+            player = sender as Player;
+            
+            if (button == PointerEventData.InputButton.Left)
             {
-                if (_player.Hit.collider.CompareTag("Cell"))
+                // HideWindow();
+            }
+            else if (button == PointerEventData.InputButton.Right)
+            {
+                if (player.Hit.collider == null) return;
+
+                if (player.Hit.collider.CompareTag("Cell"))
                 {
-                    _selectedCell = match.Board.GetCell(_player.SelectedCell.Coordinates);
-                    _player.Deselect();
+                    player.Deselect();
                     DisplayPieceActions();
                     return;
                 }
 
-                if (_player.Hit.collider.CompareTag("Background"))
+                if (player.Hit.collider.CompareTag("Background"))
                 {
                     DisplayBoardActions();
                     return;
                 }
             }
+        }
+
+        void HideWindow()
+        {
+            choiceWindow.Hide();
         }
 
         void DisplayPieceActions()
@@ -113,13 +114,14 @@ namespace Aritche.Systems
         public void DisplayBoardActions()
         {
             if (!_isEnabled) return;
-
-            _player.Deselect();
             
             choiceWindow.Position = Input.mousePosition;
             choiceWindow.Clear();
 
-            // choiceWindow.AddDivider();
+            choiceWindow.AddChoice("Change Turns", Game.UI.GetIcon("toggle_false"))
+                .AddCallback(ChangeTurns);
+
+            choiceWindow.AddDivider();
 
             choiceWindow.AddChoice("Remove All Pieces", Game.UI.GetIcon("toggle_false"))
                 .AddCallback(RemoveAll);
@@ -141,7 +143,8 @@ namespace Aritche.Systems
                     {
                         match.TimerManager.GlobalTimer.Pause();
                     });
-            } else
+            }
+            else
             {
                 choiceWindow.AddChoice("Resume Time", Game.UI.GetIcon("timer_play"))
                     .AddCallback(() =>

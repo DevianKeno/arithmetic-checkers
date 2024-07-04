@@ -57,8 +57,8 @@ namespace Aritche
 
             if (Ruleset.GetValue<bool>("EnableGlobalTimer"))
             {
-                globalTimer.SetTime(Ruleset.GetValue<float>("GlobalTimeSeconds"));
-                globalTimer.SetFormat(TimerFormat.MM_SS);
+                globalTimer.SetStartTime(Ruleset.GetValue<float>("GlobalTimeSeconds"), reset: true);
+                globalTimer.Format = TimerFormat.MM_SS;
                 globalTimer.Begin();
             }
             
@@ -66,28 +66,14 @@ namespace Aritche
             {
                 var turnTime = Ruleset.GetValue<float>("TurnTimeSeconds");
                 
-                blueTimer.SetTime(turnTime);
-                blueTimer.SetFormat(TimerFormat.SS);
+                blueTimer.Format = TimerFormat.SS;
+                blueTimer.SetStartTime(turnTime, reset: true);
                 
-                orangeTimer.SetTime(turnTime);
-                orangeTimer.SetFormat(TimerFormat.SS);
+                orangeTimer.Format = TimerFormat.SS;
+                orangeTimer.SetStartTime(turnTime, reset: true);
 
-                if (Ruleset.GetValue<Side>("FirstTurn") == Side.Blue)
-                {
-                    blueTimer.Begin();
-                    blueChipImage.CrossFadeAlpha(1f, FadeDuration, IgnoreTimeScale);
-
-                    orangeChipImage.CrossFadeAlpha(0.5f, FadeDuration, IgnoreTimeScale);
-                    orangeChipText.CrossFadeAlpha(0.5f, FadeDuration, IgnoreTimeScale);
-
-                } else if (Ruleset.GetValue<Side>("FirstTurn") == Side.Orange)
-                {
-                    orangeTimer.Begin();
-                    orangeChipImage.CrossFadeAlpha(1f, FadeDuration, IgnoreTimeScale);
-
-                    blueChipImage.CrossFadeAlpha(0.5f, FadeDuration, IgnoreTimeScale);
-                    blueChipText.CrossFadeAlpha(0.5f, FadeDuration, IgnoreTimeScale);
-                }
+                var first = Ruleset.GetValue<Side>("FirstTurn");
+                SwapTurnTimer(first);
             }
         }
 
@@ -100,17 +86,18 @@ namespace Aritche
                 orangeChipText.CrossFadeAlpha(0.5f, FadeDuration, IgnoreTimeScale);
                 orangeChipText.text = "";
 
-                blueTimer.Reset(true);
+                blueTimer.ResetTimer(true);
                 blueChipImage.CrossFadeAlpha(1f, FadeDuration, IgnoreTimeScale);
                 blueChipText.CrossFadeAlpha(1f, FadeDuration, IgnoreTimeScale);
-            } else
+            }
+            else
             {
                 blueTimer.Stop();
                 blueChipImage.CrossFadeAlpha(0.5f, FadeDuration, IgnoreTimeScale);
                 blueChipText.CrossFadeAlpha(0.5f, FadeDuration, IgnoreTimeScale);
                 blueChipText.text = "";
 
-                orangeTimer.Reset(true);
+                orangeTimer.ResetTimer(true);
                 orangeChipImage.CrossFadeAlpha(1f, FadeDuration, IgnoreTimeScale);
                 orangeChipText.CrossFadeAlpha(1f, FadeDuration, IgnoreTimeScale);
             }
@@ -119,8 +106,13 @@ namespace Aritche
         public void PauseAll()
         {
             globalTimer.Pause();
+            globalTimer.Color = Color.red;
+
             blueTimer.Pause();
+            blueTimer.Color = Color.red;
+
             orangeTimer.Pause();
+            orangeTimer.Color = Color.red;
         }
 
         public void ResumeAll()

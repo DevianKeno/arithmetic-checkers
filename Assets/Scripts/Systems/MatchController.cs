@@ -52,6 +52,7 @@ namespace Aritche.Systems
 
         #region Match events
 
+        public event EventHandler<Player> OnPlayerCreate;
         public event EventHandler<Side> OnTurnChanged;
 
         #endregion
@@ -229,7 +230,7 @@ namespace Aritche.Systems
 
             if (Ruleset.GetValue<bool>("AllowMandatoryCapture"))
             {
-                if (board.CheckIfCaptureable(moveInfo.CapturingPiece, out var moves, setAsValid: true))
+                if (board.CheckIfCaptureableMax(moveInfo.CapturingPiece, out var moves, setAsValid: true))
                 {
                     _turnRequiresCapture = true;
                 }
@@ -331,7 +332,9 @@ namespace Aritche.Systems
 
         public void ResetTurns()
         {
-            ChangeTurnTo(Ruleset.GetValue<Side>("FirstTurn"));
+            var first = Ruleset.GetValue<Side>("FirstTurn");
+            ChangeTurnTo(first);
+            GetPlayerFromSide(first).ToggleControls(true);
             TurnNumber = 0;
         }
         
@@ -518,10 +521,9 @@ namespace Aritche.Systems
             {
 
             }
+            ResetTurns();
             board.BeginMatch();
             timerManager.BeginMatch();
-            BluePlayer.ToggleControls(true);
-            OrangePlayer.ToggleControls(true);
             IsPlaying = true;
         }
 

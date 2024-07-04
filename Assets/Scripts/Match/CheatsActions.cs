@@ -114,11 +114,29 @@ namespace Aritche.Systems
             }
         }
 
+        void ChangeTurns()
+        {
+            match.ChangeTurns();
+            Game.Console.Log($"[CHEATS]: Changed turn.");
+        }
+
         void RemoveAll()
         {
             match.Board.RemoveAllPieces();
             Game.Console.Log($"[CHEATS]: Removed all pieces!");
             Debug.Log($"[CHEATS]: Removed all pieces!");
+        }
+
+        void SetTime(Timer timer)
+        {
+            if (timer.Format == TimerFormat.MM_SS)
+            {
+
+            }
+            else if (timer.Format == TimerFormat.SS)
+            {
+
+            }
         }
 
         #endregion

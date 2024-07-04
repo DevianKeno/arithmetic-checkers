@@ -56,6 +56,13 @@ namespace Aritche
                 return Piece != null;
             }
         }
+        public bool IsEmpty
+        {
+            get
+            {
+                return Piece == null;
+            }
+        }
         public bool IsValidMove { get; internal set;}
 
         public event EventHandler<PointerEventData> OnClick;

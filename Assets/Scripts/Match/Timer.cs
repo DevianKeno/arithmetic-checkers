@@ -1,154 +1,195 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
-using UnityEngine.Events;
+using UnityEngine.UI;
 using TMPro;
 
 namespace Aritche
 {
-    public enum TimerFormat {MM_SS, SS}
+    public enum TimerFormat { MM_SS, SS }
+    public enum TimeCheck { Less, Greater }
 
     public class Timer : MonoBehaviour
     {
-        public TimerFormat Format = TimerFormat.MM_SS;
-        public float StartTimeInSeconds = 0f;
-        public float CurrentTime = 0f;
         public bool IsEnabled = false;
-        public bool IsRunning { get; private set; }
+        [SerializeField] TimerFormat format = TimerFormat.MM_SS;
+        public TimerFormat Format
+        {
+            get { return format; }
+            set { format = value; }
+        }
+        [SerializeField] TimeCheck timeCheck = TimeCheck.Less;
+        public TimeCheck TimeCheck
+        {
+            get { return timeCheck; }
+            set { timeCheck = value; }
+        }
+        public float StartTimeInSeconds = 0f;
+        [SerializeField] float _currentTime = 0f;
+        public float Time
+        {
+            get { return _currentTime; }
+            set
+            {
+                _currentTime = value;
+                textTMP.text = FormatTime();
+            }
+        }
+        public float CheckTimeOn = 0f;
+        bool _isRunning = false;
+        public bool IsRunning => _isRunning;
+        public Color Color
+        {
+            get { return textTMP.color; }
+            set { textTMP.color = value; }
+        }
+        Color _originalColor;
 
-        public List<UnityAction> Callbacks = new();
-        public TextMeshProUGUI TMPComponent = null;
+        public event Action OnReachZero;
+
+        [SerializeField] TextMeshProUGUI textTMP;
+        [SerializeField] Image pauseIcon;
+
+        void Awake()
+        {
+            if (textTMP == null && TryGetComponent<TextMeshProUGUI>(out var tmp))
+            {
+                textTMP = tmp;
+            }
+        }
+
+        void Start()
+        {
+            _originalColor = Color;
+        }
 
         void Update()
         {
-            if (!IsRunning) return;
+            if (!_isRunning) return;
             
-            CurrentTime -= 1 * Time.deltaTime;
+            _currentTime -= 1 * UnityEngine.Time.deltaTime;
 
-            if (TMPComponent != null)
+            textTMP.text = FormatTime();
+            CheckTime();
+        }
+
+        void CheckTime()
+        {
+            if (timeCheck == TimeCheck.Less)
             {
-                TMPComponent.text = Format switch
+                if (_currentTime < CheckTimeOn)
                 {
-                    TimerFormat.MM_SS => ToMM_SS(),
-                    TimerFormat.SS => ToSS(),
-                    _ => ToSS()
-                };
+                    Finish();
+                }
             }
-
-            if (CurrentTime < 0)
+            else if (timeCheck == TimeCheck.Greater)
             {
-                Finish();
+                if (_currentTime > CheckTimeOn)
+                {
+                    Finish();
+                }
             }
         }
 
-        public void Init(float value)
+        string FormatTime()
         {
-            CurrentTime = value;
+            if (format == TimerFormat.MM_SS)
+            {
+                return ToMM_SS();
+            }
+            else if (format == TimerFormat.SS)
+            {
+                return ToSS();
+            }
+            return ToSS();
         }
 
-        public void SetFormat(TimerFormat format)
+        string ToMM_SS()
         {
-            Format = format;
-        }
-
-        public string ToMM_SS()
-        {
-            TimeSpan time = TimeSpan.FromSeconds(CurrentTime);
-
+            TimeSpan time = TimeSpan.FromSeconds(_currentTime);
             return time.ToString("mm':'ss");
         }
 
-        public string ToSS()
+        string ToSS()
         {
-            TimeSpan time = TimeSpan.FromSeconds(CurrentTime);
-
+            TimeSpan time = TimeSpan.FromSeconds(_currentTime);
             return time.ToString("%s");
         }
-        
+
         public void Begin()
         {
-            if (IsRunning) return;
-            IsRunning = true;
+            _isRunning = true;
+            if (pauseIcon != null)
+            {
+                pauseIcon.gameObject.SetActive(false);
+            }
         }
 
         public void Stop()
         {
-            if (!IsRunning) return;
-            IsRunning = false;
+            _isRunning = false;
         }
 
         public void Resume()
         {
-            IsRunning = true;
+            _isRunning = true;
+            if (pauseIcon != null)
+            {
+                pauseIcon.gameObject.SetActive(false);
+            }
         }
 
         public void Pause()
         {
-            IsRunning = false;
+            _isRunning = false;
+            if (pauseIcon != null)
+            {
+                pauseIcon.gameObject.SetActive(true);
+            }
         }
 
-        public void Reset(bool start = false)
+        public void ResetTimer(bool start = false)
         {
-            CurrentTime = StartTimeInSeconds;
-            IsRunning = start;
+            _currentTime = StartTimeInSeconds;
+            _isRunning = start;
         }
-        
-        
+
         public void Finish()
         {
-            IsRunning = false;
-
-            if (Callbacks.Count == 0) return;
-
-            foreach (var c in Callbacks)
-            {
-                c();
-            }
+            _isRunning = false;
+            OnReachZero?.Invoke();
         }
-
-        public float GetTime()
+        
+        public void ResetColor()
         {
-            return CurrentTime;
+            Color = _originalColor;
         }
-
-        public void SetTime(float valueInSeconds)
+        
+        public void SetStartTime(float valueInSeconds, bool reset = true)
         {
             StartTimeInSeconds = valueInSeconds;
-            CurrentTime = valueInSeconds;
+            if (reset)
+            {
+                _currentTime = valueInSeconds;
+            }
         }
 
-        public void ChangeTime(float valueInSeconds)
+        public void AddTime(float valueInSeconds, bool notify = false)
         {
-            CurrentTime = valueInSeconds;
-        }
-        
-        public void Invoke()
-        {
-            foreach (var c in Callbacks)
+            _currentTime += valueInSeconds;
+            if (notify)
             {
-                c();
+                CheckTime();
             }
         }
         
-        public void AddTime(float valueInSeconds)
+        public void RemoveTime(float valueInSeconds, bool notify = false)
         {
-            CurrentTime += valueInSeconds;
-        }
-        
-        public void RemoveTime(float valueInSeconds)
-        {
-            CurrentTime -= valueInSeconds;
-        }
-
-        public void AddCallback(UnityAction function)
-        {
-            Callbacks.Add(function);
-        }
-
-        public void SetText(TextMeshProUGUI value)
-        {
-            this.TMPComponent = value;
+            _currentTime -= valueInSeconds;
+            if (notify)
+            {
+                CheckTime();
+            }
         }
     }
 }

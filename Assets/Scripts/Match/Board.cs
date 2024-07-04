@@ -136,7 +136,7 @@ namespace Aritche
         {
             foreach (var entry in Ruleset.PieceMap)
             {
-                Cell cell = GetCellFromRow(entry.Key.Item1, entry.Key.Item2);    
+                Cell cell = GetCellFromCoordinates(entry.Key.Item1, entry.Key.Item2);    
                 PieceData pieceData = entry.Value;
 
                 var newPiece = CreatePiece(pieceData);
@@ -480,7 +480,7 @@ namespace Aritche
         public bool CheckIfCaptureable(Piece piece, out List<MovePerformInfo> moves, bool setAsValid = false)
         {
             moves = new();
-
+            
             for (int col = piece.Col - 1 ;  col < piece.Col + 2 ; col += 2)
             {
                 if (col < 0 || col > 7) continue;
@@ -489,11 +489,11 @@ namespace Aritche
                 {
                     if (row < 0 || row > 7) continue;
 
-                    Cell cellToCheck = GetCellFromRow(col, row);
+                    Cell cellToCheck = GetCellFromCoordinates(col, row);
 
                     if (cellToCheck.HasPiece)
                     {
-                        if (piece.IsAlly(cellToCheck.Piece)) continue;
+                        if (piece.IsAllyOf(cellToCheck.Piece)) continue;
                         
                         moves.AddRange(GetPieceMoves(cellToCheck.Piece, MoveType.Capture));
                     }
@@ -506,6 +506,116 @@ namespace Aritche
                 OnUpdateCaptureMoves?.Invoke(this, moves);
             }
             return moves.Count > 0;
+        }
+        
+        /// <summary>
+        /// Same as the original method, but recursive.
+        /// This is used for checking if there are king pieces that can capture this piece,
+        /// </summary>
+        public bool CheckIfCaptureableMax(Piece piece, out List<MovePerformInfo> moves, bool setAsValid = false)
+        {
+            moves = new List<MovePerformInfo>();
+            int up = 1;
+            int down = -1;
+            int above = piece.Row + 1;
+            int below = piece.Row - 1;
+
+            /// Above
+            moves.AddRange(CheckLeftCapturer(piece, above, up));
+            moves.AddRange(CheckRightCapturer(piece, above, up));
+            /// Below
+            moves.AddRange(CheckLeftCapturer(piece, below, down));
+            moves.AddRange(CheckRightCapturer(piece, below, down));
+            
+            if (moves.Count > 0 && setAsValid)
+            {
+                UpdateValidMoves(moves);
+                OnUpdateCaptureMoves?.Invoke(this, moves);
+            }
+            return moves.Count > 0;
+        }
+
+        List<MovePerformInfo> CheckLeftCapturer(Piece piece, int startingRow, int yDirection)
+        {
+            var moves = new List<MovePerformInfo>();
+            int left = piece.Col - 1;
+            int distance = 0;
+
+            for (int row = startingRow ; row < MaxRows ; row += yDirection)
+            {
+                if (left < 0 || left > 7) break;    /// Out of bounds
+                if (row < 0 || row > 7) break;      /// Out of bounds
+
+                Cell cellToCheck = GetCellFromCoordinates(left, row);
+
+                if (cellToCheck.IsEmpty) continue;
+                
+                if (distance > 1)
+                {
+                    /// The piece can't reach our piece
+                    if (cellToCheck.Piece.IsPawn) break;
+                }
+
+                if (cellToCheck.Piece.IsEnemyOf(piece))
+                {
+                    var pieceMoves = GetPieceMoves(cellToCheck.Piece, MoveType.Capture);
+
+                    if (pieceMoves.Count > 0 && piece.IsCapturedInMoves(pieceMoves, out var captureMoves))
+                    {
+                        moves.AddRange(captureMoves);
+                    }
+                }
+                else /// allied piece
+                {
+                    break;
+                }
+
+                left -= 1;  /// Move selector diagonally
+                distance++;
+            }
+
+            return moves;
+        }
+
+        List<MovePerformInfo> CheckRightCapturer(Piece piece, int startingRow, int yDirection)
+        {
+            var moves = new List<MovePerformInfo>();
+            int right = piece.Col + 1;
+            int distance = 0;
+
+            for (int row = startingRow ; row < MaxRows ; row += yDirection)
+            {
+                if (right < 0 || right > 7) break;  /// Out of bounds
+                if (row < 0 || row > 7) break;      /// Out of bounds
+
+                Cell cellToCheck = GetCellFromCoordinates(right, row);
+
+                if (cellToCheck.IsEmpty) continue;
+                
+                if (distance > 1)
+                {
+                    if (cellToCheck.Piece.IsPawn) continue;
+                }
+
+                if (cellToCheck.Piece.IsEnemyOf(piece))
+                {
+                    var pieceMoves = GetPieceMoves(cellToCheck.Piece, MoveType.Capture);
+                    
+                    if (pieceMoves.Count > 0 && piece.IsCapturedInMoves(pieceMoves, out var captureMoves))
+                    {
+                        moves.AddRange(captureMoves);
+                    }
+                }
+                else /// allied piece
+                {
+                    break;
+                }
+
+                right += 1;  /// Move selector diagonally
+                distance++;
+            }
+
+            return moves;
         }
 
         public void CheckForKing(Piece piece)
@@ -570,13 +680,13 @@ namespace Aritche
                 if (row < 0 || row > 7) break;      /// Out of bounds
                 if (nextEnemyPiece > 1) break;      /// Two successive enemy pieces
 
-                Cell cellToCheck = GetCellFromRow(left, row);
+                Cell cellToCheck = GetCellFromCoordinates(left, row);
 
                 if (!cellToCheck.HasPiece) /// Next cell is empty cell
                 {
                     if (cellToCapture != null) /// There's a captureable cell
                     {
-                        var newMove = new MovePerformInfo(GetCellFromRow(piece.Col, piece.Row), cellToCheck, cellToCapture.Piece);
+                        var newMove = new MovePerformInfo(GetCellFromCoordinates(piece.Col, piece.Row), cellToCheck, cellToCapture.Piece);
                         captureMoves.Add(newMove);
                         if (piece.IsKing) moves.Clear();
                     }
@@ -587,7 +697,7 @@ namespace Aritche
                             if (!piece.IsKing) break;
                         }
 
-                        var newMove = new MovePerformInfo(GetCellFromRow(piece.Col, piece.Row), cellToCheck);
+                        var newMove = new MovePerformInfo(GetCellFromCoordinates(piece.Col, piece.Row), cellToCheck);
                         moves.Add(newMove);
                     }
 
@@ -632,7 +742,7 @@ namespace Aritche
                 if (row < 0 || row > 7) break;          /// Out of bounds
                 if (nextEnemyPiece > 1) break;          /// Two successive enemy pieces
 
-                Cell cellToCheck = GetCellFromRow(right, row);
+                Cell cellToCheck = GetCellFromCoordinates(right, row);
 
                 if (!cellToCheck.HasPiece) /// Next cell is empty cell
                 {
@@ -640,7 +750,7 @@ namespace Aritche
                     /// This is a captureable cell (?)
                     if (cellToCapture != null)  
                     {
-                        var newMove = new MovePerformInfo(GetCellFromRow(piece.Col, piece.Row), cellToCheck, cellToCapture.Piece);
+                        var newMove = new MovePerformInfo(GetCellFromCoordinates(piece.Col, piece.Row), cellToCheck, cellToCapture.Piece);
                         captureMoves.Add(newMove);
                         if (piece.IsKing) moves.Clear();
                     }
@@ -653,7 +763,7 @@ namespace Aritche
                             if (!piece.IsKing) break;
                         }
 
-                        var newMove = new MovePerformInfo(GetCellFromRow(piece.Col, piece.Row), cellToCheck);
+                        var newMove = new MovePerformInfo(GetCellFromCoordinates(piece.Col, piece.Row), cellToCheck);
                         moves.Add(newMove);
                     }
 
@@ -683,7 +793,7 @@ namespace Aritche
 
         public Piece AddPiece(int col, int row, PieceData pieceData)
         {
-            return AddPiece(GetCellFromRow(col, row), pieceData);
+            return AddPiece(GetCellFromCoordinates(col, row), pieceData);
         }
 
         public Piece AddPiece(Cell cell, PieceData pieceData)
@@ -702,7 +812,7 @@ namespace Aritche
 
         public void RemovePiece(int col, int row)
         {
-            RemovePiece(GetCellFromRow(col, row));
+            RemovePiece(GetCellFromCoordinates(col, row));
         }
 
         public void RemovePiece(Cell cell)
@@ -721,7 +831,7 @@ namespace Aritche
         //     // return cell.RemovePiece();
         // }
 
-        public Cell GetCell(Vector2Int coords)
+        public Cell GetCellFromVector2(Vector2Int coords)
         {
             if (coords.x < 0 || coords.x > 8 || coords.y < 0 || coords.y > 8)
             {
@@ -736,7 +846,7 @@ namespace Aritche
             return null;
         }
 
-        public Cell GetCellFromRow(int col, int row)
+        public Cell GetCellFromCoordinates(int col, int row)
         {
             if (col < 0 || col > 8 || row < 0 || row > 8)
             {

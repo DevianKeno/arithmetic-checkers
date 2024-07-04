@@ -155,6 +155,7 @@ namespace Aritche.Players
         void HandlePause(InputAction.CallbackContext c)
         {
             if (!Game.Main.HasMatch) return;
+            if (!AllowControls) return;
 
             /// When on online matches, these should be handled differently
             /// As they will now be "requesting" pauses or just pause on their own
@@ -342,7 +343,7 @@ namespace Aritche.Players
             else
             {
                 SelectedPiece = piece;
-                // Game.Audio.PlaySound("select");
+                Game.Audio.PlaySound("select");
                 OnPieceSelect?.Invoke(this, SelectedPiece);
                 return;
             }

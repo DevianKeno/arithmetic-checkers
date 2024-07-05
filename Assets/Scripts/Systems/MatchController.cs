@@ -176,7 +176,7 @@ namespace Aritche.Systems
                 Name = blueName,
                 Side = Side.Blue
             });
-            BluePlayer.AssignPieceOwnership(board.BluePieces);
+            BluePlayer.AssignPieceOwnership(board.LiveBluePieces);
 
             bluePlayerDisplay.DisplayName = blueName;
             bluePlayerDisplay.SetSomebody();
@@ -188,7 +188,7 @@ namespace Aritche.Systems
                 Name = orangeName,
                 Side = Side.Orange
             });
-            OrangePlayer.AssignPieceOwnership(board.OrangePieces);
+            OrangePlayer.AssignPieceOwnership(board.LiveOrangePieces);
 
             orangePlayerDisplay.DisplayName = orangeName;
             orangePlayerDisplay.SetSomebody();
@@ -228,9 +228,15 @@ namespace Aritche.Systems
                 HandleCapture(moveInfo);
             }
 
-            if (Ruleset.GetValue<bool>("AllowMandatoryCapture"))
+            moveInfo.Player.FinishTurn();
+            if (_changeTurnOnFinish)
             {
-                if (board.CheckIfCaptureableMax(moveInfo.CapturingPiece, out var moves, setAsValid: true))
+                Side otherTurn = TurnOf switch
+                {
+                    Side.Blue => Side.Orange,
+                    Side.Orange => Side.Blue,
+                };
+                if (board.CheckCapturesAll(otherTurn))
                 {
                     _turnRequiresCapture = true;
                 }
@@ -238,11 +244,7 @@ namespace Aritche.Systems
                 {
                     _turnRequiresCapture = false;
                 }
-            }
-
-            moveInfo.Player.FinishTurn();
-            if (_changeTurnOnFinish)
-            {
+                
                 ChangeTurns();
             }
         }

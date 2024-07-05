@@ -32,10 +32,10 @@ namespace Aritche
         /// </summary>
         public float Score { get; set; }
 
-        public MovePerformInfo(Cell origin, Cell destination)
+        public MovePerformInfo(Piece piece, Cell origin, Cell destination)
         {
             /// Set the capturing piece. The piece that this move belongs to
-            CapturingPiece = origin.Piece;
+            CapturingPiece = piece;
             /// Set the player who performed this move
             Player = CapturingPiece.Owner;
 
@@ -46,12 +46,12 @@ namespace Aritche
             MoveType = MoveType.Move;
         }
         
-        public MovePerformInfo(Cell origin, Cell destination, Piece toCapture)
+        public MovePerformInfo(Piece piece, Piece toCapture, Cell origin, Cell destination)
         {
             /// Set the capturing piece. The piece that this move belongs to
-            CapturingPiece = origin.Piece;
+            CapturingPiece = piece;
             /// Set the player who performed this move
-            Player = CapturingPiece.Owner;
+            Player = piece.Owner;
 
             /// Assign cells
             Origin = origin;

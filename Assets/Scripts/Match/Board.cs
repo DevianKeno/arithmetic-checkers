@@ -19,8 +19,10 @@ namespace Aritche
         Ruleset Ruleset { get; set; }
         public Themes Theme;
 
-        public List<Piece> BluePieces = new();
-        public List<Piece> OrangePieces = new();
+        public List<Piece> LiveBluePieces = new();
+        public List<Piece> LiveOrangePieces = new();
+        public List<Piece> CapturedBluePieces = new();
+        public List<Piece> CapturedOrangePieces = new();
 
         List<Cell> _cells = new();
         List<Piece> _pieces = new();
@@ -144,11 +146,11 @@ namespace Aritche
 
                 if (pieceData.Side == Side.Blue)
                 {
-                    BluePieces.Add(newPiece);
+                    LiveBluePieces.Add(newPiece);
                 }
                 else if (pieceData.Side == Side.Orange)
                 {
-                    OrangePieces.Add(newPiece);
+                    LiveOrangePieces.Add(newPiece);
                 }
 
                 _pieces.Add(newPiece);
@@ -371,6 +373,27 @@ namespace Aritche
             Game.Audio.PlaySound("capture");
             AnimateCapture(move);
 
+            var pieces = move.CapturedPiece.Side switch
+            {
+                Side.Blue => LiveBluePieces,
+                Side.Orange => LiveOrangePieces
+            };
+            var piecesCaptured = move.CapturedPiece.Side switch
+            {
+                Side.Blue => CapturedBluePieces,
+                Side.Orange => CapturedOrangePieces
+            };
+            var result = pieces.Find((Piece piece) =>
+            {
+                return piece == move.CapturedPiece;
+            });
+            if (result != null)
+            {
+                var temp = result;
+                pieces.Remove(result);
+                piecesCaptured.Add(temp);
+            }
+
             GetCellFromPiece(move.CapturedPiece).ClearPiece();
             move.Player.CapturedPieces.Add(move.CapturedPiece);
             move.CapturingPiece.HasCaptured = true;
@@ -470,6 +493,31 @@ namespace Aritche
                     child.transform.position = targetPosition;
                 }
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="side"></param>
+        /// <returns></returns>
+        public bool CheckCapturesAll(Side side)
+        {
+            var moves = new List<MovePerformInfo>();
+            var pieces = side switch
+            {
+                Side.Blue => LiveBluePieces,
+                Side.Orange => LiveOrangePieces
+            };
+            
+            foreach (Piece piece in pieces)
+            {
+                var pieceCaptureMoves = GetPieceMoves(piece, MoveType.Capture);
+                moves.AddRange(pieceCaptureMoves);
+            }
+
+            UpdateValidMoves(moves);
+            OnUpdateCaptureMoves?.Invoke(this, moves);
+            return moves.Count > 0;
         }
 
         /// <summary>
@@ -686,7 +734,13 @@ namespace Aritche
                 {
                     if (cellToCapture != null) /// There's a captureable cell
                     {
-                        var newMove = new MovePerformInfo(GetCellFromCoordinates(piece.Col, piece.Row), cellToCheck, cellToCapture.Piece);
+                        var newMove = new MovePerformInfo(
+                            piece: piece,
+                            toCapture: cellToCapture.Piece,
+                            origin: GetCellFromCoordinates(piece.Col, piece.Row),
+                            destination: cellToCheck
+                        );
+                        
                         captureMoves.Add(newMove);
                         if (piece.IsKing) moves.Clear();
                     }
@@ -697,7 +751,11 @@ namespace Aritche
                             if (!piece.IsKing) break;
                         }
 
-                        var newMove = new MovePerformInfo(GetCellFromCoordinates(piece.Col, piece.Row), cellToCheck);
+                        var newMove = new MovePerformInfo(
+                            piece: piece,
+                            origin: GetCellFromCoordinates(piece.Col, piece.Row),
+                            destination: cellToCheck
+                        );
                         moves.Add(newMove);
                     }
 
@@ -750,7 +808,12 @@ namespace Aritche
                     /// This is a captureable cell (?)
                     if (cellToCapture != null)  
                     {
-                        var newMove = new MovePerformInfo(GetCellFromCoordinates(piece.Col, piece.Row), cellToCheck, cellToCapture.Piece);
+                        var newMove = new MovePerformInfo(
+                            piece: piece,
+                            toCapture: cellToCapture.Piece,
+                            origin: GetCellFromCoordinates(piece.Col, piece.Row),
+                            destination: cellToCheck
+                        );
                         captureMoves.Add(newMove);
                         if (piece.IsKing) moves.Clear();
                     }
@@ -763,7 +826,11 @@ namespace Aritche
                             if (!piece.IsKing) break;
                         }
 
-                        var newMove = new MovePerformInfo(GetCellFromCoordinates(piece.Col, piece.Row), cellToCheck);
+                        var newMove = new MovePerformInfo(
+                            piece: piece,
+                            origin: GetCellFromCoordinates(piece.Col, piece.Row),
+                            destination: cellToCheck
+                        );
                         moves.Add(newMove);
                     }
 

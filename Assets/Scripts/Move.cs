@@ -20,6 +20,10 @@ namespace Aritche
         /// <summary>
         /// The piece that moved. 
         /// </summary>
+        public Piece MovedPiece { get; set; }
+        /// <summary>
+        /// The piece that moved. 
+        /// </summary>
         public Piece CapturingPiece { get; set; }
         /// <summary>
         /// The piece that will be captured.
@@ -34,6 +38,7 @@ namespace Aritche
 
         public MovePerformInfo(Piece piece, Cell origin, Cell destination)
         {
+            MovedPiece = piece;
             /// Set the capturing piece. The piece that this move belongs to
             CapturingPiece = piece;
             /// Set the player who performed this move
@@ -48,6 +53,7 @@ namespace Aritche
         
         public MovePerformInfo(Piece piece, Piece toCapture, Cell origin, Cell destination)
         {
+            MovedPiece = piece;
             /// Set the capturing piece. The piece that this move belongs to
             CapturingPiece = piece;
             /// Set the player who performed this move

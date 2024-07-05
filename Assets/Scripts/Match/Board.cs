@@ -408,7 +408,6 @@ namespace Aritche
         public void DonePiece(Piece piece)
         {
             piece.FinishActions();
-            CheckForKing(piece);
         }
 
         /// <summary>

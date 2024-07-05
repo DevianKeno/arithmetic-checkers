@@ -231,6 +231,8 @@ namespace Aritche.Systems
             moveInfo.Player.FinishTurn();
             if (_changeTurnOnFinish)
             {
+                board.CheckForKing(moveInfo.MovedPiece);
+                
                 Side otherTurn = TurnOf switch
                 {
                     Side.Blue => Side.Orange,
